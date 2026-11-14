@@ -29,3 +29,6 @@
 
 ### Revis?o de prepara??o e evid?ncias
 - Aviso inicial oculto at? escolha do destino. Indicadores vermelho/amarelo/verde descrevem somente checklist hipot?tico; atualizados a cada sele??o. Detalhes expans?veis, ferramentas adicionais, capacidades da equipe, divis?o de transporte e custo por viajante. Evid?ncia hist?rica de blindagem em Murray Buttes com fonte NASA; sem inventar zonas radioativas. 21 testes aprovados; valida??o visual ainda depende do navegador automatizado.
+
+### Revis?o de categorias e investimento
+- Prepara??o com oito essenciais e tr?s recomenda??es adicionais em categorias (conting?ncia/manuten??o e poeira). Cores desta etapa independem de pap?is da equipe definidos depois. Valores grandes em verde, total separado da contagem; custos extras inclu?dos na estimativa e relat?rio. Removidas fotos dos detalhes dos equipamentos. 21 testes aprovados; sintaxe e diff conferidos. Ferramenta de navegador ainda indispon?vel para inspe??o visual.

@@ -1,5 +1,5 @@
 // Planner: mission readiness, science, resources, shelter, daylight and cost context.
-import { RESERVE_PCT, DAYLIGHT_MARGIN_MIN, EQUIPMENT, ESSENTIALS, SHELTERS, BUDGET_CATEGORIES, HISTORICAL_LAUNCH_COST, SOURCE_LINKS, RAD_MSV_PER_DAY, CAREER_LIMIT_MSV, LOAD_FACTOR_PER_KG, COST_MODEL, RADIATION_EVIDENCE_URL } from './config.js';
+import { RESERVE_PCT, DAYLIGHT_MARGIN_MIN, EQUIPMENT, ESSENTIALS, SHELTERS, BUDGET_CATEGORIES, HISTORICAL_LAUNCH_COST, SOURCE_LINKS, RAD_MSV_PER_DAY, CAREER_LIMIT_MSV, LOAD_FACTOR_PER_KG, COST_MODEL, PREPARATION_EXTRAS, RADIATION_EVIDENCE_URL } from './config.js';
 import { assessMission, compareRoutes, daylightWindow, clockTime, terrainCautions, preparationLevel } from './mission.js';
 import { baseLayers, localLayer } from './layers.js';
 
@@ -18,7 +18,7 @@ const OBJECTIVES = [
   { id: 'gelo', name: 'Ice for a human base', text: 'Find shallow water ice to drink, breathe and make fuel.',
     why: 'Ice a few meters below the surface can become water, oxygen and rocket fuel, which makes a human base feasible.', src: 'SWIM project (NASA)' },
 ];
-const state = { step: 0, objective: null, siteId: null, crew: 4, rover: false, equipment: new Set(['amostrador', 'camera', 'medico']), essentials: new Set(), shelter: 'polymer', propulsion: 'chemical', roles: new Set(), touched: false, sol: null, start: '09:00' };
+const state = { step: 0, objective: null, siteId: null, crew: 4, rover: false, equipment: new Set(['amostrador', 'camera', 'medico']), essentials: new Set(), extras: new Set(), shelter: 'polymer', propulsion: 'chemical', roles: new Set(), touched: false, sol: null, start: '09:00' };
 let sites = [];
 const weatherCache = {};
 
@@ -60,15 +60,26 @@ const STEPS = [
       const intro = document.createElement('p'); intro.className = 'wide note';
       intro.innerHTML = 'An educational surface-walk planner, not a flight clearance. Mars has no breathable atmosphere. A rover trail is evidence of a rover traverse, not proof of astronaut safety. Checklist choices are hypothetical. ' + tag('H');
       body.append(intro);
+      body.classList.add('preparation-layout');
       for (const item of ESSENTIALS) {
         const label = document.createElement('label'); label.className = `readiness ${state.essentials.has(item.id) ? 'selected' : ''}`;
-        label.innerHTML = `<input type="checkbox" ${state.essentials.has(item.id) ? 'checked' : ''}><span><b>${item.name}</b><small>${item.why}</small><span class="choice-price">+ $${COST_MODEL.essentials[item.id]}M [H] / crew</span><span class="choice-detail">${item.why} Confirm this system is available before departure.</span></span>`;
-        label.querySelector('input').onchange = (e) => { e.target.checked ? state.essentials.add(item.id) : state.essentials.delete(item.id); $('readiness-count').textContent = `${state.essentials.size} / ${ESSENTIALS.length} confirmed [H] - selected systems: $${[...state.essentials].reduce((sum, id) => sum + COST_MODEL.essentials[id], 0) * state.crew}M [H]`; e.target.closest('label').classList.toggle('selected', e.target.checked); updateRisk(); };
+        label.innerHTML = `<input type="checkbox" ${state.essentials.has(item.id) ? 'checked' : ''}><span><b>${item.name}</b><small>${item.why}</small><span class="choice-price">+ $${COST_MODEL.essentials[item.id]}M [H] / crew</span></span>`;
+        label.querySelector('input').onchange = (e) => { e.target.checked ? state.essentials.add(item.id) : state.essentials.delete(item.id); updatePreparationCost(); e.target.closest('label').classList.toggle('selected', e.target.checked); updateRisk(); };
         const more = document.createElement('details'); more.className = 'item-more';
         more.innerHTML = `<summary aria-label="More about ${item.name}">+ Learn more</summary><p>${item.why}</p><a href="${SOURCE_LINKS.suit}" target="_blank" rel="noopener">NASA: spacesuit systems</a><p>Price is a hypothetical project assumption, per astronaut. It is not a NASA quotation.</p>`;
         const wrap = document.createElement('div'); wrap.className = 'item-wrap'; wrap.append(label, more); body.append(wrap);
       }
-      const count = document.createElement('p'); count.id = 'readiness-count'; count.className = 'wide'; count.textContent = `${state.essentials.size} / ${ESSENTIALS.length} confirmed [H] - selected systems: $${[...state.essentials].reduce((sum, id) => sum + COST_MODEL.essentials[id], 0) * state.crew}M [H]`; body.append(count);
+      const count = document.createElement('p'); count.id = 'readiness-count'; count.className = 'wide'; count.innerHTML = preparationCostHTML(); body.append(count);
+      for (const group of [...new Set(PREPARATION_EXTRAS.map((item) => item.group))]) {
+        const section = document.createElement('section'); section.className = 'preparation-category wide';
+        section.innerHTML = `<h2>${group}</h2><p>Additional recommendations [H]. These procedures strengthen preparation; they do not extend modeled suit endurance.</p>`;
+        for (const item of PREPARATION_EXTRAS.filter((entry) => entry.group === group)) {
+          const row = document.createElement('div'); row.className = 'extra-row';
+          row.innerHTML = `<label><input type="checkbox" ${state.extras.has(item.id) ? 'checked' : ''}><span><b>${item.name}</b><small>${item.why}</small></span><strong class="money">$${item.millionUSD}M [H]</strong></label><details class="item-more"><summary>+ Learn more</summary><p>${item.why}</p><a href="${item.source}" target="_blank" rel="noopener">NASA reference</a></details>`;
+          row.querySelector('input').onchange = (e) => { e.target.checked ? state.extras.add(item.id) : state.extras.delete(item.id); updatePreparationCost(); updateRisk(); }; section.append(row);
+        }
+        body.append(section);
+      }
       why(`Based on <a href="${SOURCE_LINKS.suit}" target="_blank" rel="noopener">NASA spacesuit systems</a>. Confirmations describe your scenario; the app cannot verify hardware, health, rescue capability or live space weather.`);
     },
   },
@@ -130,7 +141,7 @@ const STEPS = [
         l.innerHTML = `<input type="checkbox" ${state.equipment.has(e.id) ? 'checked' : ''}> ${e.name} <small>(${e.kg} kg) ${tag('S')} - $${COST_MODEL.equipment[e.id]}M ${tag('H')}</small>`;
         l.querySelector('input').onchange = (ev) => { ev.target.checked ? state.equipment.add(e.id) : state.equipment.delete(e.id); $('load-total').textContent = `${loadKg()} kg`; updateRisk(); };
         const more = document.createElement('details'); more.className = 'item-more';
-        more.innerHTML = `<summary aria-label="More about ${e.name}">+ Learn more</summary><img src="data/photos/cheyava.jpg" alt="Cheyava Falls workspace on Mars; field context, not a photograph of this tool" width="260"><p>${e.name}: ${e.id === 'medico' ? 'Supports the emergency-response plan; it does not replace medical training.' : 'Use to document or investigate rock samples. NASA rover instruments combine imaging, spectroscopy and sampling; this handheld concept is not an actual rover instrument.'}</p><p>Mass and cost are project assumptions [S/H].</p><a href="https://science.nasa.gov/mission/mars-2020-perseverance/science-instruments/">NASA instrument reference</a>`;
+        more.innerHTML = `<summary aria-label="More about ${e.name}">+ Learn more</summary><p>${e.name}: ${e.id === 'medico' ? 'Supports the emergency-response plan; it does not replace medical training.' : 'Use to document or investigate rock samples. NASA rover instruments combine imaging, spectroscopy and sampling; this handheld concept is not an actual rover instrument.'}</p><p>Mass and cost are project assumptions [S/H].</p><a href="https://science.nasa.gov/mission/mars-2020-perseverance/science-instruments/">NASA instrument reference</a>`;
         f.append(l, more);
       }
       const t = document.createElement('div'); t.className = 'field';
@@ -181,7 +192,7 @@ STEPS.push({
   lead: 'Review the scenario and its limitations before opening the map.',
   ready: () => true,
   render(body) {
-    const life = [...state.essentials].reduce((sum, id) => sum + COST_MODEL.essentials[id], 0) * state.crew;
+    const life = [...state.essentials].reduce((sum, id) => sum + COST_MODEL.essentials[id], 0) * state.crew + extraCost();
     const equipment = [...state.equipment].reduce((sum, id) => sum + COST_MODEL.equipment[id], 0) * state.crew;
     const launch = HISTORICAL_LAUNCH_COST.reduce((sum, item) => sum + item.millionUSD, 0);
     const parts = [['Historical launch benchmark', launch], ['Life support', life], ['Equipment', equipment], ['Habitat', COST_MODEL.shelter[state.shelter]], ['Support rover', state.rover ? COST_MODEL.rover : 0], ['Operations', COST_MODEL.operations]];
@@ -200,7 +211,7 @@ async function render() {
   $('progress').innerHTML = STEPS.map((_, i) => `<li class="${i <= state.step ? 'done' : ''}" aria-current="${i === state.step ? 'step' : 'false'}"></li>`).join('');
   $('q-title').textContent = step.title;
   $('q-lead').textContent = step.lead;
-  const body = $('q-body'); body.replaceChildren();
+  const body = $('q-body'); body.replaceChildren(); body.classList.remove('preparation-layout');
   try { await step.render(body); } catch (e) { $('q-lead').textContent = `Could not load this step. Go back and retry. ${e.message}`; return; }
   if (version !== renderVersion) return;
   $('back').style.visibility = state.step === 0 ? 'hidden' : 'visible';
@@ -209,12 +220,16 @@ async function render() {
   updateRisk();
 }
 
+function extraCost() { return PREPARATION_EXTRAS.filter((item) => state.extras.has(item.id)).reduce((sum, item) => sum + item.millionUSD, 0) * state.crew; }
+function preparationCostHTML() { const total = [...state.essentials].reduce((sum, id) => sum + COST_MODEL.essentials[id], 0) * state.crew + extraCost(); return `<span>${state.essentials.size} / ${ESSENTIALS.length} essential systems confirmed [H]</span><span>Selected preparation investment</span><strong class="money">$${fmt(total)}M <small>[H]</small></strong><small>For ${state.crew} travelers; illustrative assumptions.</small>`; }
+function updatePreparationCost() { $('readiness-count').innerHTML = preparationCostHTML(); }
 function updateRisk() {
   let risk = $('risk-advice');
   if (!risk) { risk = document.createElement('aside'); risk.id = 'risk-advice'; $('q-why').after(risk); }
   risk.hidden = !state.touched;
   if (risk.hidden) return;
-  const status = preparationLevel(state.essentials, state.equipment, state.crew, state.roles, state.shelter);
+  let status = preparationLevel(state.essentials, state.equipment, state.crew, state.roles, state.shelter);
+  if (state.step === 1) { const remaining = PREPARATION_EXTRAS.filter((item) => !state.extras.has(item.id)); status = { missing: status.missing, improvements: remaining.map((item) => 'Recommended: ' + item.name), level: status.missing.length ? 'red' : remaining.length ? 'yellow' : 'green' }; }
   risk.className = `risk-advice status-${status.level}`;
   const label = status.level === 'red' ? 'Preparation incomplete' : status.level === 'yellow' ? 'Minimum checklist complete' : 'Recommended checklist complete';
   const siteNote = state.siteId === 'arcadia' ? 'Arcadia has no local weather station or rover traverse in this dataset. Model clearance remains blocked.' : 'Radiation remains an unresolved environmental risk; colors describe preparation, not a radiation forecast.';
@@ -373,7 +388,7 @@ function renderReport(s, route, p, inputs, weather) {
   const assumptions = [
     { name: 'Launch system benchmark', value: HISTORICAL_LAUNCH_COST.reduce((sum, row) => sum + row.millionUSD, 0) },
     { name: 'Habitat and shielding', value: COST_MODEL.shelter[state.shelter] },
-    { name: 'Selected life-support systems', value: [...state.essentials].reduce((sum, id) => sum + COST_MODEL.essentials[id], 0) * state.crew },
+    { name: 'Selected life-support systems', value: [...state.essentials].reduce((sum, id) => sum + COST_MODEL.essentials[id], 0) * state.crew + extraCost() },
     { name: 'Science equipment', value: [...state.equipment].reduce((sum, id) => sum + COST_MODEL.equipment[id], 0) * state.crew },
     { name: 'Support rover', value: state.rover ? COST_MODEL.rover : 0 },
     { name: 'Mission operations', value: COST_MODEL.operations },

@@ -202,3 +202,26 @@ body::before { content: ''; position: fixed; inset: 0; background: linear-gradie
 
 .option-wrap { min-width: 0; background: rgba(39,55,78,.35); border-radius: 14px; }
 .option-wrap > .opt { width: 100%; }
+/* Wider preparation workspace, with money given its own visual hierarchy. */
+.quiz { max-width: 88rem; }
+.preparation-layout { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem; }
+.preparation-layout .item-wrap { display: flex; flex-direction: column; }
+.preparation-layout .readiness { flex: 1; padding: 1.4rem; }
+.preparation-layout .readiness b { font-size: 1.12rem; }
+.preparation-layout .readiness small { margin-top: .65rem; }
+.preparation-category { padding: 1.5rem 0 .5rem; border-top: 1px solid var(--line); }
+.preparation-category h2 { margin: 0; font: 700 1.6rem/1.2 var(--display); }
+.preparation-category > p { color: var(--mute); max-width: 70ch; }
+.extra-row { margin-top: .8rem; padding: 1rem; background: rgba(35,51,72,.6); border-radius: 12px; }
+.extra-row label { display: flex; gap: 1rem; align-items: flex-start; cursor: pointer; }
+.extra-row label > span { flex: 1; }
+.extra-row small { display: block; margin-top: .4rem; color: var(--mute); }
+.extra-row input { margin-top: .3rem; accent-color: var(--glow); }
+.money, .choice-price, .cost-total, .estimate-preview > strong, .estimate-line > b, .chart-row > strong, .per-person { color: #9ce8b3; font-variant-numeric: tabular-nums; }
+.choice-price { font-size: 1.3rem; }
+#readiness-count { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: .4rem 1.5rem; background: rgba(24,40,57,.85); font: 400 1rem/1.4 var(--body); }
+#readiness-count > span:first-child { grid-column: 1 / -1; color: var(--mute); }
+#readiness-count .money { font: 700 clamp(2.4rem,5vw,4.5rem)/1.1 var(--display); }
+#readiness-count .money small { font-size: .9rem; }
+#readiness-count > small { grid-column: 1 / -1; color: var(--mute); }
+@media (max-width: 700px) { .preparation-layout { grid-template-columns: 1fr; } #readiness-count { grid-template-columns: 1fr; } .extra-row label { flex-wrap: wrap; } }

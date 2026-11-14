@@ -19,6 +19,12 @@ export const HR_PER_EFFORT = 45;             // [S]
 export const TIME_SCALE = 30;                // demonstração: 1 s real = 30 s simulados (ajustável)
 export const ARRIVAL_RADIUS_M = 15;
 export const PEAK_TEMP_HOUR = 14;            // [S] hora da temperatura máxima do dia
+// Additional project recommendations [H], informed by NASA maintenance/contingency research.
+export const PREPARATION_EXTRAS = [
+  { id: 'backup', name: 'Independent emergency oxygen check', group: 'Contingency and recovery', millionUSD: 15, why: 'Verify the backup supply and abort procedure independently of the primary oxygen system.', source: 'https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-002-eclss.pdf' },
+  { id: 'repair', name: 'Suit inspection and repair provision', group: 'Contingency and recovery', millionUSD: 12, why: 'Plan inspection, spare seals and qualified maintenance support; a spare part alone does not qualify a repair.', source: 'https://www.nasa.gov/reference/9-0-hardware-and-equipment-vol-2/' },
+  { id: 'dust', name: 'Dust-control and seal inspection procedure', group: 'Dust and equipment care', millionUSD: 8, why: 'Inspect sealing surfaces and control dust transfer when returning to the habitat.', source: 'https://www.nasa.gov/reference/9-0-hardware-and-equipment-vol-2/' },
+];
 export const RADIATION_EVIDENCE_URL = 'https://www.nasa.gov/missions/mars-science-laboratory/how-nasas-curiosity-rover-is-making-mars-safer-for-astronauts/';
 // Illustrative mission costing assumptions, millions USD [H], not NASA quotations.
 export const COST_MODEL = {
