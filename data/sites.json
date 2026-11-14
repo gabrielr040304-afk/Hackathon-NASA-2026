@@ -1,0 +1,536 @@
+[
+ {
+  "id": "jezero",
+  "name": "Cratera Jezero",
+  "mission": "Perseverance (Mars 2020)",
+  "center": {
+   "lat": 18.4925,
+   "lon": 77.308
+  },
+  "zoom": 14,
+  "objectives": [
+   "vida-antiga",
+   "sedimentos"
+  ],
+  "weather": "data/weather/jezero.json",
+  "traverse": "data/traverse/m20_traverse.json",
+  "localLayer": "hirise_jezero",
+  "hasSim": true,
+  "habitat": {
+   "lat": 18.4856,
+   "lon": 77.316,
+   "elev_m": -2330.1,
+   "elev_source": "HiRISE DTM (USGS), ponto com inclinação < 5°",
+   "tag": "H"
+  },
+  "routes": [
+   {
+    "id": "cheyava-falls",
+    "name": "Cheyava Falls",
+    "objective": "vida-antiga",
+    "tag": "R",
+    "waypoints": [
+     {
+      "lat": 18.490003,
+      "lon": 77.316079,
+      "elev_m": -2352.6,
+      "elev_source": "M20_waypoints sol 1142"
+     },
+     {
+      "lat": 18.490276,
+      "lon": 77.314316,
+      "elev_m": -2350.7,
+      "elev_source": "M20_waypoints sol 1145"
+     },
+     {
+      "lat": 18.491286,
+      "lon": 77.312809,
+      "elev_m": -2362.3,
+      "elev_source": "M20_waypoints sol 1158"
+     },
+     {
+      "lat": 18.494086,
+      "lon": 77.314026,
+      "elev_m": -2371.1,
+      "elev_source": "M20_waypoints sol 1162"
+     },
+     {
+      "lat": 18.496073,
+      "lon": 77.313807,
+      "elev_m": -2371.3,
+      "elev_source": "M20_waypoints sol 1168"
+     },
+     {
+      "lat": 18.495497,
+      "lon": 77.311731,
+      "elev_m": -2366.2,
+      "elev_source": "M20_waypoints sol 1170"
+     },
+     {
+      "lat": 18.495201,
+      "lon": 77.308325,
+      "elev_m": -2361.3,
+      "elev_source": "M20_waypoints sol 1171"
+     },
+     {
+      "lat": 18.495001,
+      "lon": 77.306281,
+      "elev_m": -2360.1,
+      "elev_source": "M20_waypoints sol 1174"
+     },
+     {
+      "lat": 18.495206,
+      "lon": 77.303913,
+      "elev_m": -2359.8,
+      "elev_source": "M20_waypoints sol 1175"
+     },
+     {
+      "lat": 18.497182,
+      "lon": 77.305358,
+      "elev_m": -2357.7,
+      "elev_source": "M20_waypoints sol 1182",
+      "target": {
+       "name": "Cheyava Falls",
+       "why": "Rocha com 'manchas de leopardo' encontrada em julho de 2024: possível sinal de vida microbiana antiga (TEXTO PROVISÓRIO — Tarefa 4).",
+       "photo": null,
+       "credit": "NASA/JPL-Caltech",
+       "sol": 1182,
+       "camera": null
+      }
+     },
+     {
+      "lat": 18.495206,
+      "lon": 77.303913,
+      "elev_m": -2359.8,
+      "elev_source": "M20_waypoints sol 1175"
+     },
+     {
+      "lat": 18.495001,
+      "lon": 77.306281,
+      "elev_m": -2360.1,
+      "elev_source": "M20_waypoints sol 1174"
+     },
+     {
+      "lat": 18.495201,
+      "lon": 77.308325,
+      "elev_m": -2361.3,
+      "elev_source": "M20_waypoints sol 1171"
+     },
+     {
+      "lat": 18.495497,
+      "lon": 77.311731,
+      "elev_m": -2366.2,
+      "elev_source": "M20_waypoints sol 1170"
+     },
+     {
+      "lat": 18.496073,
+      "lon": 77.313807,
+      "elev_m": -2371.3,
+      "elev_source": "M20_waypoints sol 1168"
+     },
+     {
+      "lat": 18.494086,
+      "lon": 77.314026,
+      "elev_m": -2371.1,
+      "elev_source": "M20_waypoints sol 1162"
+     },
+     {
+      "lat": 18.491286,
+      "lon": 77.312809,
+      "elev_m": -2362.3,
+      "elev_source": "M20_waypoints sol 1158"
+     },
+     {
+      "lat": 18.490276,
+      "lon": 77.314316,
+      "elev_m": -2350.7,
+      "elev_source": "M20_waypoints sol 1145"
+     },
+     {
+      "lat": 18.490003,
+      "lon": 77.316079,
+      "elev_m": -2352.6,
+      "elev_source": "M20_waypoints sol 1142"
+     }
+    ]
+   },
+   {
+    "id": "neretva-encosta",
+    "name": "Neretva Vallis e encosta oeste",
+    "objective": "sedimentos",
+    "tag": "R",
+    "waypoints": [
+     {
+      "lat": 18.490003,
+      "lon": 77.316079,
+      "elev_m": -2352.6,
+      "elev_source": "M20_waypoints sol 1142"
+     },
+     {
+      "lat": 18.490276,
+      "lon": 77.314316,
+      "elev_m": -2350.7,
+      "elev_source": "M20_waypoints sol 1145"
+     },
+     {
+      "lat": 18.491286,
+      "lon": 77.312809,
+      "elev_m": -2362.3,
+      "elev_source": "M20_waypoints sol 1158"
+     },
+     {
+      "lat": 18.494086,
+      "lon": 77.314026,
+      "elev_m": -2371.1,
+      "elev_source": "M20_waypoints sol 1162"
+     },
+     {
+      "lat": 18.496073,
+      "lon": 77.313807,
+      "elev_m": -2371.3,
+      "elev_source": "M20_waypoints sol 1168",
+      "target": {
+       "name": "Leito do Neretva Vallis",
+       "why": "Ponto mais baixo do antigo canal de rio que alimentava o lago de Jezero (TEXTO PROVISÓRIO — Tarefa 4).",
+       "photo": null,
+       "credit": "NASA/JPL-Caltech",
+       "sol": 1168,
+       "camera": null
+      }
+     },
+     {
+      "lat": 18.495497,
+      "lon": 77.311731,
+      "elev_m": -2366.2,
+      "elev_source": "M20_waypoints sol 1170"
+     },
+     {
+      "lat": 18.495201,
+      "lon": 77.308325,
+      "elev_m": -2361.3,
+      "elev_source": "M20_waypoints sol 1171"
+     },
+     {
+      "lat": 18.495001,
+      "lon": 77.306281,
+      "elev_m": -2360.1,
+      "elev_source": "M20_waypoints sol 1174"
+     },
+     {
+      "lat": 18.495206,
+      "lon": 77.303913,
+      "elev_m": -2359.8,
+      "elev_source": "M20_waypoints sol 1175"
+     },
+     {
+      "lat": 18.497182,
+      "lon": 77.305358,
+      "elev_m": -2357.7,
+      "elev_source": "M20_waypoints sol 1182"
+     },
+     {
+      "lat": 18.495985,
+      "lon": 77.303698,
+      "elev_m": -2362.9,
+      "elev_source": "M20_waypoints sol 1219"
+     },
+     {
+      "lat": 18.492999,
+      "lon": 77.303238,
+      "elev_m": -2353.8,
+      "elev_source": "M20_waypoints sol 1224"
+     },
+     {
+      "lat": 18.493393,
+      "lon": 77.301093,
+      "elev_m": -2355,
+      "elev_source": "M20_waypoints sol 1226"
+     },
+     {
+      "lat": 18.49114,
+      "lon": 77.300928,
+      "elev_m": -2338.7,
+      "elev_source": "M20_waypoints sol 1244"
+     },
+     {
+      "lat": 18.489335,
+      "lon": 77.299193,
+      "elev_m": -2305.7,
+      "elev_source": "M20_waypoints sol 1247"
+     },
+     {
+      "lat": 18.487792,
+      "lon": 77.298379,
+      "elev_m": -2275.2,
+      "elev_source": "M20_waypoints sol 1252",
+      "target": {
+       "name": "Encosta oeste",
+       "why": "Fim da subida: vista do canal e rochas mais altas da borda (TEXTO PROVISÓRIO — Tarefa 4).",
+       "photo": null,
+       "credit": "NASA/JPL-Caltech",
+       "sol": 1252,
+       "camera": null
+      }
+     },
+     {
+      "lat": 18.489335,
+      "lon": 77.299193,
+      "elev_m": -2305.7,
+      "elev_source": "M20_waypoints sol 1247"
+     },
+     {
+      "lat": 18.49114,
+      "lon": 77.300928,
+      "elev_m": -2338.7,
+      "elev_source": "M20_waypoints sol 1244"
+     },
+     {
+      "lat": 18.493393,
+      "lon": 77.301093,
+      "elev_m": -2355,
+      "elev_source": "M20_waypoints sol 1226"
+     },
+     {
+      "lat": 18.492999,
+      "lon": 77.303238,
+      "elev_m": -2353.8,
+      "elev_source": "M20_waypoints sol 1224"
+     },
+     {
+      "lat": 18.495985,
+      "lon": 77.303698,
+      "elev_m": -2362.9,
+      "elev_source": "M20_waypoints sol 1219"
+     },
+     {
+      "lat": 18.497182,
+      "lon": 77.305358,
+      "elev_m": -2357.7,
+      "elev_source": "M20_waypoints sol 1182"
+     },
+     {
+      "lat": 18.495206,
+      "lon": 77.303913,
+      "elev_m": -2359.8,
+      "elev_source": "M20_waypoints sol 1175"
+     },
+     {
+      "lat": 18.495001,
+      "lon": 77.306281,
+      "elev_m": -2360.1,
+      "elev_source": "M20_waypoints sol 1174"
+     },
+     {
+      "lat": 18.495201,
+      "lon": 77.308325,
+      "elev_m": -2361.3,
+      "elev_source": "M20_waypoints sol 1171"
+     },
+     {
+      "lat": 18.495497,
+      "lon": 77.311731,
+      "elev_m": -2366.2,
+      "elev_source": "M20_waypoints sol 1170"
+     },
+     {
+      "lat": 18.496073,
+      "lon": 77.313807,
+      "elev_m": -2371.3,
+      "elev_source": "M20_waypoints sol 1168"
+     },
+     {
+      "lat": 18.494086,
+      "lon": 77.314026,
+      "elev_m": -2371.1,
+      "elev_source": "M20_waypoints sol 1162"
+     },
+     {
+      "lat": 18.491286,
+      "lon": 77.312809,
+      "elev_m": -2362.3,
+      "elev_source": "M20_waypoints sol 1158"
+     },
+     {
+      "lat": 18.490276,
+      "lon": 77.314316,
+      "elev_m": -2350.7,
+      "elev_source": "M20_waypoints sol 1145"
+     },
+     {
+      "lat": 18.490003,
+      "lon": 77.316079,
+      "elev_m": -2352.6,
+      "elev_source": "M20_waypoints sol 1142"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "gale",
+  "name": "Gale / Monte Sharp",
+  "mission": "Curiosity (MSL)",
+  "center": {
+   "lat": -4.805206,
+   "lon": 137.379448
+  },
+  "zoom": 16,
+  "objectives": [
+   "boxwork"
+  ],
+  "weather": "data/weather/gale.json",
+  "traverse": "data/traverse/msl_traverse.json",
+  "localLayer": "hirise_gale",
+  "hasSim": false,
+  "habitat": {
+   "lat": -4.802326,
+   "lon": 137.381251,
+   "elev_m": -3643.9,
+   "elev_source": "MSL_waypoints sol 4580",
+   "tag": "H"
+  },
+  "routes": [
+   {
+    "id": "boxwork",
+    "name": "Formações boxwork",
+    "objective": "boxwork",
+    "tag": "R",
+    "waypoints": [
+     {
+      "lat": -4.803606,
+      "lon": 137.380074,
+      "elev_m": -3640.5,
+      "elev_source": "MSL_waypoints sol 4596"
+     },
+     {
+      "lat": -4.805206,
+      "lon": 137.379448,
+      "elev_m": -3622.4,
+      "elev_source": "MSL_waypoints sol 4614",
+      "target": {
+       "name": "Crista do boxwork",
+       "why": "Crista de ~5 m de largura entre os 'favos' do boxwork, parada do Curiosity nos sóis 4627–4628 (TEXTO PROVISÓRIO — Tarefa 4).",
+       "photo": null,
+       "credit": "NASA/JPL-Caltech/MSSS",
+       "sol": 4614,
+       "camera": null
+      }
+     },
+     {
+      "lat": -4.806891,
+      "lon": 137.379812,
+      "elev_m": -3610.5,
+      "elev_source": "MSL_waypoints sol 4647"
+     },
+     {
+      "lat": -4.808271,
+      "lon": 137.38127,
+      "elev_m": -3608.3,
+      "elev_source": "MSL_waypoints sol 4671",
+      "target": {
+       "name": "Perfuração no vale Monte Grande",
+       "why": "Rocha do fundo de um 'vale' do boxwork, perfurada pelo Curiosity nos sóis 4709–4715 (TEXTO PROVISÓRIO — Tarefa 4).",
+       "photo": null,
+       "credit": "NASA/JPL-Caltech/MSSS",
+       "sol": 4671,
+       "camera": null
+      }
+     },
+     {
+      "lat": -4.806891,
+      "lon": 137.379812,
+      "elev_m": -3610.5,
+      "elev_source": "MSL_waypoints sol 4647"
+     },
+     {
+      "lat": -4.805206,
+      "lon": 137.379448,
+      "elev_m": -3622.4,
+      "elev_source": "MSL_waypoints sol 4614"
+     },
+     {
+      "lat": -4.803606,
+      "lon": 137.380074,
+      "elev_m": -3640.5,
+      "elev_source": "MSL_waypoints sol 4596"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "arcadia",
+  "name": "Arcadia Planitia",
+  "mission": "nenhuma (pouco explorada)",
+  "center": {
+   "lat": 47.2,
+   "lon": -175.7
+  },
+  "zoom": 12,
+  "objectives": [
+   "gelo"
+  ],
+  "weather": null,
+  "traverse": null,
+  "localLayer": null,
+  "hasSim": false,
+  "habitat": {
+   "lat": 47.2,
+   "lon": -175.7,
+   "elev_m": 0.0,
+   "elev_source": "PENDENTE: ler altitude no Mars Trek",
+   "tag": "H"
+  },
+  "notes": "PROVISÓRIO: coordenadas no centro IAU de Arcadia Planitia; trocar pela área de gelo raso escolhida no mapa SWIM (Tarefa 3 passo 5).",
+  "routes": [
+   {
+    "id": "gelo-raso",
+    "name": "Gelo raso para base humana",
+    "objective": "gelo",
+    "tag": "H",
+    "waypoints": [
+     {
+      "lat": 47.210122,
+      "lon": -175.692551,
+      "elev_m": 0.0,
+      "elev_source": "PENDENTE: ler altitude no Mars Trek"
+     },
+     {
+      "lat": 47.220245,
+      "lon": -175.685102,
+      "elev_m": 0.0,
+      "elev_source": "PENDENTE: ler altitude no Mars Trek",
+      "target": {
+       "name": "Cratera recente com gelo exposto (hipotética)",
+       "why": "Alvo hipotético: gelo de água a poucos metros da superfície (mapas SWIM) — escolher no mapa SWIM (Tarefa 3 passo 5).",
+       "photo": null,
+       "credit": null,
+       "sol": null,
+       "camera": null
+      }
+     },
+     {
+      "lat": 47.215184,
+      "lon": -175.670204,
+      "elev_m": 0.0,
+      "elev_source": "PENDENTE: ler altitude no Mars Trek"
+     },
+     {
+      "lat": 47.205061,
+      "lon": -175.667721,
+      "elev_m": 0.0,
+      "elev_source": "PENDENTE: ler altitude no Mars Trek",
+      "target": {
+       "name": "Perfil do solo para gelo (hipotético)",
+       "why": "Alvo hipotético: medir profundidade do gelo para uma futura base (Tarefa 3 passo 5).",
+       "photo": null,
+       "credit": null,
+       "sol": null,
+       "camera": null
+      }
+     }
+    ]
+   }
+  ]
+ }
+]

@@ -107,3 +107,18 @@ test('lonLatToLocal: centro é (0,0) e 1 km ao norte é z = -1000', () => {
   const n = lonLatToLocal(t, 18.5 + 1000 / M_PER_DEG, 77.3);
   assert.ok(Math.abs(n.z + 1000) < 1, `obtido ${n.z}`);
 });
+
+test('sites.json: todas as rotas calculam sem NaN; Jezero e Gale dão GO com entradas padrão', async () => {
+  const fs = await import('node:fs');
+  const sites = JSON.parse(fs.readFileSync(new URL('../data/sites.json', import.meta.url)));
+  for (const site of sites) {
+    const w = site.weather ? JSON.parse(fs.readFileSync(new URL('../' + site.weather, import.meta.url)))[0] : null;
+    for (const route of site.routes) {
+      const p = planEva(site, route, inputs(), w);
+      const nums = [p.total_h, p.reserve_pct, p.dose_mSv, p.used_pct.o2, p.stats.distance_m, p.stats.max_slope_deg];
+      for (const n of nums) assert.ok(Number.isFinite(n), `${site.id}/${route.id}: valor não finito`);
+      if (site.id !== 'arcadia') assert.equal(p.go, true, `${site.id}/${route.id}: ${p.alerts.map((a) => a.msg).join(' | ')}`);
+      console.log(`${site.id}/${route.id}: ${(p.stats.distance_m / 1000).toFixed(2)} km, ${p.total_h.toFixed(2)} h, reserva ${p.reserve_pct.toFixed(0)}%, máx ${p.stats.max_slope_deg.toFixed(1)}°, go=${p.go}`);
+    }
+  }
+});
