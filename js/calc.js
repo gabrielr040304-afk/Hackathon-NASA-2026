@@ -61,22 +61,22 @@ export function planEva(site, route, inputs, weatherSol) {
   const endMin = toMin(start) + total_h * 60;
 
   const alerts = [];
-  if (crew === 1) alerts.push({ level: 'aviso', code: 'solo', msg: 'EVAs da NASA são feitas em dupla.' });
+  if (crew === 1) alerts.push({ level: 'aviso', code: 'solo', msg: 'NASA spacewalks are always done in pairs.' });
   if (stats.max_slope_deg > C.SLOPE_NOGO_DEG) {
-    alerts.push({ level: 'proibido', code: 'inclinacao', msg: `Trecho com ${stats.max_slope_deg.toFixed(0)}° de inclinação (limite ${C.SLOPE_NOGO_DEG}°).` });
+    alerts.push({ level: 'proibido', code: 'inclinacao', msg: `A stretch has a ${stats.max_slope_deg.toFixed(0)}° slope (limit ${C.SLOPE_NOGO_DEG}°).` });
   } else if (stats.max_slope_deg > C.SLOPE_WARN_DEG) {
-    alerts.push({ level: 'aviso', code: 'inclinacao', msg: `Trecho com ${stats.max_slope_deg.toFixed(0)}° de inclinação: reduza a velocidade.` });
+    alerts.push({ level: 'aviso', code: 'inclinacao', msg: `A stretch has a ${stats.max_slope_deg.toFixed(0)}° slope: slow down.` });
   }
   if (reserve_pct < C.RESERVE_PCT) {
-    alerts.push({ level: 'proibido', code: 'consumivel', msg: `Reserva do traje ao voltar: ${reserve_pct.toFixed(0)}% (mínimo ${C.RESERVE_PCT}%).` });
+    alerts.push({ level: 'proibido', code: 'consumivel', msg: `Suit reserve on return: ${reserve_pct.toFixed(0)}% (minimum ${C.RESERVE_PCT}%).` });
   }
   if (!weatherSol) {
-    alerts.push({ level: 'aviso', code: 'sem-clima', msg: 'Sem estação meteorológica no local: horário do pôr do sol não verificado.' });
+    alerts.push({ level: 'aviso', code: 'sem-clima', msg: 'No weather station at this site: sunset time not checked.' });
   } else if (endMin > toMin(weatherSol.sunset) - C.DAYLIGHT_MARGIN_MIN) {
-    alerts.push({ level: 'proibido', code: 'por-do-sol', msg: `Volta às ${toHHMM(endMin)}; é preciso voltar ${C.DAYLIGHT_MARGIN_MIN} min antes do pôr do sol (${weatherSol.sunset.slice(0, 5)}).` });
+    alerts.push({ level: 'proibido', code: 'por-do-sol', msg: `Return at ${toHHMM(endMin)}; you must be back ${C.DAYLIGHT_MARGIN_MIN} min before sunset (${weatherSol.sunset.slice(0, 5)}).` });
   }
   if (site.id !== 'gale') {
-    alerts.push({ level: 'aviso', code: 'radiacao-ref', msg: 'Radiação: valor de referência medido pelo Curiosity em Gale, não neste local.' });
+    alerts.push({ level: 'aviso', code: 'radiacao-ref', msg: 'Radiation: reference value measured by Curiosity in Gale crater, not at this site.' });
   }
 
   return {

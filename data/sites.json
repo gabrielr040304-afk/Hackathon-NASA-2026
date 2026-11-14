@@ -1,7 +1,7 @@
 [
  {
   "id": "jezero",
-  "name": "Cratera Jezero",
+  "name": "Jezero Crater",
   "mission": "Perseverance (Mars 2020)",
   "center": {
    "lat": 18.4925,
@@ -20,7 +20,7 @@
    "lat": 18.4856,
    "lon": 77.316,
    "elev_m": -2330.1,
-   "elev_source": "HiRISE DTM (USGS), ponto com inclinação < 5°",
+   "elev_source": "HiRISE DTM (USGS), point with slope < 5°",
    "tag": "H"
   },
   "routes": [
@@ -91,7 +91,7 @@
       "elev_source": "M20_waypoints sol 1210",
       "target": {
        "name": "Cheyava Falls",
-       "why": "Rocha em forma de ponta de flecha, com veios brancos e 'manchas de leopardo' que, na Terra, costumam se formar com a ajuda de micróbios. Em setembro de 2025 a NASA anunciou que a amostra tirada dela (Sapphire Canyon) é a melhor candidata a sinal de vida antiga já encontrada em Marte. Observe as manchas com borda escura e os veios claros.",
+       "why": "Arrowhead-shaped rock with white veins and 'leopard spots' that, on Earth, usually form with the help of microbes. In September 2025 NASA announced that the sample drilled from it (Sapphire Canyon) is the best candidate for a sign of ancient life ever found on Mars. Look for the spots with dark rims and the light veins.",
        "photo": "data/photos/cheyava.jpg",
        "credit": "NASA/JPL-Caltech/ASU/MSSS",
        "sol": 1210,
@@ -156,7 +156,7 @@
    },
    {
     "id": "neretva-encosta",
-    "name": "Neretva Vallis e encosta oeste",
+    "name": "Neretva Vallis and west slope",
     "objective": "sedimentos",
     "tag": "R",
     "waypoints": [
@@ -190,8 +190,8 @@
       "elev_m": -2371.3,
       "elev_source": "M20_waypoints sol 1168",
       "target": {
-       "name": "Leito do Neretva Vallis",
-       "why": "Antigo canal por onde a água de um rio entrava no lago de Jezero, há mais de 3 bilhões de anos. Hoje o leito está coberto por ondulações de areia. Observe a parede do canal ao fundo e os blocos que a água transportou.",
+       "name": "Neretva Vallis channel floor",
+       "why": "Ancient channel where a river flowed into Jezero lake more than 3 billion years ago. Today the floor is covered by sand ripples. Look at the channel wall in the distance and the boulders carried by the water.",
        "photo": "data/photos/neretva.jpg",
        "credit": "NASA/JPL-Caltech",
        "sol": 1168,
@@ -264,8 +264,8 @@
       "elev_m": -2264.5,
       "elev_source": "M20_waypoints sol 1264",
       "target": {
-       "name": "Encosta oeste",
-       "why": "Fim da subida, mais de 100 m acima do leito do canal, no caminho que o Perseverance tomou rumo à borda da cratera. Daqui se vê todo o trajeto. Observe a mudança de cor e de textura das rochas conforme a altitude.",
+       "name": "West slope",
+       "why": "End of the climb, more than 100 m above the channel floor, on the path Perseverance took toward the crater rim. From here you see the whole route. Look at how the color and texture of the rocks change with altitude.",
        "photo": "data/photos/encosta.jpg",
        "credit": "NASA/JPL-Caltech",
        "sol": 1264,
@@ -368,7 +368,7 @@
  },
  {
   "id": "gale",
-  "name": "Gale / Monte Sharp",
+  "name": "Gale Crater / Mount Sharp",
   "mission": "Curiosity (MSL)",
   "center": {
    "lat": -4.805206,
@@ -392,7 +392,7 @@
   "routes": [
    {
     "id": "boxwork",
-    "name": "Formações boxwork",
+    "name": "Boxwork formations",
     "objective": "boxwork",
     "tag": "R",
     "waypoints": [
@@ -408,8 +408,8 @@
       "elev_m": -3613.9,
       "elev_source": "MSL_waypoints sol 4628",
       "target": {
-       "name": "Crista do boxwork",
-       "why": "Cristas de alguns metros de largura onde a água subterrânea deixou minerais que endureceram a rocha; o vento erodiu o resto e sobrou o desenho de favo. O Curiosity percorreu uma crista de cerca de 5 m de largura. Observe as cristas, os vales entre elas e os nódulos claros.",
+       "name": "Boxwork ridge",
+       "why": "Ridges a few meters wide where groundwater left minerals that hardened the rock; wind eroded the rest, leaving a honeycomb pattern. Curiosity drove along a ridge about 5 m wide. Look at the ridges, the hollows between them and the bright nodules.",
        "photo": "data/photos/crista.jpg",
        "credit": "NASA/JPL-Caltech/MSSS",
        "sol": 4628,
@@ -428,8 +428,8 @@
       "elev_m": -3608.7,
       "elev_source": "MSL_waypoints sol 4709",
       "target": {
-       "name": "Perfuração no vale Monte Grande",
-       "why": "Vale entre as cristas onde o Curiosity perfurou a rocha 'Nevado Sajama' para comparar com as cristas: por que elas resistiram e o vale não? Observe o piso coberto de areia e pedriscos, que tornou difícil achar rocha exposta para perfurar.",
+       "name": "Monte Grande hollow drill site",
+       "why": "Hollow between ridges where Curiosity drilled the 'Nevado Sajama' rock to compare it with the ridges: why did the ridges survive and the hollow did not? Look at the floor covered by sand and pebbles, which made finding bare rock to drill hard.",
        "photo": "data/photos/montegrande.jpg",
        "credit": "NASA/JPL-Caltech/MSSS",
        "sol": 4709,
@@ -461,7 +461,7 @@
  {
   "id": "arcadia",
   "name": "Arcadia Planitia",
-  "mission": "nenhuma (pouco explorada)",
+  "mission": "None (barely explored)",
   "center": {
    "lat": 47.25,
    "lon": -164.0
@@ -481,11 +481,11 @@
    "elev_source": "MOLA 463 m (USGS), tools/mola_elev.py",
    "tag": "H"
   },
-  "notes": "Hipotético: centro do mapa do estudo piloto do SWIM em Arcadia (196° L, 47,25° N; SWIM/PSI, LPSC 2019, resumo 2069). Nenhum rover esteve aqui.",
+  "notes": "Hypothetical: center of the SWIM pilot-study map in Arcadia (196° E, 47.25° N; SWIM/PSI, LPSC 2019, abstract 2069). No rover has been here.",
   "routes": [
    {
     "id": "gelo-raso",
-    "name": "Gelo raso para base humana",
+    "name": "Shallow ice for a human base",
     "objective": "gelo",
     "tag": "H",
     "waypoints": [
@@ -501,8 +501,8 @@
       "elev_m": -3978.0,
       "elev_source": "MOLA 463 m (USGS), tools/mola_elev.py",
       "target": {
-       "name": "Cratera recente com gelo exposto (hipotética)",
-       "why": "Alvo hipotético. Nas latitudes médias do norte, a câmera HiRISE já flagrou crateras de impacto recentes expondo gelo branco, que sumiu em poucos meses. Achar uma assim perto da base confirma que o gelo está raso.",
+       "name": "Fresh crater with exposed ice (hypothetical)",
+       "why": "Hypothetical target. At northern mid-latitudes, the HiRISE camera has caught fresh impact craters exposing bright ice that vanished within months. Finding one near the base would confirm the ice is shallow.",
        "photo": null,
        "credit": null,
        "sol": null,
@@ -521,8 +521,8 @@
       "elev_m": -3978.0,
       "elev_source": "MOLA 463 m (USGS), tools/mola_elev.py",
       "target": {
-       "name": "Perfil do solo para gelo (hipotético)",
-       "why": "Alvo hipotético. Cavar ou usar radar para medir a que profundidade o gelo começa: se estiver a menos de 1 m, pode virar água, oxigênio e combustível para uma base humana.",
+       "name": "Ice depth profile (hypothetical)",
+       "why": "Hypothetical target. Dig or use radar to measure how deep the ice begins: if it is less than 1 m down, it can become water, oxygen and fuel for a human base.",
        "photo": null,
        "credit": null,
        "sol": null,

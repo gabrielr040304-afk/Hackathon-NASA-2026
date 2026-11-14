@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Guia de Sobrevivência em Marte — Planejador</title>
-  <meta name="description" content="Planeje uma caminhada de astronauta em Marte com dados reais da NASA.">
+  <title>Mars Survival Guide — EVA Planner</title>
+  <meta name="description" content="Plan an astronaut walk on Mars with real NASA data, then walk it in a helmet HUD.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..800&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
@@ -13,32 +13,32 @@
 </head>
 <body>
   <header class="top">
-    <a class="brand" href="./">Guia de Sobrevivência em Marte</a>
-    <p class="tagline">Planeje a caminhada. Depois, faça ela no visor.</p>
+    <a class="brand" href="./">Mars Survival Guide</a>
+    <p class="tagline">Plan the Marswalk. Then walk it in the visor.</p>
   </header>
 
   <main>
     <section id="quiz" class="quiz" aria-live="polite">
-      <ol class="progress" id="progress" aria-label="Etapas"></ol>
+      <ol class="progress" id="progress" aria-label="Steps"></ol>
       <h1 id="q-title"></h1>
       <p id="q-lead" class="lead"></p>
       <div id="q-body" class="q-body"></div>
       <aside id="q-why" class="why" hidden></aside>
       <div class="nav">
-        <button type="button" id="back" class="btn ghost">Voltar</button>
-        <button type="button" id="next" class="btn">Avançar</button>
+        <button type="button" id="back" class="btn ghost">Back</button>
+        <button type="button" id="next" class="btn">Next</button>
       </div>
     </section>
 
     <section id="result" class="result" hidden>
       <div class="map-wrap">
-        <div id="map" role="application" aria-label="Mapa de Marte com a rota planejada"></div>
+        <div id="map" role="application" aria-label="Map of Mars with the planned route"></div>
         <div class="map-tools">
           <p id="legend" class="legend"></p>
-          <label id="opacity-wrap" class="opacity">Transparência do detalhe
+          <label id="opacity-wrap" class="opacity">Detail layer opacity
             <input type="range" id="opacity" min="0" max="100" value="100">
           </label>
-          <p id="tile-notice" class="tile-notice" hidden>Camadas da NASA indisponíveis no momento. A rota continua válida.</p>
+          <p id="tile-notice" class="tile-notice" hidden>NASA map layers are unavailable right now. The route is still valid.</p>
         </div>
       </div>
       <div id="panel" class="panel"></div>
@@ -46,8 +46,9 @@
   </main>
 
   <footer class="foot">
-    <p>Etiquetas: <b class="tag t-R">R</b> real (NASA/USGS) <b class="tag t-D">D</b> derivado por nós de dados reais <b class="tag t-S">S</b> simulado <b class="tag t-H">H</b> hipotético.
-      Dados: Mars Trek (NASA/JPL), USGS Astrogeology, Perseverance e Curiosity (NASA/JPL-Caltech), HiRISE (NASA/JPL/University of Arizona). <a href="FONTES.md">Fontes</a></p>
+    <p>Labels: <b class="tag t-R">R</b> real (NASA/USGS) <b class="tag t-D">D</b> derived by us from real data <b class="tag t-S">S</b> simulated <b class="tag t-H">H</b> hypothetical.
+      Data: Mars Trek (NASA/JPL), USGS Astrogeology, Perseverance and Curiosity (NASA/JPL-Caltech), HiRISE (NASA/JPL/University of Arizona). <a href="SOURCES.md">Sources</a>.
+      Code written with AI assistance (Claude, Anthropic); idea, science choices and review by the team.</p>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>

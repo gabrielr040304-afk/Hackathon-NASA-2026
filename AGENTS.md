@@ -25,6 +25,8 @@ Survival Guide: Martian Map". Prazo: hackathon de menos de 24 h.
 ## Regras do projeto
 - Toda constante do modelo fica em `js/config.js`. Nada de números mágicos espalhados.
 - `js/calc.js` e `js/sim/terrain.js` são puros (sem DOM, sem Three.js) e têm testes.
+- **Tudo que os jurados veem fica em inglês** (regra do Space Apps: site, README, SOURCES.md, demo). Docs internos do time podem ficar em português.
+- Fontes e créditos: `SOURCES.md` (em inglês). Uso de IA declarado no rodapé do site, no README e no SOURCES.md.
 - Todo valor mostrado na tela leva etiqueta de origem: [R] real, [D] derivado, [S] simulado, [H] hipotético.
 - Nunca apresentar como dado da NASA algo calculado ou inventado por nós.
 - Cada pessoa mexe só nos próprios arquivos (seção 9 do plano). Mudanças em `calc.js`,
