@@ -1,0 +1,18 @@
+{
+  "width": 512,
+  "height": 512,
+  "m_per_px_x": 3.906335519704916,
+  "m_per_px_y": 3.908203125,
+  "center_lat": 18.4975,
+  "center_lon": 77.305,
+  "bbox": [
+    77.28721008148084,
+    18.480617291539726,
+    77.32279018712661,
+    18.514375371860815
+  ],
+  "elev_min": -2406.103271484375,
+  "elev_max": -2037.2510986328125,
+  "source": "USGS Mars 2020 TRN HiRISE DTM (JEZ_hirise_soc_006, 1 m), media em blocos para 512x512",
+  "source_url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/mars2020_trn/HiRISE/JEZ_hirise_soc_006_DTM_MOLAtopography_DeltaGeoid_1m_Eqc_latTs0_lon0_blend40.tif"
+}
