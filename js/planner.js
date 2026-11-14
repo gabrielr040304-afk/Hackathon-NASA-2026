@@ -17,8 +17,7 @@ const OBJECTIVES = [
     why: 'Rocks laid down by water record how long it lasted. The Neretva Vallis channel carried the river that filled Jezero lake.', src: 'NASA Mars 2020' },
   { id: 'boxwork', name: 'Boxwork formations', text: 'Honeycomb-shaped ridges made by minerals from groundwater.',
     why: 'The ridges show where water flowed underground while Mars was drying out. Curiosity studied these formations in 2025.', src: 'Curiosity blog, NASA, 2025' },
-  { id: 'gelo', name: 'Ice for a human base', text: 'Find shallow water ice to drink, breathe and make fuel.',
-    why: 'Ice a few meters below the surface can become water, oxygen and rocket fuel, which makes a human base feasible.', src: 'SWIM project (NASA)' },
+  { id: 'agua-meridiani', name: 'Ancient water at Meridiani', text: 'Explore the water-altered rocks discovered by Opportunity.', why: 'Opportunity found evidence that liquid water once affected rocks at Meridiani Planum.', src: 'NASA Opportunity mission' },
 ];
 const state = { step: 0, objective: null, siteId: null, crew: 4, rover: false, equipment: new Set(['amostrador', 'camera', 'medico']), essentials: new Set(), extras: new Set(), optional: new Set(), shelter: 'polymer', propulsion: 'chemical', roles: new Set(), touched: false, sol: null, start: '09:00' };
 let sites = [];
@@ -110,7 +109,7 @@ const STEPS = [
       const notes = {
         jezero: ['Route along real Perseverance stops. 3D simulation available.', 'The terrain is known down to 1 meter by the HiRISE camera in orbit.'],
         gale: ['Route along real Curiosity stops. The only site with radiation measured on the ground.', 'Curiosity has measured radiation since 2012; it is the best reference we have for astronauts.'],
-        arcadia: ['No rover has been here. Hypothetical route.', 'It is one of the plains considered for a human base because of its shallow ice. The trade-off: no ground photos and no measured weather.'],
+        meridiani: ['Opportunity explored Eagle Crater and Meridiani. Local route data is incomplete.', 'Opportunity discovered evidence of ancient water. Our nearby route is hypothetical; fine-scale terrain and local weather are unavailable.'],
       };
       for (const s of sites) body.append(option({ title: s.name, text: `${s.mission}. ${notes[s.id]?.[0] ?? ''}`,
         hint: s.objectives?.includes(state.objective) ? 'Matches your goal' : '', details: notes[s.id]?.[1], pressed: state.siteId === s.id,
@@ -243,7 +242,7 @@ function updateRisk() {
   if (state.step === 1) { const remaining = PREPARATION_EXTRAS.filter((item) => !state.extras.has(item.id)); status = { missing: status.missing, improvements: remaining.map((item) => 'Recommended: ' + item.name), level: status.missing.length ? 'red' : remaining.length ? 'yellow' : 'green' }; }
   risk.className = `risk-advice status-${status.level}`;
   const label = status.level === 'red' ? 'Preparation incomplete' : status.level === 'yellow' ? 'Minimum checklist complete' : 'Recommended checklist complete';
-  const siteNote = state.siteId === 'arcadia' ? 'Arcadia has no local weather station or rover traverse in this dataset. Model clearance remains blocked.' : 'Radiation remains an unresolved environmental risk; colors describe preparation, not a radiation forecast.';
+  const siteNote = state.siteId === 'meridiani' ? 'Meridiani local fine-scale terrain and rover waypoints are not available in this prototype. Model clearance remains blocked.' : 'Radiation remains an unresolved environmental risk; colors describe preparation, not a radiation forecast.';
   const shelterNote = state.shelter === 'shell' ? 'Metal shell selected: added radiation shielding needs review.' : state.shelter === 'regolith' ? 'Regolith cover selected: construction and load-bearing verification are needed.' : 'Hydrogen-rich shielding selected: thickness and geometry still require validation.';
   risk.innerHTML = `<b>${label} [H]</b><p>${status.level === 'red' ? 'Still required: ' + status.missing.map((item) => item.name).join(', ') : status.level === 'yellow' ? 'These systems cover the minimum project checklist. This does not establish a safe Mars journey.' : 'Your scenario includes the recommended project preparations. Operational approval is still required.'}</p><ul>${status.improvements.map((text) => `<li>${text}</li>`).join('')}</ul><p>${shelterNote} ${siteNote}</p>${state.step > 1 && status.missing.length ? '<button type="button" id="review-essentials" class="btn ghost">Review essential systems</button>' : ''}`;
   if ($('readiness-count')) risk.after($('readiness-count'));
@@ -300,10 +299,15 @@ async function drawSite(s) {
       const cells = terrainHazards(parseTerrain(meta, await response.arrayBuffer()));
       if (!map.getPane('hazards')) { map.createPane('hazards'); map.getPane('hazards').style.zIndex = 450; }
       const hazards = L.layerGroup(cells.map((cell) => L.rectangle(cell.bounds, {
-        pane: 'hazards', color: cell.blocked ? '#ff5d63' : '#ffc469', weight: 1, fillOpacity: .14,
-      }).bindPopup(`<b>${cell.blocked ? 'Avoid steep terrain in this cell' : 'Terrain caution'}</b><p>Maximum sampled slope: ${fmt(cell.slope, 1)} degrees [D]. Source: USGS HiRISE terrain, resampled to approximately 4 m.</p><p>Project slope thresholds [S]. This square contains steep samples; not every point is steep. No radiation classification is inferred.</p>`)));
+        pane: 'hazards', color: ({red:'#ff5d63', yellow:'#ffc469', green:'#68d592', unknown:'#a5adb8'})[cell.status], weight: 1, fillOpacity: .14,
+      }).bindPopup(`<b>${({red:'Steep samples: avoid', yellow:'Steep samples: caution', green:'Slope criterion passed only', unknown:'Terrain data unknown'})[cell.status]}</b><p>Maximum sampled slope: ${cell.slope === null ? 'Unknown' : fmt(cell.slope, 1) + ' degrees [D]'}. Source: USGS HiRISE terrain, resampled to approximately 4 m.</p><p>Project slope thresholds [S]. Green only means the sampled slope passed the project threshold. Unseen obstacles and radiation are not assessed; no color certifies safety.</p>`)));
       hazards.addTo(map); map._ctl.addOverlay(hazards, 'Jezero terrain cautions [D/S]'); siteLayers.push(hazards);
     } catch { $('tile-notice').hidden = false; $('tile-notice').textContent = 'Terrain caution layer unavailable. Unmarked areas must not be assumed safe.'; }
+  }
+  if (s.id !== 'jezero') {
+    const delta = 0.02; // Display extent only; not a surveyed boundary.
+    const c = s.center; const unknown = L.rectangle([[c.lat-delta,c.lon-delta],[c.lat+delta,c.lon+delta]], { color:'#a5adb8', weight:2, dashArray:'4 4', fillOpacity:.18 }).bindPopup('<b>Terrain classification unavailable</b><p>No suitable local elevation grid has been prepared for this area. Gray does not mean safe or unsafe; radiation and obstacles are unknown.</p>');
+    unknown.addTo(map); map._ctl.addOverlay(unknown, 'Terrain: no local grid'); siteLayers.push(unknown);
   }
   const local = localLayer(s.localLayer);
   map._local = local?.layer;
@@ -359,6 +363,11 @@ async function drawPlan(s, route) {
   let evidence = $('radiation-evidence');
   if (!evidence) { evidence = document.createElement('details'); evidence.id = 'radiation-evidence'; evidence.className = 'evidence-note'; $('map').after(evidence); }
   evidence.innerHTML = `<summary>+ Radiation evidence: what is measured, and what is unknown?</summary><p>Curiosity RAD measured about 4% less overall radiation near a cliff in Murray Buttes, Gale, during September 9-21, 2016 [R]. The observation is outside the supplied walking routes and is not a safe-zone boundary.</p><p>Solar events can raise exposure across broad areas. No live event feed or spatial radiation dataset is connected here. Red route marks indicate sampled slope limits, never invented radiation hot spots.</p><a href="${RADIATION_EVIDENCE_URL}" target="_blank" rel="noopener">NASA: measured shielding and radiation variability</a>`;
+  if (s.id === 'meridiani') {
+    $('panel').innerHTML = `<h2>${s.name}</h2><div class="verdict nogo"><b>NOT RECOMMENDED [H]</b><p>Fine-scale terrain, local weather and verified Opportunity waypoints are unavailable. The nearby line is hypothetical.</p></div><p>Opportunity landed in Eagle Crater in 2004 and studied rocks altered by ancient water [R]. Coarse MOLA altitude cannot establish walking safety.</p><p><a href="https://science.nasa.gov/mission/mer-opportunity/">NASA Opportunity mission</a> ? <a href="https://www.nasa.gov/image-article/opportunitys-final-traverse-map/">NASA rover traverse map</a></p><button class="btn ghost" id="redo">Plan again</button>`;
+    $('mission-report').innerHTML = '<h2>Exploration report</h2><p>No route, radiation, slope or resource safety assessment is available for this location. Obtain local terrain and weather data before planning a walk.</p>';
+    $('redo').onclick = () => { $('result').hidden = true; $('quiz').hidden = false; state.step = 0; render(); }; return;
+  }
   $('panel').innerHTML = `
     <h2>${route.name}</h2>
     <p class="sub">${s.name} · Proposed human EVA ${tag('H')} · Waypoints ${tag(route.id.endsWith('-short') ? 'R' : route.tag)}</p>

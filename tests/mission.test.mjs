@@ -25,7 +25,7 @@ test('complete checklist passes ordinary scenario, but pre-sunrise departure blo
 });
 
 test('unknown weather and hypothetical route never become a cleared candidate', () => {
-  const arcadia = sites.find((site) => site.id === 'arcadia');
+  const arcadia = sites.find((site) => site.id === 'meridiani');
   assert.equal(assessMission(arcadia, arcadia.routes[0], inputs, null, ready).go, false);
   assert.equal(compareRoutes(arcadia, inputs, null, ready).some((entry) => entry.plan.go), false);
 });

@@ -26,3 +26,5 @@ If the environment prevents child-process spawning (`EPERM`), run `node --test -
 Code was written with assistance from Claude (Anthropic) and Codex (OpenAI) under the team's direction. Recommendations use transparent rules; no live AI service is called. Idea, science choices and review: the team. See [SOURCES.md](SOURCES.md#use-of-ai).
 
 Team docs (Portuguese): [PLANO_IMPLEMENTACAO.md](PLANO_IMPLEMENTACAO.md), [PROGRESSO.md](PROGRESSO.md).
+
+Meridiani Planum replaces Arcadia in the planner. Its Eagle Crater vicinity is exploratory and lacks a local terrain grid, usable weather and digitized rover waypoints; no numerical walking safety result is offered. In Jezero, green cells pass the project sampled-slope threshold only, yellow/red flag slopes and gray indicates unknown terrain. Gale and Meridiani have no prepared local slope grid. No color indicates radiation safety.

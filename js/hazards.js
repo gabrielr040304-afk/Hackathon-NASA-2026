@@ -15,10 +15,10 @@ export function terrainHazards(t) {
         if (!Number.isFinite(dx) || !Number.isFinite(dy)) valid = false;
         else max = Math.max(max, Math.atan(Math.hypot(dx, dy)) * 180 / Math.PI);
       }
-      if (!valid || max <= SLOPE_WARN_DEG) continue;
+
       const lon = (col) => bbox[0] + col / (w - 1) * (bbox[2] - bbox[0]);
       const lat = (row) => bbox[3] - row / (h - 1) * (bbox[3] - bbox[1]);
-      cells.push({ bounds: [[lat(endY), lon(x)], [lat(y), lon(endX)]], slope: max, blocked: max > SLOPE_NOGO_DEG });
+      cells.push({ bounds: [[lat(endY), lon(x)], [lat(y), lon(endX)]], slope: valid ? max : null, status: !valid ? 'unknown' : max > SLOPE_NOGO_DEG ? 'red' : max > SLOPE_WARN_DEG ? 'yellow' : 'green', blocked: valid && max > SLOPE_NOGO_DEG });
     }
   }
   return cells;

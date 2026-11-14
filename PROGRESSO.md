@@ -38,3 +38,6 @@
 
 ### Rotas curtas e fotos
 - Duas alternativas hipot?ticas geradas a partir dos pontos existentes: canal Neretva em Jezero e crista boxwork em Gale. Fotos dos popups abrem em nova aba para amplia??o. Trajetos s?o propostas, n?o rotas certificadas para astronautas.
+
+### Meridiani e cobertura de relevo
+- Arcadia substitu?da por Meridiani / Eagle Crater. Coordenadas NASA; altitude MOLA grosseira consultada. Sem DEM local, trajeto Opportunity digitalizado ou clima, cen?rio hipot?tico ? bloqueado e resultados num?ricos n?o s?o apresentados. Grade de Jezero identifica declividade baixa/alta e aus?ncia de dados; Gale e Meridiani mostram ?rea ilustrativa cinza por falta de DEM local preparado. N?o classificar radia??o ou seguran?a real.
