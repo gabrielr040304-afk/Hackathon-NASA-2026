@@ -26,3 +26,6 @@
   - Linhas retas entre paradas distantes cruzavam encostas de 31°; as rotas agora seguem as paradas do rover.
 - Planejador: questionário em 5 passos, mapa com 5 camadas do Mars Trek + detalhe HiRISE + trajeto do rover, painel com GO/NÃO RECOMENDADO e etiquetas R/D/S/H, transparência, legenda, aviso de camada fora do ar e layout de celular.
 - Site traduzido para o inglês, SOURCES.md, declaração de uso de IA e textos da entrega prontos.
+
+### Revis?o de prepara??o e evid?ncias
+- Aviso inicial oculto at? escolha do destino. Indicadores vermelho/amarelo/verde descrevem somente checklist hipot?tico; atualizados a cada sele??o. Detalhes expans?veis, ferramentas adicionais, capacidades da equipe, divis?o de transporte e custo por viajante. Evid?ncia hist?rica de blindagem em Murray Buttes com fonte NASA; sem inventar zonas radioativas. 21 testes aprovados; valida??o visual ainda depende do navegador automatizado.

@@ -1,6 +1,6 @@
 // Planner: mission readiness, science, resources, shelter, daylight and cost context.
-import { RESERVE_PCT, DAYLIGHT_MARGIN_MIN, EQUIPMENT, ESSENTIALS, SHELTERS, BUDGET_CATEGORIES, HISTORICAL_LAUNCH_COST, SOURCE_LINKS, RAD_MSV_PER_DAY, CAREER_LIMIT_MSV, LOAD_FACTOR_PER_KG, COST_MODEL } from './config.js';
-import { assessMission, compareRoutes, daylightWindow, clockTime, terrainCautions } from './mission.js';
+import { RESERVE_PCT, DAYLIGHT_MARGIN_MIN, EQUIPMENT, ESSENTIALS, SHELTERS, BUDGET_CATEGORIES, HISTORICAL_LAUNCH_COST, SOURCE_LINKS, RAD_MSV_PER_DAY, CAREER_LIMIT_MSV, LOAD_FACTOR_PER_KG, COST_MODEL, RADIATION_EVIDENCE_URL } from './config.js';
+import { assessMission, compareRoutes, daylightWindow, clockTime, terrainCautions, preparationLevel } from './mission.js';
 import { baseLayers, localLayer } from './layers.js';
 
 const $ = (id) => document.getElementById(id);
@@ -18,7 +18,7 @@ const OBJECTIVES = [
   { id: 'gelo', name: 'Ice for a human base', text: 'Find shallow water ice to drink, breathe and make fuel.',
     why: 'Ice a few meters below the surface can become water, oxygen and rocket fuel, which makes a human base feasible.', src: 'SWIM project (NASA)' },
 ];
-const state = { step: 0, objective: null, siteId: null, crew: 4, rover: false, equipment: new Set(['amostrador', 'camera', 'medico']), essentials: new Set(), shelter: 'polymer', propulsion: 'chemical', sol: null, start: '09:00' };
+const state = { step: 0, objective: null, siteId: null, crew: 4, rover: false, equipment: new Set(['amostrador', 'camera', 'medico']), essentials: new Set(), shelter: 'polymer', propulsion: 'chemical', roles: new Set(), touched: false, sol: null, start: '09:00' };
 let sites = [];
 const weatherCache = {};
 
@@ -40,7 +40,11 @@ function option({ title, text, hint, details, pressed, onClick }) {
   b.setAttribute('aria-pressed', String(!!pressed));
   b.innerHTML = `<b>${title}</b><small>${text}</small>${hint ? `<span class="hint">${hint}</span>` : ''}${pressed && details ? `<span class="choice-detail">${details}</span>` : ''}`;
   b.onclick = onClick;
-  return b;
+  if (!details) return b;
+  const wrap = document.createElement('div'); wrap.className = 'option-wrap';
+  const more = document.createElement('details'); more.className = 'item-more';
+  more.innerHTML = `<summary>+ Learn more</summary><p>${details}</p><p>See the source listed below this step for the applicable data and limitations.</p>`;
+  wrap.append(b, more); return wrap;
 }
 function why(text, src) {
   const el = $('q-why');
@@ -59,8 +63,10 @@ const STEPS = [
       for (const item of ESSENTIALS) {
         const label = document.createElement('label'); label.className = `readiness ${state.essentials.has(item.id) ? 'selected' : ''}`;
         label.innerHTML = `<input type="checkbox" ${state.essentials.has(item.id) ? 'checked' : ''}><span><b>${item.name}</b><small>${item.why}</small><span class="choice-price">+ $${COST_MODEL.essentials[item.id]}M [H] / crew</span><span class="choice-detail">${item.why} Confirm this system is available before departure.</span></span>`;
-        label.querySelector('input').onchange = (e) => { e.target.checked ? state.essentials.add(item.id) : state.essentials.delete(item.id); $('readiness-count').textContent = `${state.essentials.size} / ${ESSENTIALS.length} confirmed [H] - selected systems: $${[...state.essentials].reduce((sum, id) => sum + COST_MODEL.essentials[id], 0) * state.crew}M [H]`; e.target.closest('label').classList.toggle('selected', e.target.checked); };
-        body.append(label);
+        label.querySelector('input').onchange = (e) => { e.target.checked ? state.essentials.add(item.id) : state.essentials.delete(item.id); $('readiness-count').textContent = `${state.essentials.size} / ${ESSENTIALS.length} confirmed [H] - selected systems: $${[...state.essentials].reduce((sum, id) => sum + COST_MODEL.essentials[id], 0) * state.crew}M [H]`; e.target.closest('label').classList.toggle('selected', e.target.checked); updateRisk(); };
+        const more = document.createElement('details'); more.className = 'item-more';
+        more.innerHTML = `<summary aria-label="More about ${item.name}">+ Learn more</summary><p>${item.why}</p><a href="${SOURCE_LINKS.suit}" target="_blank" rel="noopener">NASA: spacesuit systems</a><p>Price is a hypothetical project assumption, per astronaut. It is not a NASA quotation.</p>`;
+        const wrap = document.createElement('div'); wrap.className = 'item-wrap'; wrap.append(label, more); body.append(wrap);
       }
       const count = document.createElement('p'); count.id = 'readiness-count'; count.className = 'wide'; count.textContent = `${state.essentials.size} / ${ESSENTIALS.length} confirmed [H] - selected systems: $${[...state.essentials].reduce((sum, id) => sum + COST_MODEL.essentials[id], 0) * state.crew}M [H]`; body.append(count);
       why(`Based on <a href="${SOURCE_LINKS.suit}" target="_blank" rel="noopener">NASA spacesuit systems</a>. Confirmations describe your scenario; the app cannot verify hardware, health, rescue capability or live space weather.`);
@@ -87,19 +93,30 @@ const STEPS = [
       };
       for (const s of sites) body.append(option({ title: s.name, text: `${s.mission}. ${notes[s.id]?.[0] ?? ''}`,
         hint: s.objectives?.includes(state.objective) ? 'Matches your goal' : '', details: notes[s.id]?.[1], pressed: state.siteId === s.id,
-        onClick: () => { state.siteId = s.id; state.sol = null; render(); } }));
+        onClick: () => { state.touched = true; state.siteId = s.id; state.sol = null; render(); } }));
       why(notes[state.siteId]?.[1]);
     },
   },
   {
-    title: 'Who goes, and how?', lead: 'A pair or alone, on foot or with a support rover.',
+    title: 'Who goes, and how?', lead: 'Set the surface crew, mobility and cross-trained capabilities.',
     ready: () => true,
     render(body) {
       const field = document.createElement('div'); field.className = 'field';
       field.innerHTML = `<label for="crew-count">Mission crew size [H]</label><input id="crew-count" type="number" min="1" max="50" value="${state.crew}"><small>NASA's 2025 Mars architecture targets at least four surface crew, with six considered for added capability. <a href="https://www.nasa.gov/wp-content/uploads/2025/12/2025-architecture-update-for-publication.pdf">NASA architecture update</a></small>`;
-      field.querySelector('input').onchange = (e) => { state.crew = Math.max(1, Math.min(50, Number(e.target.value) || 1)); e.target.value = state.crew; };
+      field.querySelector('input').onchange = (e) => { state.crew = Math.max(1, Math.min(50, Number(e.target.value) || 1)); e.target.value = state.crew; updateRisk(); };
       body.append(field, option({ title: 'Support rover', text: 'Hypothetical crewed surface vehicle; rover mobility uses a simulated model.', pressed: state.rover, onClick: () => { state.rover = !state.rover; render(); } }));
-      body.append(option({ title: 'Chemical propulsion', text: 'Established rocket technology; no crewed Mars mission has flown.', pressed: state.propulsion === 'chemical', onClick: () => { state.propulsion = 'chemical'; render(); } }), option({ title: 'Nuclear thermal propulsion', text: 'Research technology studied by NASA; not an operational human Mars transport.', pressed: state.propulsion === 'nuclear', onClick: () => { state.propulsion = 'nuclear'; render(); } }));
+      const transport = document.createElement('section'); transport.className = 'transport-section wide';
+      transport.innerHTML = '<h2>Transportation</h2><p>Interplanetary propulsion is separate from walking or riding on the surface. Chemical rockets are established technology; nuclear thermal systems remain a research concept. Neither choice represents an available human Mars transport. Travel time and cost are not predicted here.</p><a href="https://www.nasa.gov/space-technology-mission-directorate/tdm/space-nuclear-propulsion/">NASA propulsion research</a>';
+      const choices = document.createElement('div'); choices.className = 'q-body';
+      for (const [id, name, text] of [['chemical', 'Chemical propulsion', 'Established technology; Mars crew architecture still conceptual.'], ['nuclear', 'Nuclear thermal propulsion', 'Research concept; not an operational human Mars vehicle.']]) choices.append(option({ title: name, text, pressed: state.propulsion === id, onClick: () => { state.propulsion = id; render(); } }));
+      transport.append(choices); body.append(transport);
+      const roles = document.createElement('div'); roles.className = 'field wide';
+      roles.innerHTML = '<h3>Crew capabilities</h3><p>Project recommendations [H], not mandatory NASA job titles. Cross-trained crew can cover more than one capability.</p>';
+      for (const [id, title] of [['medical','Medical and health'], ['engineering','Engineering and maintenance'], ['science','Science and field geology']]) {
+        const label = document.createElement('label'); label.innerHTML = `<input type="checkbox" ${state.roles.has(id) ? 'checked' : ''}>${title}`;
+        label.querySelector('input').onchange = (e) => { e.target.checked ? state.roles.add(id) : state.roles.delete(id); updateRisk(); }; roles.append(label);
+      }
+      body.append(roles);
       why('A partner provides assistance during an emergency. Support-rover speed and terrain limits are simulated assumptions; this is not a tested Mars crew vehicle.', 'NASA spacesuit guidance; project mobility model [S]');
     },
   },
@@ -111,8 +128,10 @@ const STEPS = [
       for (const e of EQUIPMENT) {
         const l = document.createElement('label');
         l.innerHTML = `<input type="checkbox" ${state.equipment.has(e.id) ? 'checked' : ''}> ${e.name} <small>(${e.kg} kg) ${tag('S')} - $${COST_MODEL.equipment[e.id]}M ${tag('H')}</small>`;
-        l.querySelector('input').onchange = (ev) => { ev.target.checked ? state.equipment.add(e.id) : state.equipment.delete(e.id); $('load-total').textContent = `${loadKg()} kg`; };
-        f.append(l);
+        l.querySelector('input').onchange = (ev) => { ev.target.checked ? state.equipment.add(e.id) : state.equipment.delete(e.id); $('load-total').textContent = `${loadKg()} kg`; updateRisk(); };
+        const more = document.createElement('details'); more.className = 'item-more';
+        more.innerHTML = `<summary aria-label="More about ${e.name}">+ Learn more</summary><img src="data/photos/cheyava.jpg" alt="Cheyava Falls workspace on Mars; field context, not a photograph of this tool" width="260"><p>${e.name}: ${e.id === 'medico' ? 'Supports the emergency-response plan; it does not replace medical training.' : 'Use to document or investigate rock samples. NASA rover instruments combine imaging, spectroscopy and sampling; this handheld concept is not an actual rover instrument.'}</p><p>Mass and cost are project assumptions [S/H].</p><a href="https://science.nasa.gov/mission/mars-2020-perseverance/science-instruments/">NASA instrument reference</a>`;
+        f.append(l, more);
       }
       const t = document.createElement('div'); t.className = 'field';
       t.innerHTML = `<span>Additional load per astronaut ${tag('S')}</span><span class="total" id="load-total">${loadKg()} kg</span><small>Illustrative masses. The pressure suit and its life-support system are excluded from this extra load; they remain essential.</small>`;
@@ -168,7 +187,7 @@ STEPS.push({
     const parts = [['Historical launch benchmark', launch], ['Life support', life], ['Equipment', equipment], ['Habitat', COST_MODEL.shelter[state.shelter]], ['Support rover', state.rover ? COST_MODEL.rover : 0], ['Operations', COST_MODEL.operations]];
     const subtotal = parts.reduce((sum, row) => sum + row[1], 0);
     const box = document.createElement('div'); box.className = 'estimate-preview wide';
-    box.innerHTML = `<p>Estimated scenario total [H]</p><strong>$${fmt(subtotal * (1 + COST_MODEL.contingency) / 1000, 2)} billion</strong><p>Includes ${COST_MODEL.contingency * 100}% illustrative contingency [H].</p>${parts.map(([name, value]) => `<div class="estimate-line"><span>${name}</span><b>$${fmt(value)}M [H]</b></div>`).join('')}<p>Hypothetical assumptions, not NASA Mars mission prices. The historical Artemis benchmark does not cover a Mars landing, transit or return. Propulsion selection is conceptual and has no validated price in this model.</p>`;
+    box.innerHTML = `<p>Estimated scenario total [H]</p><strong>$${fmt(subtotal * (1 + COST_MODEL.contingency) / 1000, 2)} billion</strong><p class="per-person">$${fmt(subtotal * (1 + COST_MODEL.contingency) / state.crew, 1)}M per traveler [H] - ${state.crew} travelers [H]</p><p>Includes ${COST_MODEL.contingency * 100}% illustrative contingency [H].</p>${parts.map(([name, value]) => `<div class="estimate-line"><span>${name}</span><b>$${fmt(value)}M [H]</b></div>`).join('')}<p>Hypothetical assumptions, not NASA Mars mission prices. The historical Artemis benchmark does not cover a Mars landing, transit or return. Propulsion selection is conceptual and has no validated price in this model.</p>`;
     body.append(box); why('Review your choices before opening the route map. The full breakdown and sources remain in the report.');
   },
 });
@@ -187,11 +206,20 @@ async function render() {
   $('back').style.visibility = state.step === 0 ? 'hidden' : 'visible';
   $('next').textContent = state.step === STEPS.length - 1 ? 'Plan the walk' : 'Next';
   $('next').disabled = !step.ready();
+  updateRisk();
+}
+
+function updateRisk() {
   let risk = $('risk-advice');
-  if (!risk) { risk = document.createElement('aside'); risk.id = 'risk-advice'; risk.className = 'risk-advice'; $('q-why').after(risk); }
-  const missing = ESSENTIALS.filter((item) => !state.essentials.has(item.id));
-  const siteRisk = state.siteId === 'arcadia' ? 'No rover weather station or ground traverse is available here; treat the route as exploratory.' : state.siteId ? 'Terrain and radiation vary; the map cannot identify radiation-safe areas or small obstacles.' : 'Choose a destination to see its evidence limitations.';
-  risk.innerHTML = `<b>Risk and preparation</b><p>${siteRisk} ${missing.length ? `Before the walk, confirm: ${missing.map((item) => item.name).join(', ')}.` : 'All essential systems are confirmed in this scenario; verify them before departure.'}</p>${state.step > 1 && missing.length ? '<button type="button" id="review-essentials" class="btn ghost">Review essential systems</button>' : ''}`;
+  if (!risk) { risk = document.createElement('aside'); risk.id = 'risk-advice'; $('q-why').after(risk); }
+  risk.hidden = !state.touched;
+  if (risk.hidden) return;
+  const status = preparationLevel(state.essentials, state.equipment, state.crew, state.roles, state.shelter);
+  risk.className = `risk-advice status-${status.level}`;
+  const label = status.level === 'red' ? 'Preparation incomplete' : status.level === 'yellow' ? 'Minimum checklist complete' : 'Recommended checklist complete';
+  const siteNote = state.siteId === 'arcadia' ? 'Arcadia has no local weather station or rover traverse in this dataset. Model clearance remains blocked.' : 'Radiation remains an unresolved environmental risk; colors describe preparation, not a radiation forecast.';
+  const shelterNote = state.shelter === 'shell' ? 'Metal shell selected: added radiation shielding needs review.' : state.shelter === 'regolith' ? 'Regolith cover selected: construction and load-bearing verification are needed.' : 'Hydrogen-rich shielding selected: thickness and geometry still require validation.';
+  risk.innerHTML = `<b>${label} [H]</b><p>${status.level === 'red' ? 'Still required: ' + status.missing.map((item) => item.name).join(', ') : status.level === 'yellow' ? 'These systems cover the minimum project checklist. This does not establish a safe Mars journey.' : 'Your scenario includes the recommended project preparations. Operational approval is still required.'}</p><ul>${status.improvements.map((text) => `<li>${text}</li>`).join('')}</ul><p>${shelterNote} ${siteNote}</p>${state.step > 1 && status.missing.length ? '<button type="button" id="review-essentials" class="btn ghost">Review essential systems</button>' : ''}`;
   $('review-essentials')?.addEventListener('click', () => { state.step = 1; render(); });
 }
 
@@ -278,6 +306,8 @@ async function drawPlan(s, route) {
   }
   routeLayer.addTo(map);
   map._ctl.addOverlay(routeLayer, 'Planned route');
+  const statusMarker = L.marker([s.habitat.lat, s.habitat.lon], { icon: L.divIcon({ className: 'map-status', html: `<span style="background:${p.go ? '#275d47' : '#752f35'}">${p.go ? 'Passes scenario checks [S]' : 'Do not start: blockers [S]'}</span>`, iconSize: [210, 40], iconAnchor: [105, 55] }) });
+  statusMarker.bindPopup(`<b>${p.go ? 'Candidate route, subject to validation' : 'Do not start this scenario'}</b><p>${p.alerts.map((a) => a.msg).join('<br>')}</p><p>Radiation safety is not established by this assessment.</p>`).addTo(routeLayer);
   map.fitBounds(L.latLngBounds(pts).pad(0.25));
   }
 
@@ -286,6 +316,9 @@ async function drawPlan(s, route) {
   if (state.sol != null) q.set('sol', state.sol);
   const nogo = p.alerts.filter((a) => a.level === 'proibido').length, warn = p.alerts.length - nogo;
   const rad = s.id === 'gale' ? 'average measured here by Curiosity' : 'reference value measured by Curiosity in Gale crater';
+  let evidence = $('radiation-evidence');
+  if (!evidence) { evidence = document.createElement('details'); evidence.id = 'radiation-evidence'; evidence.className = 'evidence-note'; $('map').after(evidence); }
+  evidence.innerHTML = `<summary>+ Radiation evidence: what is measured, and what is unknown?</summary><p>Curiosity RAD measured about 4% less overall radiation near a cliff in Murray Buttes, Gale, during September 9-21, 2016 [R]. The observation is outside the supplied walking routes and is not a safe-zone boundary.</p><p>Solar events can raise exposure across broad areas. No live event feed or spatial radiation dataset is connected here. Red route marks indicate sampled slope limits, never invented radiation hot spots.</p><a href="${RADIATION_EVIDENCE_URL}" target="_blank" rel="noopener">NASA: measured shielding and radiation variability</a>`;
   $('panel').innerHTML = `
     <h2>${route.name}</h2>
     <p class="sub">${s.name} · Proposed human EVA ${tag('H')} · Waypoints ${tag(route.tag)}</p>

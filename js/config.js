@@ -19,10 +19,11 @@ export const HR_PER_EFFORT = 45;             // [S]
 export const TIME_SCALE = 30;                // demonstração: 1 s real = 30 s simulados (ajustável)
 export const ARRIVAL_RADIUS_M = 15;
 export const PEAK_TEMP_HOUR = 14;            // [S] hora da temperatura máxima do dia
+export const RADIATION_EVIDENCE_URL = 'https://www.nasa.gov/missions/mars-science-laboratory/how-nasas-curiosity-rover-is-making-mars-safer-for-astronauts/';
 // Illustrative mission costing assumptions, millions USD [H], not NASA quotations.
 export const COST_MODEL = {
   essentials: { pressure: 100, oxygen: 25, scrubber: 30, cooling: 20, power: 25, comms: 35, monitor: 10, rescue: 80 },
-  equipment: { amostrador: 3, camera: 2, espectrometro: 8, perfuratriz: 15, medico: 2 },
+  equipment: { amostrador: 3, camera: 2, espectrometro: 8, perfuratriz: 15, medico: 2, microscopia: 4, ambiente: 6 },
   shelter: { shell: 480, polymer: 620, regolith: 900 },
   rover: 250, operations: 493, contingency: 0.2,
 };
@@ -34,6 +35,8 @@ export const EQUIPMENT = [
   { id: 'espectrometro', name: 'Handheld spectrometer', kg: 5 },
   { id: 'perfuratriz', name: 'Hand drill', kg: 12 },
   { id: 'medico', name: 'Emergency medical kit', kg: 3 },
+  { id: 'microscopia', name: 'Close-up texture imaging kit', kg: 2 },
+  { id: 'ambiente', name: 'Portable environmental sensor kit', kg: 3 },
 ]; // [S] illustrative carried masses, per astronaut; suit mass excluded.
 export const ESSENTIALS = [
   { id: 'pressure', name: 'Pressure suit and leak check', why: 'The Martian atmosphere cannot sustain human breathing or body pressure.' },

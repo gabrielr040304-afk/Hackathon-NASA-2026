@@ -58,3 +58,9 @@ The project assigns hypothetical costs [H] in `js/config.js` to each selected li
 ## Crew and propulsion concepts
 
 NASA?s [2025 architecture update](https://www.nasa.gov/wp-content/uploads/2025/12/2025-architecture-update-for-publication.pdf) targets at least four crew on Mars, and considers six. NASA studies [nuclear thermal propulsion](https://www.nasa.gov/space-technology-mission-directorate/tdm/space-nuclear-propulsion/); neither the propulsion selection nor support rover is a validated human Mars vehicle. The selection does not alter route duration or mission cost.
+
+## Readiness colors and radiation evidence
+
+Checklist colors are project rules [H]: red means at least one essential system is unconfirmed; yellow means all essentials are confirmed but recommended medical equipment, crew capabilities, crew size or added shielding remain incomplete; green means those recommendations are also selected. None certifies radiation safety or a minimum safe real mission. Role labels are project recommendations and may be covered by cross-training.
+
+[NASA reported](https://www.nasa.gov/missions/mars-science-laboratory/how-nasas-curiosity-rover-is-making-mars-safer-for-astronauts/) a roughly 4% reduction in total RAD radiation near a cliff at Murray Buttes, September 9-21, 2016. This is shown as historical evidence, not mapped as a safe polygon or applied to current routes. No spatial dose map or live solar-event feed is connected. Added handheld imaging/environment kits are hypothetical analogues informed by NASA rover imaging and environmental measurements; masses and prices are simulated/project assumptions.

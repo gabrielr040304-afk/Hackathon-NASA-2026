@@ -53,3 +53,14 @@ export function budgetSummary(budget) {
   const subtotal = entries.reduce((total, entry) => total + (entry.value ?? 0), 0);
   return { entries, complete, subtotal, total: complete && Number.isFinite(subtotal) ? subtotal : null };
 }
+
+// Readiness colors describe a project checklist, never a NASA flight clearance.
+export function preparationLevel(essentials, equipment, crew, roles, shelter) {
+  const missing = ESSENTIALS.filter((item) => !essentials.has(item.id));
+  const improvements = [];
+  if (!equipment.has('medico')) improvements.push('Add an emergency medical kit.');
+  if (crew < 4) improvements.push('Plan at least four surface crew for this mission concept.');
+  for (const role of ['medical', 'engineering', 'science']) if (!roles.has(role)) improvements.push(`Assign ${role} capability; cross-training may cover multiple roles.`);
+  if (shelter === 'shell') improvements.push('Review added shielding for the pressure habitat.');
+  return { level: missing.length ? 'red' : improvements.length ? 'yellow' : 'green', missing, improvements };
+}

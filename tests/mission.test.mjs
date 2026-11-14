@@ -55,3 +55,13 @@ test('unknown budget is not zero; complete budget sums assumptions and rejects i
     assert.equal(budgetSummary({ transport: invalid, habitat: 3, support: 4, operations: 1 }).total, null);
   }
 });
+
+
+test('preparation colors require all essentials and distinguish minimum from recommendations', async () => {
+  const { preparationLevel } = await import('../js/mission.js');
+  const roles = new Set(['medical', 'engineering', 'science']);
+  assert.equal(preparationLevel(new Set(), new Set(['medico']), 4, roles, 'polymer').level, 'red');
+  assert.equal(preparationLevel(ready, new Set(), 4, roles, 'polymer').level, 'yellow');
+  assert.equal(preparationLevel(ready, new Set(['medico']), 4, roles, 'polymer').level, 'green');
+  assert.equal(preparationLevel(ready, new Set(['medico']), 4, new Set(), 'shell').level, 'yellow');
+});
