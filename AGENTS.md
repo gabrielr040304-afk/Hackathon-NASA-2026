@@ -20,7 +20,7 @@ Survival Guide: Martian Map". Prazo: hackathon de menos de 24 h.
 ## Comandos
 - Rodar: `npm run dev` (= `python -m http.server 8000`) e abrir http://localhost:8000
   - Sem Python: `php -S localhost:8000`
-- Testes: `npm test` (= `node --test tests/`)
+- Testes: `npm test` (= `node --test "tests/*.test.mjs"`)
 
 ## Regras do projeto
 - Toda constante do modelo fica em `js/config.js`. Nada de números mágicos espalhados.
