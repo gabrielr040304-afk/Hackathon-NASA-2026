@@ -17,6 +17,7 @@ export const SUIT_PRESSURE_KPA = 29.6;       // [R] traje EMU da NASA (4,3 psi)
 export const HR_BASE_BPM = 75;               // [S]
 export const HR_PER_EFFORT = 45;             // [S]
 export const TIME_SCALE = 30;                // demonstração: 1 s real = 30 s simulados (ajustável)
+export const SIM = { eyeHeight: 1.7, mouseSensitivity: 0.002, meshSegments: 256, maxFrameSeconds: 0.1, waypointRadius: 18, fov: 75, far: 6000, projectionMaxHours: 72 };
 export const ARRIVAL_RADIUS_M = 15;
 export const PEAK_TEMP_HOUR = 14;            // [S] hora da temperatura máxima do dia
 export const HAZARD_CELL_PIXELS = 16; // Display aggregation only, ~63 m for the bundled Jezero DTM.

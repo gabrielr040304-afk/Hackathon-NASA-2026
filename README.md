@@ -28,3 +28,11 @@ Code was written with assistance from Claude (Anthropic) and Codex (OpenAI) unde
 Team docs (Portuguese): [PLANO_IMPLEMENTACAO.md](PLANO_IMPLEMENTACAO.md), [PROGRESSO.md](PROGRESSO.md).
 
 Meridiani Planum replaces Arcadia in the planner. Its Eagle Crater vicinity is exploratory and lacks a local terrain grid, usable weather and digitized rover waypoints; no numerical walking safety result is offered. In Jezero, green cells pass the project sampled-slope threshold only, yellow/red flag slopes and gray indicates unknown terrain. Gale and Meridiani have no prepared local slope grid. No color indicates radiation safety.
+
+## Jezero helmet simulator
+
+Start from a permitted Jezero plan to transfer preparation through session storage. All three routes share the bundled HiRISE height grid and orbital texture. Desktop: WASD/arrows, mouse look, E inspect, M route map, Escape pause/finish. Simulation supports real time and 30x time; movement and resource use share the time scale. The simulator blocks slopes above the project limit and movement outside terrain coverage.
+
+The HUD uses selected equipment and the existing suit/effort model. No individual rocks, solar events or survival probabilities are modeled. Esc opens a paused review; ending gives consumption and duration projections at observed average effort. Financial investment is shown separately; no validated incremental EVA rate is available.
+
+TypeScript sources: `js/sim/main.ts` and `model.ts`. User-authorized stack extension; deployable JavaScript is committed. Regenerate with `npm run compile:sim` using Node 24 built-in type erasure; no packages or browser compilation required. This command erases types and does not perform semantic TypeScript checking.

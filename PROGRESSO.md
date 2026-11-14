@@ -41,3 +41,6 @@
 
 ### Meridiani e cobertura de relevo
 - Arcadia substitu?da por Meridiani / Eagle Crater. Coordenadas NASA; altitude MOLA grosseira consultada. Sem DEM local, trajeto Opportunity digitalizado ou clima, cen?rio hipot?tico ? bloqueado e resultados num?ricos n?o s?o apresentados. Grade de Jezero identifica declividade baixa/alta e aus?ncia de dados; Gale e Meridiani mostram ?rea ilustrativa cinza por falta de DEM local preparado. N?o classificar radia??o ou seguran?a real.
+
+### Simulador Jezero
+- TypeScript autorizado pelo usu?rio: main.ts/model.ts, gera??o JS via Node 24 sem depend?ncias. Um terreno HiRISE para as tr?s rotas; mouse/WASD, E alvos, M mapa, Esc pausa/relat?rio/proje??o. Prepara??o transferida via sessionStorage e conferida na entrada. HUD de recursos usa modelo existente; sem prever sobreviv?ncia real ou custo incremental inventado. Three.js CDN confirmado HTTP 200. 25 testes aprovados. Valida??o visual/WebGL n?o executada: browser access host unavailable. Conferir intera??o no navegador antes da demonstra??o.

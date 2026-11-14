@@ -400,11 +400,15 @@ async function drawPlan(s, route) {
     <p class="note">Radiation: ${rad} (${RAD_MSV_PER_DAY} mSv per Earth day ${tag('R')}; Hassler et al., Science, 2014). The modeled dose excludes solar events and is not a local forecast. A small share of a career limit does not establish safety.</p>
     <p><a href="#mission-report">Read survival, route and cost analysis</a></p>
     <div class="actions">
-      ${s.hasSim && p.go ? `<a class="btn ghost" href="sim.html?${q}">Preview 3D page (under construction)</a>`
+      ${s.hasSim && p.go ? `<a id="start-sim" class="btn" href="sim.html?${q}">Start the Jezero 3D walk</a>`
         : `<a class="btn" aria-disabled="true" tabindex="-1">Walk it in the 3D visor</a><p class="note">${p.go ? 'The 3D simulation is only available for Jezero in this prototype.' : 'Resolve the safety blockers before opening the 3D page.'}</p>`}
       <button type="button" class="btn ghost" id="redo">Plan again</button>
     </div>`;
   renderReport(s, route, p, inputs, w);
+  $('start-sim')?.addEventListener('click', (event) => {
+    try { sessionStorage.setItem('mars-eva-preparation', JSON.stringify({ site: s.id, route: route.id, crew: state.crew, rover: state.rover, essentials: [...state.essentials], equipment: [...state.equipment], extras: [...state.extras], optional: [...state.optional], shelter: state.shelter, roles: [...state.roles], sol: state.sol, start: state.start, investmentMillion: state.investmentMillion })); }
+    catch { event.preventDefault(); alert('Browser storage is unavailable. Enable session storage to transfer your preparation.'); }
+  });
   $('route')?.addEventListener('change', (e) => drawPlan(s, s.routes.find((r) => r.id === e.target.value)).catch(showError));
   $('redo').onclick = () => { $('result').hidden = true; $('quiz').hidden = false; state.step = 0; render(); window.scrollTo(0, 0); };
 }
@@ -431,6 +435,7 @@ function renderReport(s, route, p, inputs, weather) {
   const contingency = subtotal * COST_MODEL.contingency;
   assumptions.push({ name: 'Contingency', value: contingency });
   const estimate = subtotal + contingency;
+  state.investmentMillion = estimate;
   const historicalTotal = HISTORICAL_LAUNCH_COST.reduce((sum, row) => sum + row.millionUSD, 0);
   const timeAdvice = !window ? 'No measured local sunrise or sunset is available. A departure window cannot be established.'
     : !window.feasible ? 'This walk does not fit within the recorded daylight and return margin. Shorten it or change the scenario.'

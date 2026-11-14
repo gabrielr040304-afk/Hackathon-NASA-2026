@@ -84,3 +84,9 @@ The planner constructs two extra hypothetical [H] out-and-back scenarios by trun
 Opportunity landed at 1.9483 S, 354.47417 E, in Eagle Crater ([NASA mission](https://science.nasa.gov/mission/mer-opportunity/)). The hypothetical nearby route and base are not Opportunity waypoints. MOLA 463 m altitude -1384 m was retrieved for nearby sample locations with tools/mola_elev.py; this coarse data cannot establish a walking slope. Local rover traverse, weather and fine terrain are not yet integrated; numeric walk results are withheld. [NASA final traverse](https://www.nasa.gov/image-article/opportunitys-final-traverse-map/) and [geology](https://science.nasa.gov/resource/geologic-setting-of-opportunity-traverse-and-meridiani-planum/).
 
 Jezero now colors valid low-slope cells green, warning cells yellow and steep cells red; invalid cells are gray. Green is a model slope criterion, not a safety clearance. Gale and Meridiani show a gray illustrative area indicating missing local elevation grids, not a surveyed boundary. Radiation, rocks and other hazards remain unclassified.
+
+## Jezero interactive simulator
+
+The shared three-route scene uses the bundled USGS HiRISE height grid and NASA orbital texture; rendering resamples the grid to a 256-segment mesh [D]. Camera, movement, visit detection, suit resource use, accelerated time and dose accumulation are simulated [S]. Weather temperature is interpolated from a historical MEDA day; radiation is the historical Gale reference, not Jezero dosimetry. Survey-scale heights do not resolve all rocks or obstacles. No probability of survival is inferred.
+
+The planner transfers preparation using same-tab session storage. Simulator entry repeats planner checks and rejects missing essentials or blocked plans. Projection uses observed average effort; it does not forecast new hazards. TypeScript implementation was requested by the user and uses Three.js 0.187.0; generated JavaScript is committed for static hosting.
