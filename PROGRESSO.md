@@ -1,7 +1,7 @@
 # Progresso
 
 ## Próximo passo
-- **Colega A:** Tarefa 5 (planejador). Os dados reais já estão em `data/` e os cálculos em `js/calc.js`.
+- **Planejador (Tarefas 5 e 6): pronto**, feito pelo Claude e testado no navegador. Falta o commit do Gabriel.
 - **Colega B:** Tarefa 7 (simulador 3D). Terreno real pronto em `data/jezero/`, com funções de altura e inclinação em `js/sim/terrain.js`.
 - **Gabriel:** Tarefa 4 (fotos do Perseverance e textos dos alvos, hoje marcados "PROVISÓRIO" em `data/sites.json`) e Tarefa 3, passo 5 (escolher a área de Arcadia no mapa SWIM).
 
@@ -20,3 +20,4 @@
 - Problemas encontrados:
   - `node --test tests/` não funciona no Node 24; o comando passou a ser `npm test`.
   - Linhas retas entre paradas distantes cruzavam encostas de 31°; as rotas agora seguem as paradas do rover.
+- Planejador: questionário em 5 passos, mapa com 5 camadas do Mars Trek + detalhe HiRISE + trajeto do rover, painel com GO/NÃO RECOMENDADO e etiquetas R/D/S/H, transparência, legenda, aviso de camada fora do ar e layout de celular.

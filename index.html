@@ -4,11 +4,53 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Guia de Sobrevivência em Marte — Planejador</title>
+  <meta name="description" content="Planeje uma caminhada de astronauta em Marte com dados reais da NASA.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..800&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="css/planner.css">
 </head>
 <body>
-  <!-- ponytail: esqueleto; Colega A constrói o planejador aqui (Tarefa 5 do plano) -->
-  <h1>Guia de Sobrevivência em Marte</h1>
-  <p>Planejador de caminhada: em construção.</p>
-  <p><a href="sim.html">Abrir simulador 3D</a></p>
+  <header class="top">
+    <a class="brand" href="./">Guia de Sobrevivência em Marte</a>
+    <p class="tagline">Planeje a caminhada. Depois, faça ela no visor.</p>
+  </header>
+
+  <main>
+    <section id="quiz" class="quiz" aria-live="polite">
+      <ol class="progress" id="progress" aria-label="Etapas"></ol>
+      <h1 id="q-title"></h1>
+      <p id="q-lead" class="lead"></p>
+      <div id="q-body" class="q-body"></div>
+      <aside id="q-why" class="why" hidden></aside>
+      <div class="nav">
+        <button type="button" id="back" class="btn ghost">Voltar</button>
+        <button type="button" id="next" class="btn">Avançar</button>
+      </div>
+    </section>
+
+    <section id="result" class="result" hidden>
+      <div class="map-wrap">
+        <div id="map" role="application" aria-label="Mapa de Marte com a rota planejada"></div>
+        <div class="map-tools">
+          <p id="legend" class="legend"></p>
+          <label id="opacity-wrap" class="opacity">Transparência do detalhe
+            <input type="range" id="opacity" min="0" max="100" value="100">
+          </label>
+          <p id="tile-notice" class="tile-notice" hidden>Camadas da NASA indisponíveis no momento. A rota continua válida.</p>
+        </div>
+      </div>
+      <div id="panel" class="panel"></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>Etiquetas: <b class="tag t-R">R</b> real (NASA/USGS) <b class="tag t-D">D</b> derivado por nós de dados reais <b class="tag t-S">S</b> simulado <b class="tag t-H">H</b> hipotético.
+      Dados: Mars Trek (NASA/JPL), USGS Astrogeology, Perseverance e Curiosity (NASA/JPL-Caltech), HiRISE (NASA/JPL/University of Arizona). <a href="FONTES.md">Fontes</a></p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module" src="js/planner.js"></script>
 </body>
 </html>
