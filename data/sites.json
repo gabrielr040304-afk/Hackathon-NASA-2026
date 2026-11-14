@@ -85,17 +85,17 @@
       "elev_source": "M20_waypoints sol 1175"
      },
      {
-      "lat": 18.497182,
-      "lon": 77.305358,
-      "elev_m": -2357.7,
-      "elev_source": "M20_waypoints sol 1182",
+      "lat": 18.497484,
+      "lon": 77.305191,
+      "elev_m": -2354.0,
+      "elev_source": "M20_waypoints sol 1210",
       "target": {
        "name": "Cheyava Falls",
-       "why": "Rocha com 'manchas de leopardo' encontrada em julho de 2024: possível sinal de vida microbiana antiga (TEXTO PROVISÓRIO — Tarefa 4).",
-       "photo": null,
-       "credit": "NASA/JPL-Caltech",
-       "sol": 1182,
-       "camera": null
+       "why": "Rocha em forma de ponta de flecha, com veios brancos e 'manchas de leopardo' que, na Terra, costumam se formar com a ajuda de micróbios. Em setembro de 2025 a NASA anunciou que a amostra tirada dela (Sapphire Canyon) é a melhor candidata a sinal de vida antiga já encontrada em Marte. Observe as manchas com borda escura e os veios claros.",
+       "photo": "data/photos/cheyava.jpg",
+       "credit": "NASA/JPL-Caltech/ASU/MSSS",
+       "sol": 1210,
+       "camera": "PIA26401 (Mastcam-Z)"
       }
      },
      {
@@ -191,11 +191,11 @@
       "elev_source": "M20_waypoints sol 1168",
       "target": {
        "name": "Leito do Neretva Vallis",
-       "why": "Ponto mais baixo do antigo canal de rio que alimentava o lago de Jezero (TEXTO PROVISÓRIO — Tarefa 4).",
-       "photo": null,
+       "why": "Antigo canal por onde a água de um rio entrava no lago de Jezero, há mais de 3 bilhões de anos. Hoje o leito está coberto por ondulações de areia. Observe a parede do canal ao fundo e os blocos que a água transportou.",
+       "photo": "data/photos/neretva.jpg",
        "credit": "NASA/JPL-Caltech",
        "sol": 1168,
-       "camera": null
+       "camera": "NLF_1168_0770638338_771ECM_N0525032NCAM02168_04_195J (NAVCAM_LEFT)"
       }
      },
      {
@@ -259,17 +259,17 @@
       "elev_source": "M20_waypoints sol 1247"
      },
      {
-      "lat": 18.487792,
-      "lon": 77.298379,
-      "elev_m": -2275.2,
-      "elev_source": "M20_waypoints sol 1252",
+      "lat": 18.487234,
+      "lon": 77.298264,
+      "elev_m": -2264.5,
+      "elev_source": "M20_waypoints sol 1264",
       "target": {
        "name": "Encosta oeste",
-       "why": "Fim da subida: vista do canal e rochas mais altas da borda (TEXTO PROVISÓRIO — Tarefa 4).",
-       "photo": null,
+       "why": "Fim da subida, mais de 100 m acima do leito do canal, no caminho que o Perseverance tomou rumo à borda da cratera. Daqui se vê todo o trajeto. Observe a mudança de cor e de textura das rochas conforme a altitude.",
+       "photo": "data/photos/encosta.jpg",
        "credit": "NASA/JPL-Caltech",
-       "sol": 1252,
-       "camera": null
+       "sol": 1264,
+       "camera": "NLF_1264_0779152935_617ECM_N0590330NCAM02264_01_195J (NAVCAM_LEFT)"
       }
      },
      {
@@ -403,17 +403,17 @@
       "elev_source": "MSL_waypoints sol 4596"
      },
      {
-      "lat": -4.805206,
-      "lon": 137.379448,
-      "elev_m": -3622.4,
-      "elev_source": "MSL_waypoints sol 4614",
+      "lat": -4.80599,
+      "lon": 137.37946,
+      "elev_m": -3613.9,
+      "elev_source": "MSL_waypoints sol 4628",
       "target": {
        "name": "Crista do boxwork",
-       "why": "Crista de ~5 m de largura entre os 'favos' do boxwork, parada do Curiosity nos sóis 4627–4628 (TEXTO PROVISÓRIO — Tarefa 4).",
-       "photo": null,
+       "why": "Cristas de alguns metros de largura onde a água subterrânea deixou minerais que endureceram a rocha; o vento erodiu o resto e sobrou o desenho de favo. O Curiosity percorreu uma crista de cerca de 5 m de largura. Observe as cristas, os vales entre elas e os nódulos claros.",
+       "photo": "data/photos/crista.jpg",
        "credit": "NASA/JPL-Caltech/MSSS",
-       "sol": 4614,
-       "camera": null
+       "sol": 4628,
+       "camera": "PIA26559 (Mastcam)"
       }
      },
      {
@@ -423,17 +423,17 @@
       "elev_source": "MSL_waypoints sol 4647"
      },
      {
-      "lat": -4.808271,
-      "lon": 137.38127,
-      "elev_m": -3608.3,
-      "elev_source": "MSL_waypoints sol 4671",
+      "lat": -4.807999,
+      "lon": 137.381049,
+      "elev_m": -3608.7,
+      "elev_source": "MSL_waypoints sol 4709",
       "target": {
        "name": "Perfuração no vale Monte Grande",
-       "why": "Rocha do fundo de um 'vale' do boxwork, perfurada pelo Curiosity nos sóis 4709–4715 (TEXTO PROVISÓRIO — Tarefa 4).",
-       "photo": null,
+       "why": "Vale entre as cristas onde o Curiosity perfurou a rocha 'Nevado Sajama' para comparar com as cristas: por que elas resistiram e o vale não? Observe o piso coberto de areia e pedriscos, que tornou difícil achar rocha exposta para perfurar.",
+       "photo": "data/photos/montegrande.jpg",
        "credit": "NASA/JPL-Caltech/MSSS",
-       "sol": 4671,
-       "camera": null
+       "sol": 4709,
+       "camera": "PIA26695"
       }
      },
      {
@@ -463,8 +463,8 @@
   "name": "Arcadia Planitia",
   "mission": "nenhuma (pouco explorada)",
   "center": {
-   "lat": 47.2,
-   "lon": -175.7
+   "lat": 47.25,
+   "lon": -164.0
   },
   "zoom": 12,
   "objectives": [
@@ -475,13 +475,13 @@
   "localLayer": null,
   "hasSim": false,
   "habitat": {
-   "lat": 47.2,
-   "lon": -175.7,
-   "elev_m": 0.0,
-   "elev_source": "PENDENTE: ler altitude no Mars Trek",
+   "lat": 47.25,
+   "lon": -164.0,
+   "elev_m": -3980.0,
+   "elev_source": "MOLA 463 m (USGS), tools/mola_elev.py",
    "tag": "H"
   },
-  "notes": "PROVISÓRIO: coordenadas no centro IAU de Arcadia Planitia; trocar pela área de gelo raso escolhida no mapa SWIM (Tarefa 3 passo 5).",
+  "notes": "Hipotético: centro do mapa do estudo piloto do SWIM em Arcadia (196° L, 47,25° N; SWIM/PSI, LPSC 2019, resumo 2069). Nenhum rover esteve aqui.",
   "routes": [
    {
     "id": "gelo-raso",
@@ -490,19 +490,19 @@
     "tag": "H",
     "waypoints": [
      {
-      "lat": 47.210122,
-      "lon": -175.692551,
-      "elev_m": 0.0,
-      "elev_source": "PENDENTE: ler altitude no Mars Trek"
+      "lat": 47.260122,
+      "lon": -163.992544,
+      "elev_m": -3978.0,
+      "elev_source": "MOLA 463 m (USGS), tools/mola_elev.py"
      },
      {
-      "lat": 47.220245,
-      "lon": -175.685102,
-      "elev_m": 0.0,
-      "elev_source": "PENDENTE: ler altitude no Mars Trek",
+      "lat": 47.270245,
+      "lon": -163.985088,
+      "elev_m": -3978.0,
+      "elev_source": "MOLA 463 m (USGS), tools/mola_elev.py",
       "target": {
        "name": "Cratera recente com gelo exposto (hipotética)",
-       "why": "Alvo hipotético: gelo de água a poucos metros da superfície (mapas SWIM) — escolher no mapa SWIM (Tarefa 3 passo 5).",
+       "why": "Alvo hipotético. Nas latitudes médias do norte, a câmera HiRISE já flagrou crateras de impacto recentes expondo gelo branco, que sumiu em poucos meses. Achar uma assim perto da base confirma que o gelo está raso.",
        "photo": null,
        "credit": null,
        "sol": null,
@@ -510,19 +510,19 @@
       }
      },
      {
-      "lat": 47.215184,
-      "lon": -175.670204,
-      "elev_m": 0.0,
-      "elev_source": "PENDENTE: ler altitude no Mars Trek"
+      "lat": 47.265184,
+      "lon": -163.970176,
+      "elev_m": -3977.0,
+      "elev_source": "MOLA 463 m (USGS), tools/mola_elev.py"
      },
      {
-      "lat": 47.205061,
-      "lon": -175.667721,
-      "elev_m": 0.0,
-      "elev_source": "PENDENTE: ler altitude no Mars Trek",
+      "lat": 47.255061,
+      "lon": -163.96769,
+      "elev_m": -3978.0,
+      "elev_source": "MOLA 463 m (USGS), tools/mola_elev.py",
       "target": {
        "name": "Perfil do solo para gelo (hipotético)",
-       "why": "Alvo hipotético: medir profundidade do gelo para uma futura base (Tarefa 3 passo 5).",
+       "why": "Alvo hipotético. Cavar ou usar radar para medir a que profundidade o gelo começa: se estiver a menos de 1 m, pode virar água, oxigênio e combustível para uma base humana.",
        "photo": null,
        "credit": null,
        "sol": null,

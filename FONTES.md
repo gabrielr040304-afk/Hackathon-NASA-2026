@@ -15,8 +15,13 @@ A lista completa e testada está na seção 4 do [PLANO_IMPLEMENTACAO.md](PLANO_
 | Trajetos dos rovers (`data/traverse/`) | R | `mars.nasa.gov/mmgis-maps/{M20,MSL}/Layers/json/*_traverse.json` | Sem alteração |
 | Rotas de Jezero (`data/sites.json`) | R (pontos) / H (base) | Paradas do Perseverance, `M20_waypoints.json`, sóis 1142–1264 | Paradas a cada ~100 m, ida e volta pelo mesmo caminho; base num ponto com inclinação < 5° no relevo HiRISE |
 | Rota de Gale (`data/sites.json`) | R (pontos) / H (base) | Paradas do Curiosity, `MSL_waypoints.json`, sóis 4580–4709 (campanha boxwork, blog do Curiosity: sóis 4627–4628 crista, 4709–4715 perfuração) | Paradas a cada ~100 m |
-| Rota de Arcadia (`data/sites.json`) | H | **PROVISÓRIA**: centro IAU de Arcadia Planitia (47,2° N, 184,3° L) | Trocar pela área de gelo raso dos mapas SWIM e ler as altitudes no Mars Trek |
-| _(fotos e textos: Tarefa 4)_ | | | |
+| Rota de Arcadia (`data/sites.json`) | H (rota) / R (altitudes) | Centro do mapa do estudo piloto SWIM em Arcadia, 196° L, 47,25° N (SWIM/PSI, LPSC 2019, resumo 2069); altitudes do MOLA 463 m (USGS) | Base e alvos hipotéticos a até 1,5 km do centro; altitudes lidas por leitura parcial do GeoTIFF — `tools/mola_elev.py` |
+| Foto de Cheyava Falls (`data/photos/cheyava.jpg`) | R | NASA PIA26401 (Mastcam-Z), "Mastcam-Z Views the 'Cheyava Falls' Workspace" — NASA/JPL-Caltech/ASU/MSSS | Reduzida para 1200 px |
+| Foto do leito do Neretva Vallis (`neretva.jpg`) | R | Perseverance, sol 1168, NLF_1168_0770638338_771ECM_N0525032NCAM02168_04_195J (NAVCAM_LEFT) — NASA/JPL-Caltech | Versão de 800 px da galeria bruta |
+| Foto da encosta oeste (`encosta.jpg`) | R | Perseverance, sol 1264, NLF_1264_0779152935_617ECM_N0590330NCAM02264_01_195J (NAVCAM_LEFT) — NASA/JPL-Caltech | Versão de 800 px da galeria bruta |
+| Foto da crista do boxwork (`crista.jpg`) | R | NASA PIA26559 (Mastcam), "Curiosity's First 360-Degree View of Boxwork Patterns" — NASA/JPL-Caltech/MSSS | Reduzida para 1200 px |
+| Foto do vale Monte Grande (`montegrande.jpg`) | R | NASA PIA26695, "Curiosity Lights Up 'Nevado Sajama' at Night" — NASA/JPL-Caltech/MSSS | Reduzida para 1200 px |
+| Textos dos alvos | R (fatos) | NASA/JPL: anúncio de Cheyava Falls (jul/2024) e da amostra Sapphire Canyon (set/2025); blog do Curiosity (sóis 4627–4628, 4709–4715) | Resumo nosso, em português |
 
 ## Créditos
 - Imagens e dados de missões: NASA/JPL-Caltech.

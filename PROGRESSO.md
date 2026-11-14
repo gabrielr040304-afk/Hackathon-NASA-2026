@@ -3,11 +3,10 @@
 ## Próximo passo
 - **Planejador (Tarefas 5 e 6): pronto**, feito pelo Claude e testado no navegador. Falta o commit do Gabriel.
 - **Colega B:** Tarefa 7 (simulador 3D). Terreno real pronto em `data/jezero/`, com funções de altura e inclinação em `js/sim/terrain.js`.
-- **Gabriel:** Tarefa 4 (fotos do Perseverance e textos dos alvos, hoje marcados "PROVISÓRIO" em `data/sites.json`) e Tarefa 3, passo 5 (escolher a área de Arcadia no mapa SWIM).
+- **Conteúdo (Tarefa 4): pronto.** 5 fotos reais com créditos, textos dos alvos e Arcadia no centro do estudo SWIM com altitudes MOLA.
 
 ## Pendências e avisos
 - Repositório: https://github.com/gabrielr040304-afk/Hackton-NASA-2026 · Site: https://gabrielr040304-afk.github.io/Hackton-NASA-2026/ (GitHub Pages, branch main). Push só com o "ok" do Gabriel.
-- Arcadia Planitia está **provisória** (centro IAU, altitudes "PENDENTE").
 - Conferir na página do Space Apps os campos da entrega e os critérios de avaliação (Tarefa 9).
 
 ## Histórico
