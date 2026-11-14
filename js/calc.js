@@ -61,7 +61,7 @@ export function planEva(site, route, inputs, weatherSol) {
   const endMin = toMin(start) + total_h * 60;
 
   const alerts = [];
-  if (crew === 1) alerts.push({ level: 'aviso', code: 'solo', msg: 'NASA spacewalks are always done in pairs.' });
+  if (crew === 1) alerts.push({ level: 'aviso', code: 'solo', msg: 'Solo walk: no partner is available for immediate assistance.' });
   if (stats.max_slope_deg > C.SLOPE_NOGO_DEG) {
     alerts.push({ level: 'proibido', code: 'inclinacao', msg: `A stretch has a ${stats.max_slope_deg.toFixed(0)}° slope (limit ${C.SLOPE_NOGO_DEG}°).` });
   } else if (stats.max_slope_deg > C.SLOPE_WARN_DEG) {

@@ -32,6 +32,15 @@ Every value on screen carries one of these labels. We never present a derived or
 
 Walking speed uses Tobler's hiking function halved for the suit; effort grows +3% per degree of uphill slope and +1% per kilogram carried; the suit supports 8 hours at rest effort; walks must end with at least 30% reserve and 60 minutes before sunset. All constants live in `js/config.js`. This is a demonstration model, not a medical or engineering prediction.
 
+## Readiness, shielding and cost context
+
+- [NASA Spacewalk Spacesuit Basics](https://www.nasa.gov/centers-and-facilities/johnson/spacewalk-spacesuit-basics/): pressure garment, oxygen circulation, CO₂ removal and cooling. The app's readiness checklist is a hypothetical project requirement, not a NASA certification checklist. Unconfirmed items block the planner.
+- [NASA shielding research](https://science.nasa.gov/resource/real-martians-how-to-protect-astronauts-from-space-radiation-on-mars/): background for hydrogen-rich shielding. Metal pressure shells, polymer layers and regolith-covered habitats are qualitative concepts [H]. No thickness, dose-reduction percentage, construction mass or thermal score is assigned.
+- [NASA OIG IG-22-003, November 15, 2021, pp. 22–23](https://oig.nasa.gov/wp-content/uploads/2024/02/ig-22-003.pdf): historical published SLS/Orion production and launch-operation estimates [R]. Chart components: SLS $2,200M, Orion $1,000M, ESA service-module barter $300M and ground systems $568M at an annual launch cadence. Their sum is $4,068M [D], rounded by OIG to approximately $4.1B. These are estimates, not actual expenditures or current Mars prices. Prior development and a complete surface mission are excluded. User budgets and their sums are hypothetical [H]; blank amounts are unknown, never zero.
+- User-provided challenge resources: [Mars Trek](https://trek.nasa.gov/mars/), [USGS Mars maps](https://astrogeology-usgs.hub.arcgis.com/pages/interactive-maps-mars), [Curiosity proposed path](https://science.nasa.gov/resource/curiositys-proposed-path-up-mount-sharp/) and [Perseverance raw images](https://mars.nasa.gov/mars2020/multimedia/raw-images/). [Worldview](https://worldview.earthdata.nasa.gov/) depicts Earth and supplies no Mars hazards. The 2026 challenge page could not be retrieved during this review; alignment follows the supplied brief and approved plan.
+
+Route rankings first compare model blockers, then sampled maximum slope, duration and reserve. An existing rover traverse does not certify a human route. Slope markers [D] connect waypoint elevations; their warning thresholds are simulated [S], and small hazards between samples are unresolved. Radiation dose multiplied by simulated duration is labeled [S]. No spatial radiation measurements or live space-weather alerts are connected; neither crater imagery nor geology is used to invent dose zones. Sunrise/sunset restrict the scenario daylight window but do not establish an optimal radiation-safe departure hour. Missing local weather or hypothetical routes block the planner's assessment.
+
 ## Credits
 - Mission images and data: NASA/JPL-Caltech.
 - HiRISE: NASA/JPL/University of Arizona.
@@ -40,4 +49,4 @@ Walking speed uses Tobler's hiking function halved for the suit; effort grows +3
 - Libraries: Leaflet 1.9.4 (BSD-2), Three.js (MIT). Fonts: Archivo and Atkinson Hyperlegible (SIL Open Font License).
 
 ## Use of AI
-Code and data-processing scripts were written with the assistance of Claude (Anthropic), an AI model, under the team's direction. The project idea, the choice of sites, routes and science targets, and the review of every result were done by the team. No AI-generated images, video or audio are used; all images are NASA's.
+Code and data-processing scripts were written with assistance from Claude (Anthropic) and Codex (OpenAI) under the team's direction. The readiness/report extension and deterministic recommendation rules were developed with Codex. No live AI is used to invent hazards or forecast conditions. The project idea, science choices and review belong to the team. No AI-generated images, video or audio are used; all images are NASA's.

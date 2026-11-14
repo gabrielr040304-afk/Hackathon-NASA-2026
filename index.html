@@ -20,13 +20,13 @@
   <main>
     <section id="quiz" class="quiz" aria-live="polite">
       <ol class="progress" id="progress" aria-label="Steps"></ol>
-      <h1 id="q-title"></h1>
+      <h1 id="q-title">Loading mission planner…</h1>
       <p id="q-lead" class="lead"></p>
       <div id="q-body" class="q-body"></div>
       <aside id="q-why" class="why" hidden></aside>
       <div class="nav">
         <button type="button" id="back" class="btn ghost">Back</button>
-        <button type="button" id="next" class="btn">Next</button>
+        <button type="button" id="next" class="btn" disabled>Next</button>
       </div>
     </section>
 
@@ -38,17 +38,19 @@
           <label id="opacity-wrap" class="opacity">Detail layer opacity
             <input type="range" id="opacity" min="0" max="100" value="100">
           </label>
-          <p id="tile-notice" class="tile-notice" hidden>NASA map layers are unavailable right now. The route is still valid.</p>
+          <p class="map-key">Ochre: proposed walk [H], using rover stops [R] where available. Dashed blue: rover traverse [R]. Orange/red: slope cautions [D], using simulated thresholds [S]. No local radiation hazard layer is available.</p>
+          <p id="tile-notice" class="tile-notice" hidden>NASA map layers are unavailable right now. Route geometry remains visible; inspect terrain before drawing conclusions.</p>
         </div>
       </div>
       <div id="panel" class="panel"></div>
+      <section id="mission-report" class="mission-report" aria-label="Survival and cost report"></section>
     </section>
   </main>
 
   <footer class="foot">
     <p>Labels: <b class="tag t-R">R</b> real (NASA/USGS) <b class="tag t-D">D</b> derived by us from real data <b class="tag t-S">S</b> simulated <b class="tag t-H">H</b> hypothetical.
       Data: Mars Trek (NASA/JPL), USGS Astrogeology, Perseverance and Curiosity (NASA/JPL-Caltech), HiRISE (NASA/JPL/University of Arizona). <a href="SOURCES.md">Sources</a>.
-      Code written with AI assistance (Claude, Anthropic); idea, science choices and review by the team.</p>
+      Educational prototype, not operational guidance. Code written with AI assistance (Claude, Anthropic, and Codex, OpenAI). Recommendations follow explicit rules, not a live AI or space-weather service; review by the team.</p>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>

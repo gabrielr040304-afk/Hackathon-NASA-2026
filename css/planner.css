@@ -43,7 +43,7 @@ main { flex: 1; }
 .field select, .field input[type=time] { font: inherit; background: var(--dusk); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: .45rem .6rem; }
 .field input[type=checkbox] { width: 1.1rem; height: 1.1rem; accent-color: var(--glow); }
 .total { font: 700 2.2rem/1 var(--display); font-stretch: 80%; }
-.why { margin-top: 1.5rem; padding: .9rem 1.1rem; border-left: 3px solid var(--dust); background: rgba(217,163,95,.07); max-width: 62ch; }
+.why { margin-top: 1.5rem; padding: .9rem 1.1rem; border-left: 1px solid var(--dust); background: rgba(217,163,95,.07); max-width: 62ch; }
 .why p { margin: 0; }
 .why cite { display: block; color: var(--mute); font-size: .85rem; font-style: normal; margin-top: .35rem; }
 .nav { display: flex; justify-content: space-between; margin-top: 2rem; }
@@ -74,8 +74,8 @@ main { flex: 1; }
 .stats .grp { grid-column: 1 / -1; font: 700 .95rem var(--display); color: var(--ink); margin-top: .6rem; border-top: 1px solid var(--line); padding-top: .6rem; }
 .alerts { list-style: none; padding: 0; margin: 0 0 1.2rem; display: grid; gap: .5rem; }
 .alerts li { padding: .55rem .75rem; border-radius: 8px; font-size: .95rem; }
-.alerts .proibido { background: rgba(239,111,90,.14); border-left: 3px solid var(--nogo); }
-.alerts .aviso { background: rgba(217,163,95,.1); border-left: 3px solid var(--dust); }
+.alerts .proibido { background: rgba(239,111,90,.14); border-left: 1px solid var(--nogo); }
+.alerts .aviso { background: rgba(217,163,95,.1); border-left: 1px solid var(--dust); }
 .route-pick { margin: 0 0 1rem; display: flex; flex-direction: column; gap: .3rem; color: var(--mute); }
 .route-pick select { font: inherit; background: var(--dusk); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: .45rem; }
 .actions { display: grid; gap: .6rem; }
@@ -101,3 +101,49 @@ main { flex: 1; }
   #map { min-height: 55vh; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* Mission readiness and analysis extend the existing Mars palette and typography. */
+html { color-scheme: dark; scroll-padding-top: 1rem; }
+::selection { color: var(--dusk); background: var(--glow); }
+* { scrollbar-color: var(--line) var(--dusk); }
+a { text-underline-offset: .2em; }
+.wide { grid-column: 1 / -1; }
+.readiness { display: flex; align-items: flex-start; gap: .8rem; padding: 1rem 0; border-bottom: 1px solid var(--line); cursor: pointer; }
+.readiness input { flex: 0 0 auto; width: 1.2rem; height: 1.2rem; margin-top: .25rem; accent-color: var(--glow); }
+.readiness small { display: block; color: var(--mute); margin-top: .3rem; }
+.field input[type=number] { width: 100%; min-width: 0; padding: .6rem; font: inherit; color: var(--ink); background: var(--dusk); border: 1px solid var(--line); border-radius: 6px; }
+.field input:invalid { border-color: var(--nogo); }
+.field select { min-width: 0; width: 100%; }
+.map-key { flex-basis: 100%; margin: 0; max-width: 85ch; }
+.mission-report { grid-column: 1 / -1; padding: clamp(1.2rem, 4vw, 3rem); border-top: 1px solid var(--line); min-width: 0; }
+.report-heading { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.report-heading h2 { font: 700 clamp(1.8rem, 4vw, 2.8rem)/1.1 var(--display); margin: 0; }
+.report-heading p { margin: .5rem 0 0; color: var(--mute); }
+.report-intro { max-width: 75ch; margin: 1.5rem 0 2rem; }
+.report-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1.5rem, 4vw, 4rem); }
+.mission-report h3 { font: 700 1.35rem/1.25 var(--display); margin: 1.8rem 0 .6rem; }
+.mission-report h4 { margin: 1rem 0 .6rem; font-size: 1.1rem; }
+.mission-report p, .mission-report li { max-width: 75ch; }
+.mission-report section > h3:first-child { margin-top: 0; }
+.mission-report ul { padding-left: 1.3rem; }
+.risk-text { color: var(--nogo); }
+.route-analysis, .cost-analysis { border-top: 1px solid var(--line); margin-top: 2rem; padding-top: 2rem; }
+.table-scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; margin-top: 1rem; font-variant-numeric: tabular-nums; }
+caption { text-align: left; color: var(--mute); margin-bottom: .6rem; font-size: .9rem; }
+th, td { text-align: left; padding: .8rem; border-bottom: 1px solid var(--line); }
+thead th { color: var(--mute); font-weight: 400; }
+.current-route { background: var(--panel); }
+.cost-total { font: 700 1.7rem/1.2 var(--display); margin: 1rem 0; }
+.cost-chart { margin: 1.5rem 0; }
+.cost-chart figcaption { color: var(--mute); margin-bottom: 1rem; }
+.chart-row { display: grid; grid-template-columns: 1fr auto; gap: .35rem .8rem; margin: 1rem 0; font-size: .95rem; }
+.chart-row strong { font-variant-numeric: tabular-nums; }
+.bar-track { grid-column: 1 / -1; height: .65rem; background: var(--line); }
+.bar-fill { height: 100%; background: var(--glow); }
+.cost-analysis .report-grid > div:first-child .bar-fill { background: var(--dust); }
+@media (max-width: 700px) {
+  .report-grid { grid-template-columns: 1fr; gap: 1.2rem; }
+  .chart-row { grid-template-columns: 1fr; }
+  th, td { padding: .6rem; }
+}

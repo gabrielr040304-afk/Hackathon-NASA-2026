@@ -5,10 +5,14 @@ Survival HUD for astronauts on exploratory missions to Mars. Overlays data from 
 **Live site:** https://gabrielr040304-afk.github.io/Hackton-NASA-2026/
 
 ## What it does
-1. **Plan:** a 5-step questionnaire (science goal, site, crew, load, day and time) produces a Marswalk plan on a layered map of Mars — route along real rover stops, distance, climb, duration, suit oxygen/water/battery use, radiation dose, and a GO / NO-GO verdict with the reasons.
+1. **Plan:** an 8-step questionnaire covers essential life-support systems, science goal, site, crew, additional equipment, habitat/shielding concept, recorded weather/departure time and an optional scenario budget. The map shows sampled slope cautions, a MODEL GO / NO-GO assessment, resource use and a downloadable survival report. Candidate routes are compared using explicit rules.
 2. **Walk it:** a first-person 3D simulation of Jezero Crater built from the real 1 m HiRISE terrain, with a helmet HUD (in progress).
 
 Every number on screen is labeled **R** (real NASA/USGS data), **D** (derived from real data), **S** (simulated) or **H** (hypothetical). Data sources: [SOURCES.md](SOURCES.md).
+
+This is an educational Mars prototype, not a flight clearance. No local radiation hazard zones, live solar-event forecast, certified shielding rating or survival probability are available. Outdoor dose uses a historical Gale reference and modeled duration. Hypothetical routes or missing local weather block the planner's assessment. The underlying simulator calculation API is preserved.
+
+The cost report separates user-entered hypothetical budgets from a chart of the NASA OIG's historical 2021 SLS/Orion estimate. Unknown costs remain unknown; no actual human Mars mission cost or price per kilometer is asserted. Habitat choice does not automatically change outdoor radiation dose or cost.
 
 ## Run locally
 1. `npm run dev` (or `python -m http.server 8000`, or `php -S localhost:8000`)
@@ -16,8 +20,9 @@ Every number on screen is labeled **R** (real NASA/USGS data), **D** (derived fr
 
 ## Test
 `npm test` (Node's built-in test runner, no packages to install).
+If the environment prevents child-process spawning (`EPERM`), run `node --test --test-isolation=none "tests/*.test.mjs"`.
 
 ## Use of AI
-Code was written with the assistance of Claude (Anthropic) under the team's direction. Idea, science choices and review: the team. See [SOURCES.md](SOURCES.md#use-of-ai).
+Code was written with assistance from Claude (Anthropic) and Codex (OpenAI) under the team's direction. Recommendations use transparent rules; no live AI service is called. Idea, science choices and review: the team. See [SOURCES.md](SOURCES.md#use-of-ai).
 
 Team docs (Portuguese): [PLANO_IMPLEMENTACAO.md](PLANO_IMPLEMENTACAO.md), [PROGRESSO.md](PROGRESSO.md).

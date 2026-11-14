@@ -1,6 +1,8 @@
 # Progresso
 
 ## Próximo passo
+- **Ampliação autorizada pelo Gabriel (14/11): implementada localmente.** Planejamento de Marte com 8 etapas, suporte de vida, conceitos de abrigo/proteção, orçamento hipotético e contexto histórico NASA OIG; relatório para download e comparação de rotas.
+- **Validação visual pendente:** ferramenta de navegador retornou `The browser access host is unavailable`. Servidor local responde HTTP 200; não foi possível percorrer a interface visualmente nesta sessão. Conferir desktop/celular, alteração de rota, NO-GO por item essencial e download do resumo antes da apresentação.
 - **Planejador (Tarefas 5 e 6): pronto**, feito pelo Claude e testado no navegador. Falta o commit do Gabriel.
 - **Colega B:** Tarefa 7 (simulador 3D). Terreno real pronto em `data/jezero/`, com funções de altura e inclinação em `js/sim/terrain.js`.
 - **Conteúdo (Tarefa 4): pronto.** 5 fotos reais com créditos, textos dos alvos e Arcadia no centro do estudo SWIM com altitudes MOLA.
@@ -12,6 +14,8 @@
 
 ## Histórico
 ### 2026-11-14
+- Ampliação do planejador via Codex, autorizada pelo Gabriel: mantido Marte e stack; `config.js` centraliza catálogos, materiais e referências financeiras. `js/mission.js` acrescenta regras puras sem mudar o contrato do simulador. Checklist ausente, partida antes do nascer do sol, rota hipotética ou falta de clima bloqueiam MODEL GO. Marcadores de inclinação entre pontos da rota, comparação fundamentada de candidatos, janela de luz do dia, riscos não modelados e relatório em texto. Sem inventar zonas de radiação, notas de blindagem ou preços de missão marciana; custos reais publicados são identificados como estimativas históricas do SLS/Orion (OIG 2021), separados do orçamento H do usuário. Documentação em ADR-002 e SOURCES.md.
+- Verificação: `npm test` aprovado (20 testes), após permitir execução fora da restrição de criação de processos; alternativa `node --test --test-isolation=none "tests/*.test.mjs"` também aprovada. Sintaxe JS conferida. A inspeção mecânica de design apontou bordas antigas, reduzidas para 1 px. Navegador indisponível para inspeção visual; nenhuma publicação/push executada.
 - Feito: plano aprovado; Tarefas 0–3 concluídas.
   - Base do projeto.
   - Terreno 3D de Jezero: relevo HiRISE de 1 m, 2 × 2 km, conferido contra a altitude do Perseverance.
