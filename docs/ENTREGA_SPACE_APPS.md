@@ -22,7 +22,7 @@ https://gabrielr040304-afk.github.io/Hackton-NASA-2026/
 ## Detailed Project Description
 **What it does.** NASA maps such as Mars Trek are built for regional and global views, but an astronaut on a Marswalk needs a hyper-local plan: where to step, how steep it gets, how long it takes, and whether the suit and the daylight will last. Our tool answers those questions in two steps.
 
-1. **Plan.** A five-step questionnaire (science goal → site → crew and rover support → equipment load → Martian day and departure time) produces a route on a layered map. The result panel shows distance, total climb, steepest slope, science stops, total duration, return time vs. measured sunset, suit oxygen/water/battery use and reserve, radiation dose and share of NASA's 600 mSv career limit, and a GO / NO-GO verdict. Safety rules flag solo walks (NASA EVAs are done in pairs), slopes above 15° (warning) and 25° (no-go), a suit reserve under 30%, and returns later than one hour before sunset. Each target opens a real rover photo of what the crew will see when they arrive.
+1. **Plan.** A seven-step questionnaire starts with the purpose of the exploration (science goal → site → crew size → mobility → science gear → safety margins → Martian day and time). At every step the tool recommends the option that fits the purpose and shows each option's benefits, drawbacks, and its effect on time and approximate cost. Then it builds the plan: a route on a layered map, a minute-by-minute walk timeline with the oxygen left at each stop, a cost and time comparison against alternatives (rover, crew size, extra life support), a risk analysis with recommended actions, and live space weather from NASA's DONKI API. The result panel shows distance, total climb, steepest slope, science stops, total duration, return time vs. measured sunset, suit oxygen/water/battery use and reserve, radiation dose and share of NASA's 600 mSv career limit, and a GO / NO-GO verdict. Safety rules flag solo walks (NASA EVAs are done in pairs), slopes above 15° (warning) and 25° (no-go), a suit reserve under 30%, and returns later than one hour before sunset. Each target opens a real rover photo of what the crew will see when they arrive.
 2. **Walk it.** A first-person 3D simulation of a 2 × 2 km area around Cheyava Falls in Jezero Crater, built from the real 1 m HiRISE terrain model, with a helmet HUD showing vitals, suit consumables, slope under the feet, air temperature, pressure and radiation. [atualizar quando o 3D estiver pronto]
 
 **Sites and science.**
@@ -49,6 +49,8 @@ Yes. We used Claude (Anthropic), a large language model, as a coding assistant t
 - Mars Science Laboratory Curiosity: REMS daily weather, traverse and waypoints, RAD surface dose (Hassler et al., Science 343, 2014), NASA images PIA26559 and PIA26695 (boxwork).
 - NASA SWIM (Subsurface Water Ice Mapping) project: Arcadia Planitia pilot study.
 - NASA-STD-3001: 600 mSv career radiation limit.
+- NASA DONKI (Space Weather Database Of Notifications, Knowledge, Information): coronal mass ejections, solar flares and solar energetic particle events, live via api.nasa.gov.
+- Cost references: NASA ISS crew-time price; Mars 2020 mission cost and rover mass; Apollo Lunar Roving Vehicle cost and mass.
 
 ## Space Agency Partner Data and Other References
 - Centro de Astrobiología (CAB, Spain): REMS weather data distribution.

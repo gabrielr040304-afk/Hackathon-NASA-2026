@@ -39,23 +39,58 @@ export function walkSpeedKmh(slopeDeg, loadKg, rover) {
   return (tobler * C.SUIT_SPEED_FACTOR) / effort(0, loadKg);
 }
 
-export function planEva(site, route, inputs, weatherSol) {
-  const { crew, rover, loadKg, start } = inputs;
-  const stats = routeStats([site.habitat, ...route.waypoints, site.habitat]);
-  let walk_h = 0, effortHours = 0;
-  for (const s of stats.segments) {
-    const h = s.distance_m / 1000 / walkSpeedKmh(s.slope_deg, loadKg, rover);
-    const riding = rover && Math.abs(s.slope_deg) <= C.ROVER_MAX_SLOPE_DEG; // no rover o esforço é de repouso
-    walk_h += h;
-    effortHours += h * (riding ? 1 : effort(s.slope_deg, loadKg));
-  }
-  const targets = route.waypoints.filter((w) => w.target).length;
-  const science_h = (targets * C.SCIENCE_MIN_PER_TARGET) / 60;
-  const total_h = walk_h + science_h;
-  effortHours += science_h * effort(0, loadKg);
+// Massa total levada (equipamentos + pacote extra de suporte de vida) e capacidade do traje.
+const totalLoad = (inputs) => inputs.loadKg + (inputs.extraO2 ? C.EXTRA_O2_KG : 0);
+const suitHours = (inputs) => C.SUIT_CAPACITY_H + (inputs.extraO2 ? C.EXTRA_O2_H : 0);
 
-  const metabolic = (effortHours / C.SUIT_CAPACITY_H) * 100;
-  const used_pct = { o2: metabolic, water: metabolic, battery: (total_h / C.SUIT_CAPACITY_H) * 100 };
+// Caminhada como sequência de eventos (fonte única para planEva e evaTimeline).
+function legs(site, route, inputs) {
+  const load = totalLoad(inputs), rover = inputs.rover;
+  const pts = [site.habitat, ...route.waypoints, site.habitat];
+  const stats = routeStats(pts);
+  const events = [];
+  let t = 0, eff = 0, walk_h = 0, science_h = 0;
+  stats.segments.forEach((s, i) => {
+    const h = s.distance_m / 1000 / walkSpeedKmh(s.slope_deg, load, rover);
+    const riding = rover && Math.abs(s.slope_deg) <= C.ROVER_MAX_SLOPE_DEG; // no rover o esforço é de repouso
+    t += h; walk_h += h; eff += h * (riding ? 1 : effort(s.slope_deg, load));
+    const wp = pts[i + 1];
+    if (wp.target) {
+      events.push({ kind: 'target', name: wp.target.name, t_h: t, eff });
+      const sh = C.SCIENCE_MIN_PER_TARGET / 60;
+      t += sh; science_h += sh; eff += sh * effort(0, load);
+    }
+  });
+  events.push({ kind: 'return', name: 'Base', t_h: t, eff });
+  return { stats, events, walk_h, science_h, total_h: t, effortHours: eff };
+}
+
+export function evaTimeline(site, route, inputs) {
+  const { events } = legs(site, route, inputs);
+  const cap = suitHours(inputs), s0 = toMin(inputs.start);
+  const row = (e) => ({ ...e, time: toHHMM(s0 + e.t_h * 60), o2_left_pct: Math.max(0, 100 - (e.eff / cap) * 100) });
+  return [row({ kind: 'depart', name: 'Base', t_h: 0, eff: 0 }), ...events.map(row)];
+}
+
+export function recommendMobility(stats) {
+  return stats.distance_m / 1000 > C.ROVER_RECOMMEND_KM && stats.max_slope_deg <= C.ROVER_MAX_SLOPE_DEG ? 'rover' : 'foot';
+}
+
+// Custo por caminhada (hora de tripulação) e custos únicos (levar equipamento e rover até Marte).
+export function evaCost(plan, inputs) {
+  const crew_time_usd = inputs.crew * plan.total_h * C.CREW_HOUR_USD;
+  const gear_delivery_usd = totalLoad(inputs) * C.USD_PER_KG_TO_MARS;
+  const rover_usd = inputs.rover ? C.ROVER_UNIT_USD + C.ROVER_MASS_KG * C.USD_PER_KG_TO_MARS : 0;
+  return { crew_time_usd, gear_delivery_usd, rover_usd, one_time_usd: gear_delivery_usd + rover_usd };
+}
+
+export function planEva(site, route, inputs, weatherSol) {
+  const { crew, start } = inputs;
+  const { stats, walk_h, science_h, total_h, effortHours } = legs(site, route, inputs);
+  const cap = suitHours(inputs);
+
+  const metabolic = (effortHours / cap) * 100;
+  const used_pct = { o2: metabolic, water: metabolic, battery: (total_h / cap) * 100 };
   const reserve_pct = Math.max(0, 100 - Math.max(used_pct.o2, used_pct.water, used_pct.battery));
   const dose_mSv = (C.RAD_MSV_PER_DAY * total_h) / 24;
   const endMin = toMin(start) + total_h * 60;
@@ -95,4 +130,14 @@ export function airTempAt(weatherSol, hhmm) {
   if (t < rise) t += 1440;
   if (t <= peak) return lo + ((hi - lo) * (t - rise)) / (peak - rise);
   return hi - ((hi - lo) * (t - peak)) / (rise + 1440 - peak);
+}
+
+// Clima espacial (eventos DONKI medidos perto da Terra; Marte pode estar do outro lado do Sol).
+export function spaceWeatherRisk(events, nowIso, days = C.DONKI_DAYS) {
+  const now = Date.parse(nowIso), recent = events.filter((e) => e.time && now - Date.parse(e.time) <= days * 864e5 && Date.parse(e.time) <= now);
+  const sep = recent.filter((e) => e.type === 'SEP').length;
+  const xflr = recent.filter((e) => e.type === 'FLR' && /^X/.test(e.class ?? '')).length;
+  const fastest = Math.max(0, ...recent.filter((e) => e.type === 'CME').map((e) => e.speed_kms ?? 0));
+  const level = sep || xflr ? 'high' : fastest >= C.CME_FAST_KMS ? 'watch' : 'low';
+  return { level, recent: recent.length, sep, xflr, fastest_kms: fastest };
 }

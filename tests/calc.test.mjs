@@ -122,3 +122,56 @@ test('sites.json: todas as rotas calculam sem NaN; Jezero e Gale dão GO com ent
     }
   }
 });
+
+// ---------- planejamento detalhado ----------
+import { evaTimeline, evaCost, recommendMobility } from '../js/calc.js';
+import * as CFG from '../js/config.js';
+
+test('evaTimeline: começa na saída, passa pelos alvos em ordem e termina na hora de volta do plano', () => {
+  const { site, route } = fakeSite(1);
+  const p = planEva(site, route, inputs(), weather());
+  const tl = evaTimeline(site, route, inputs());
+  assert.equal(tl[0].kind, 'depart');
+  assert.equal(tl[0].time, '09:00');
+  assert.equal(tl.at(-1).kind, 'return');
+  assert.equal(tl.at(-1).time, p.end_time);
+  assert.ok(tl.some((e) => e.kind === 'target'));
+  for (let i = 1; i < tl.length; i++) assert.ok(tl[i].t_h >= tl[i - 1].t_h);
+  for (let i = 1; i < tl.length; i++) assert.ok(tl[i].o2_left_pct <= tl[i - 1].o2_left_pct);
+});
+
+test('planEva: oxigênio extra aumenta a reserva e o tempo de traje', () => {
+  const { site, route } = fakeSite(5);
+  const a = planEva(site, route, inputs(), weather());
+  const b = planEva(site, route, inputs({ extraO2: true }), weather());
+  assert.ok(b.reserve_pct > a.reserve_pct);
+});
+
+test('evaCost: hora de tripulação = astronautas × horas × preço; entrega = kg × preço por kg', () => {
+  const { site, route } = fakeSite(1);
+  const inp = inputs({ crew: 3, loadKg: 10 });
+  const p = planEva(site, route, inp, weather());
+  const c = evaCost(p, inp);
+  assert.equal(c.crew_time_usd, 3 * p.total_h * CFG.CREW_HOUR_USD);
+  assert.equal(c.gear_delivery_usd, 10 * CFG.USD_PER_KG_TO_MARS);
+  assert.equal(c.rover_usd, 0);
+  const r = evaCost(p, { ...inp, rover: true });
+  assert.equal(r.rover_usd, CFG.ROVER_UNIT_USD + CFG.ROVER_MASS_KG * CFG.USD_PER_KG_TO_MARS);
+});
+
+test('recommendMobility: rover só quando a rota é longa e sem encostas acima do limite do rover', () => {
+  assert.equal(recommendMobility({ distance_m: 2000, max_slope_deg: 5 }), 'foot');
+  assert.equal(recommendMobility({ distance_m: 6000, max_slope_deg: 5 }), 'rover');
+  assert.equal(recommendMobility({ distance_m: 6000, max_slope_deg: 20 }), 'foot');
+});
+
+import { spaceWeatherRisk } from '../js/calc.js';
+test('spaceWeatherRisk: SEP ou flare classe X recentes = alto; CME rápida = atenção; senão baixo', () => {
+  const now = '2026-11-14T12:00Z';
+  assert.equal(spaceWeatherRisk([], now).level, 'low');
+  assert.equal(spaceWeatherRisk([{ type: 'CME', time: '2026-11-13T00:00Z', speed_kms: 400 }], now).level, 'low');
+  assert.equal(spaceWeatherRisk([{ type: 'CME', time: '2026-11-13T00:00Z', speed_kms: 1500 }], now).level, 'watch');
+  assert.equal(spaceWeatherRisk([{ type: 'FLR', time: '2026-11-13T00:00Z', class: 'X1.2' }], now).level, 'high');
+  assert.equal(spaceWeatherRisk([{ type: 'SEP', time: '2026-11-12T00:00Z' }], now).level, 'high');
+  assert.equal(spaceWeatherRisk([{ type: 'SEP', time: '2026-10-01T00:00Z' }], now).level, 'low'); // fora da janela de 7 dias
+});

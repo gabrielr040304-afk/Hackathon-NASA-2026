@@ -21,6 +21,10 @@ Every value on screen carries one of these labels. We never present a derived or
 | Arcadia route | H (route) / R (elevations) | Center of the SWIM pilot-study map in Arcadia, 196° E, 47.25° N (SWIM/PSI, LPSC 2019, abstract 2069); elevations from MOLA 463 m (USGS) | Hypothetical base and targets within 1.5 km; elevations read from the remote GeoTIFF — `tools/mola_elev.py` |
 | Surface radiation dose | R (Gale) / reference elsewhere | 0.64 mSv/day, Curiosity RAD (Hassler et al., *Science* 343, 2014) | Dose = rate × walk hours / 24 |
 | Career radiation limit | R | 600 mSv, NASA-STD-3001 | Shown as a percentage |
+| Space weather (CME, flares, solar particle events) | R | NASA DONKI API (`api.nasa.gov/DONKI`), live, last 7 days; saved copy in `data/spaceweather.json` as fallback (`tools/prep_spaceweather.py`) | Risk level: any solar particle event or X-class flare = storm; CME ≥ 1000 km/s = watch. Events are measured near Earth |
+| Crew-time cost | R (price) / D (per walk) | NASA ISS commercial pricing: $130,000 per crew hour | Crew × walk hours × price |
+| Cost to land 1 kg on Mars | D | Mars 2020: ~$2.7 billion mission for a 1,025 kg rover → ~$2.6M/kg | Gear mass × price, one-time |
+| Rover cost | D | Apollo Lunar Roving Vehicle: $38M for 4 units (1971), ~$70M each today; 210 kg | Unit cost + landing its mass, one-time |
 | Cheyava Falls photo | R | NASA PIA26401, "Mastcam-Z Views the 'Cheyava Falls' Workspace" — NASA/JPL-Caltech/ASU/MSSS | Resized to 1200 px |
 | Neretva Vallis photo | R | Perseverance, sol 1168, NLF_1168_0770638338_771ECM_N0525032NCAM02168_04_195J (Navcam) — NASA/JPL-Caltech | 800 px raw-gallery version |
 | West slope photo | R | Perseverance, sol 1264, NLF_1264_0779152935_617ECM_N0590330NCAM02264_01_195J (Navcam) — NASA/JPL-Caltech | 800 px raw-gallery version |

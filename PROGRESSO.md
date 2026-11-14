@@ -22,3 +22,4 @@
   - Linhas retas entre paradas distantes cruzavam encostas de 31°; as rotas agora seguem as paradas do rover.
 - Planejador: questionário em 5 passos, mapa com 5 camadas do Mars Trek + detalhe HiRISE + trajeto do rover, painel com GO/NÃO RECOMENDADO e etiquetas R/D/S/H, transparência, legenda, aviso de camada fora do ar e layout de celular.
 - Site traduzido para o inglês, SOURCES.md, declaração de uso de IA e textos da entrega prontos.
+- Planejador detalhado (ramo develop): questionário de 7 passos começando pelo propósito, com recomendações, prós e contras e custos por opção; resultado com cronograma, comparação de custo e tempo, riscos e recomendações e clima espacial ao vivo (NASA DONKI).
