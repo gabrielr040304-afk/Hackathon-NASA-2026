@@ -1,0 +1,19 @@
+# Segredos
+.env
+.env.*
+!.env.example
+
+# Downloads grandes e arquivos gerados
+tools/cache/
+__pycache__/
+node_modules/
+.superpowers/
+
+# Configurações pessoais do Claude
+.claude/settings.local.json
+CLAUDE.local.md
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.log
