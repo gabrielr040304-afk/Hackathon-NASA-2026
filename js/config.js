@@ -19,6 +19,11 @@ export const HR_PER_EFFORT = 45;             // [S]
 export const TIME_SCALE = 30;                // demonstração: 1 s real = 30 s simulados (ajustável)
 export const ARRIVAL_RADIUS_M = 15;
 export const PEAK_TEMP_HOUR = 14;            // [S] hora da temperatura máxima do dia
+export const HAZARD_CELL_PIXELS = 16; // Display aggregation only, ~63 m for the bundled Jezero DTM.
+export const OPTIONAL_PREPARATION = [
+  { id: 'rehearsal', name: 'Additional field-science rehearsal', millionUSD: 3, why: 'Rehearse sample handling and documentation before departure. Additional training; not required for the checklist level.' },
+  { id: 'archive', name: 'Redundant science-data archive', millionUSD: 2, why: 'Keep an extra copy of field observations for science review. Does not improve suit endurance or reduce radiation.' },
+]; // [H] optional project enhancements, illustrative per-person costs.
 // Additional project recommendations [H], informed by NASA maintenance/contingency research.
 export const PREPARATION_EXTRAS = [
   { id: 'backup', name: 'Independent emergency oxygen check', group: 'Contingency and recovery', millionUSD: 15, why: 'Verify the backup supply and abort procedure independently of the primary oxygen system.', source: 'https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-002-eclss.pdf' },

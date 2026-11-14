@@ -1,6 +1,8 @@
 // Planner: mission readiness, science, resources, shelter, daylight and cost context.
-import { RESERVE_PCT, DAYLIGHT_MARGIN_MIN, EQUIPMENT, ESSENTIALS, SHELTERS, BUDGET_CATEGORIES, HISTORICAL_LAUNCH_COST, SOURCE_LINKS, RAD_MSV_PER_DAY, CAREER_LIMIT_MSV, LOAD_FACTOR_PER_KG, COST_MODEL, PREPARATION_EXTRAS, RADIATION_EVIDENCE_URL } from './config.js';
+import { RESERVE_PCT, DAYLIGHT_MARGIN_MIN, EQUIPMENT, ESSENTIALS, SHELTERS, BUDGET_CATEGORIES, HISTORICAL_LAUNCH_COST, SOURCE_LINKS, RAD_MSV_PER_DAY, CAREER_LIMIT_MSV, LOAD_FACTOR_PER_KG, COST_MODEL, PREPARATION_EXTRAS, OPTIONAL_PREPARATION, RADIATION_EVIDENCE_URL } from './config.js';
 import { assessMission, compareRoutes, daylightWindow, clockTime, terrainCautions, preparationLevel } from './mission.js';
+import { terrainHazards } from './hazards.js';
+import { parseTerrain } from './sim/terrain.js';
 import { baseLayers, localLayer } from './layers.js';
 
 const $ = (id) => document.getElementById(id);
@@ -18,7 +20,7 @@ const OBJECTIVES = [
   { id: 'gelo', name: 'Ice for a human base', text: 'Find shallow water ice to drink, breathe and make fuel.',
     why: 'Ice a few meters below the surface can become water, oxygen and rocket fuel, which makes a human base feasible.', src: 'SWIM project (NASA)' },
 ];
-const state = { step: 0, objective: null, siteId: null, crew: 4, rover: false, equipment: new Set(['amostrador', 'camera', 'medico']), essentials: new Set(), extras: new Set(), shelter: 'polymer', propulsion: 'chemical', roles: new Set(), touched: false, sol: null, start: '09:00' };
+const state = { step: 0, objective: null, siteId: null, crew: 4, rover: false, equipment: new Set(['amostrador', 'camera', 'medico']), essentials: new Set(), extras: new Set(), optional: new Set(), shelter: 'polymer', propulsion: 'chemical', roles: new Set(), touched: false, sol: null, start: '09:00' };
 let sites = [];
 const weatherCache = {};
 
@@ -69,7 +71,7 @@ const STEPS = [
         more.innerHTML = `<summary aria-label="More about ${item.name}">+ Learn more</summary><p>${item.why}</p><a href="${SOURCE_LINKS.suit}" target="_blank" rel="noopener">NASA: spacesuit systems</a><p>Price is a hypothetical project assumption, per astronaut. It is not a NASA quotation.</p>`;
         const wrap = document.createElement('div'); wrap.className = 'item-wrap'; wrap.append(label, more); body.append(wrap);
       }
-      const count = document.createElement('p'); count.id = 'readiness-count'; count.className = 'wide'; count.innerHTML = preparationCostHTML(); body.append(count);
+      const count = document.createElement('p'); count.id = 'readiness-count'; count.className = 'wide'; count.innerHTML = preparationCostHTML();
       for (const group of [...new Set(PREPARATION_EXTRAS.map((item) => item.group))]) {
         const section = document.createElement('section'); section.className = 'preparation-category wide';
         section.innerHTML = `<h2>${group}</h2><p>Additional recommendations [H]. These procedures strengthen preparation; they do not extend modeled suit endurance.</p>`;
@@ -80,6 +82,14 @@ const STEPS = [
         }
         body.append(section);
       }
+      const optional = document.createElement('section'); optional.className = 'preparation-category wide';
+      optional.innerHTML = '<h2>Optional additions</h2><p>For additional science preparation. These do not change the minimum or recommended checklist level.</p>';
+      for (const item of OPTIONAL_PREPARATION) {
+        const row = document.createElement('div'); row.className = 'extra-row';
+        row.innerHTML = `<label><input type="checkbox" ${state.optional.has(item.id) ? 'checked' : ''}><span><b>${item.name}</b><small>${item.why}</small></span><strong class="money">$${item.millionUSD}M [H]</strong></label>`;
+        row.querySelector('input').onchange = (e) => { e.target.checked ? state.optional.add(item.id) : state.optional.delete(item.id); updatePreparationCost(); }; optional.append(row);
+      }
+      body.append(optional, count);
       why(`Based on <a href="${SOURCE_LINKS.suit}" target="_blank" rel="noopener">NASA spacesuit systems</a>. Confirmations describe your scenario; the app cannot verify hardware, health, rescue capability or live space weather.`);
     },
   },
@@ -211,6 +221,7 @@ async function render() {
   $('progress').innerHTML = STEPS.map((_, i) => `<li class="${i <= state.step ? 'done' : ''}" aria-current="${i === state.step ? 'step' : 'false'}"></li>`).join('');
   $('q-title').textContent = step.title;
   $('q-lead').textContent = step.lead;
+  $('readiness-count')?.remove();
   const body = $('q-body'); body.replaceChildren(); body.classList.remove('preparation-layout');
   try { await step.render(body); } catch (e) { $('q-lead').textContent = `Could not load this step. Go back and retry. ${e.message}`; return; }
   if (version !== renderVersion) return;
@@ -220,7 +231,7 @@ async function render() {
   updateRisk();
 }
 
-function extraCost() { return PREPARATION_EXTRAS.filter((item) => state.extras.has(item.id)).reduce((sum, item) => sum + item.millionUSD, 0) * state.crew; }
+function extraCost() { return (PREPARATION_EXTRAS.filter((item) => state.extras.has(item.id)).reduce((sum, item) => sum + item.millionUSD, 0) + OPTIONAL_PREPARATION.filter((item) => state.optional.has(item.id)).reduce((sum, item) => sum + item.millionUSD, 0)) * state.crew; }
 function preparationCostHTML() { const total = [...state.essentials].reduce((sum, id) => sum + COST_MODEL.essentials[id], 0) * state.crew + extraCost(); return `<span>${state.essentials.size} / ${ESSENTIALS.length} essential systems confirmed [H]</span><span>Selected preparation investment</span><strong class="money">$${fmt(total)}M <small>[H]</small></strong><small>For ${state.crew} travelers; illustrative assumptions.</small>`; }
 function updatePreparationCost() { $('readiness-count').innerHTML = preparationCostHTML(); }
 function updateRisk() {
@@ -235,6 +246,7 @@ function updateRisk() {
   const siteNote = state.siteId === 'arcadia' ? 'Arcadia has no local weather station or rover traverse in this dataset. Model clearance remains blocked.' : 'Radiation remains an unresolved environmental risk; colors describe preparation, not a radiation forecast.';
   const shelterNote = state.shelter === 'shell' ? 'Metal shell selected: added radiation shielding needs review.' : state.shelter === 'regolith' ? 'Regolith cover selected: construction and load-bearing verification are needed.' : 'Hydrogen-rich shielding selected: thickness and geometry still require validation.';
   risk.innerHTML = `<b>${label} [H]</b><p>${status.level === 'red' ? 'Still required: ' + status.missing.map((item) => item.name).join(', ') : status.level === 'yellow' ? 'These systems cover the minimum project checklist. This does not establish a safe Mars journey.' : 'Your scenario includes the recommended project preparations. Operational approval is still required.'}</p><ul>${status.improvements.map((text) => `<li>${text}</li>`).join('')}</ul><p>${shelterNote} ${siteNote}</p>${state.step > 1 && status.missing.length ? '<button type="button" id="review-essentials" class="btn ghost">Review essential systems</button>' : ''}`;
+  if ($('readiness-count')) risk.after($('readiness-count'));
   $('review-essentials')?.addEventListener('click', () => { state.step = 1; render(); });
 }
 
@@ -280,6 +292,19 @@ let siteLayers = [];
 async function drawSite(s) {
   siteLayers.forEach((l) => { map.removeLayer(l); map._ctl.removeLayer(l); });
   siteLayers = [];
+  if (s.id === 'jezero') {
+    try {
+      const meta = await getJSON('data/jezero/terrain.json');
+      const response = await fetch('data/jezero/terrain.bin');
+      if (!response.ok) throw new Error('Terrain unavailable');
+      const cells = terrainHazards(parseTerrain(meta, await response.arrayBuffer()));
+      if (!map.getPane('hazards')) { map.createPane('hazards'); map.getPane('hazards').style.zIndex = 450; }
+      const hazards = L.layerGroup(cells.map((cell) => L.rectangle(cell.bounds, {
+        pane: 'hazards', color: cell.blocked ? '#ff5d63' : '#ffc469', weight: 1, fillOpacity: .14,
+      }).bindPopup(`<b>${cell.blocked ? 'Avoid steep terrain in this cell' : 'Terrain caution'}</b><p>Maximum sampled slope: ${fmt(cell.slope, 1)} degrees [D]. Source: USGS HiRISE terrain, resampled to approximately 4 m.</p><p>Project slope thresholds [S]. This square contains steep samples; not every point is steep. No radiation classification is inferred.</p>`)));
+      hazards.addTo(map); map._ctl.addOverlay(hazards, 'Jezero terrain cautions [D/S]'); siteLayers.push(hazards);
+    } catch { $('tile-notice').hidden = false; $('tile-notice').textContent = 'Terrain caution layer unavailable. Unmarked areas must not be assumed safe.'; }
+  }
   const local = localLayer(s.localLayer);
   map._local = local?.layer;
   $('opacity-wrap').hidden = !local;

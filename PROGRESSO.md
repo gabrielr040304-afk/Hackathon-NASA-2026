@@ -32,3 +32,6 @@
 
 ### Revis?o de categorias e investimento
 - Prepara??o com oito essenciais e tr?s recomenda??es adicionais em categorias (conting?ncia/manuten??o e poeira). Cores desta etapa independem de pap?is da equipe definidos depois. Valores grandes em verde, total separado da contagem; custos extras inclu?dos na estimativa e relat?rio. Removidas fotos dos detalhes dos equipamentos. 21 testes aprovados; sintaxe e diff conferidos. Ferramenta de navegador ainda indispon?vel para inspe??o visual.
+
+### Extras opcionais e cautelas no mapa
+- Total financeiro movido para baixo das op??es e avisos de prepara??o. Extras opcionais de ci?ncia/arquivo entram no custo, sem alterar checklist recomendado. Jezero continua com duas rotas selecionadas. Nova camada com c?lulas de cautela derivadas do relevo real HiRISE: 782 c?lulas sinalizadas, 237 acima do limiar simulado de 25 graus, m?ximo amostrado ~48,3 graus. Fonte e limita??es nos popups; n?o ? mapa de radia??o. 23 testes aprovados. Navegador automatizado indispon?vel para inspe??o visual.

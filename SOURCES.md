@@ -68,3 +68,9 @@ Checklist colors are project rules [H]: red means at least one essential system 
 ## Preparation page recommendations
 
 The preparation page evaluates its own selectable systems, separately from later crew roles. All eight essential confirmations yield yellow; adding the three recommended contingency/maintenance procedures yields green. These are hypothetical checklist levels, not certified mission sufficiency. Additional procedure costs are illustrative per-person assumptions and are included in the total. NASA references: [ECLSS technical brief](https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-002-eclss.pdf), [hardware maintenance and dust considerations](https://www.nasa.gov/reference/9-0-hardware-and-equipment-vol-2/). Checks do not extend modeled oxygen endurance.
+
+## Terrain caution cells and optional additions
+
+Jezero terrain squares use the bundled USGS HiRISE height grid (~3.9 m resampling). Central differences derive gradients [D]; display cells aggregate 16 by 16 samples (~63 m). The maximum sampled slope is compared to project thresholds: over 15 degrees caution, over 25 degrees avoid steep terrain [S]. A cell contains steep samples; it is not a surveyed exclusion polygon and may include walkable points. Unknown cells are not classified. No radiation class is inferred. Coverage is limited to the bundled 2 km crop.
+
+Optional science rehearsal and redundant data archiving [H] have illustrative costs and do not change preparation readiness, radiation exposure or suit capacity. Jezero currently supplies two curated route scenarios, not an exhaustive inventory of trails.
