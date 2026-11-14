@@ -54,3 +54,7 @@ Code and data-processing scripts were written with assistance from Claude (Anthr
 ## Illustrative automatic mission budget
 
 The project assigns hypothetical costs [H] in `js/config.js` to each selected life-support system, equipment item, habitat, rover and operations. Suit systems and equipment are multiplied by crew count; a 20% hypothetical contingency is added to the subtotal. The subtotal also includes one historical OIG launch-system component sum [D]. This is a teaching scenario, not an actual or NASA-estimated Mars mission price. It does not independently price Mars landing, transit or return. Individual assumptions have no NASA cost source.
+
+## Crew and propulsion concepts
+
+NASA?s [2025 architecture update](https://www.nasa.gov/wp-content/uploads/2025/12/2025-architecture-update-for-publication.pdf) targets at least four crew on Mars, and considers six. NASA studies [nuclear thermal propulsion](https://www.nasa.gov/space-technology-mission-directorate/tdm/space-nuclear-propulsion/); neither the propulsion selection nor support rover is a validated human Mars vehicle. The selection does not alter route duration or mission cost.

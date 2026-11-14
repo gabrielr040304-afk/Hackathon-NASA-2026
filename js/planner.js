@@ -18,7 +18,7 @@ const OBJECTIVES = [
   { id: 'gelo', name: 'Ice for a human base', text: 'Find shallow water ice to drink, breathe and make fuel.',
     why: 'Ice a few meters below the surface can become water, oxygen and rocket fuel, which makes a human base feasible.', src: 'SWIM project (NASA)' },
 ];
-const state = { step: 0, objective: null, siteId: null, crew: 2, rover: false, equipment: new Set(['amostrador', 'camera', 'medico']), essentials: new Set(), shelter: 'polymer', sol: null, start: '09:00' };
+const state = { step: 0, objective: null, siteId: null, crew: 4, rover: false, equipment: new Set(['amostrador', 'camera', 'medico']), essentials: new Set(), shelter: 'polymer', propulsion: 'chemical', sol: null, start: '09:00' };
 let sites = [];
 const weatherCache = {};
 
@@ -71,7 +71,7 @@ const STEPS = [
     ready: () => state.objective,
     render(body) {
       for (const o of OBJECTIVES) body.append(option({ title: o.name, text: o.text, details: o.why, pressed: state.objective === o.id,
-        onClick: () => { state.objective = o.id; state.siteId = sites.find((s) => s.objectives.includes(o.id))?.id ?? state.siteId; render(); } }));
+        onClick: () => { state.objective = o.id;  render(); } }));
       const o = OBJECTIVES.find((x) => x.id === state.objective);
       why(o?.why, o?.src);
     },
@@ -86,7 +86,7 @@ const STEPS = [
         arcadia: ['No rover has been here. Hypothetical route.', 'It is one of the plains considered for a human base because of its shallow ice. The trade-off: no ground photos and no measured weather.'],
       };
       for (const s of sites) body.append(option({ title: s.name, text: `${s.mission}. ${notes[s.id]?.[0] ?? ''}`,
-        hint: s.objectives.includes(state.objective) ? 'Matches your goal' : '', details: notes[s.id]?.[1], pressed: state.siteId === s.id,
+        hint: s.objectives?.includes(state.objective) ? 'Matches your goal' : '', details: notes[s.id]?.[1], pressed: state.siteId === s.id,
         onClick: () => { state.siteId = s.id; state.sol = null; render(); } }));
       why(notes[state.siteId]?.[1]);
     },
@@ -95,11 +95,11 @@ const STEPS = [
     title: 'Who goes, and how?', lead: 'A pair or alone, on foot or with a support rover.',
     ready: () => true,
     render(body) {
-      body.append(
-        option({ title: 'Two astronauts', text: 'Each one can help the other if something goes wrong.', pressed: state.crew === 2, onClick: () => { state.crew = 2; render(); } }),
-        option({ title: 'One astronaut', text: 'Quicker to organize, riskier.', pressed: state.crew === 1, onClick: () => { state.crew = 1; render(); } }),
-        option({ title: 'With a support rover', text: 'Carries the crew on stretches up to 15° of slope.', pressed: state.rover, onClick: () => { state.rover = !state.rover; render(); } }),
-      );
+      const field = document.createElement('div'); field.className = 'field';
+      field.innerHTML = `<label for="crew-count">Mission crew size [H]</label><input id="crew-count" type="number" min="1" max="50" value="${state.crew}"><small>NASA's 2025 Mars architecture targets at least four surface crew, with six considered for added capability. <a href="https://www.nasa.gov/wp-content/uploads/2025/12/2025-architecture-update-for-publication.pdf">NASA architecture update</a></small>`;
+      field.querySelector('input').onchange = (e) => { state.crew = Math.max(1, Math.min(50, Number(e.target.value) || 1)); e.target.value = state.crew; };
+      body.append(field, option({ title: 'Support rover', text: 'Hypothetical crewed surface vehicle; rover mobility uses a simulated model.', pressed: state.rover, onClick: () => { state.rover = !state.rover; render(); } }));
+      body.append(option({ title: 'Chemical propulsion', text: 'Established rocket technology; no crewed Mars mission has flown.', pressed: state.propulsion === 'chemical', onClick: () => { state.propulsion = 'chemical'; render(); } }), option({ title: 'Nuclear thermal propulsion', text: 'Research technology studied by NASA; not an operational human Mars transport.', pressed: state.propulsion === 'nuclear', onClick: () => { state.propulsion = 'nuclear'; render(); } }));
       why('A partner provides assistance during an emergency. Support-rover speed and terrain limits are simulated assumptions; this is not a tested Mars crew vehicle.', 'NASA spacesuit guidance; project mobility model [S]');
     },
   },
@@ -110,7 +110,7 @@ const STEPS = [
       const f = document.createElement('div'); f.className = 'field';
       for (const e of EQUIPMENT) {
         const l = document.createElement('label');
-        l.innerHTML = `<input type="checkbox" ${state.equipment.has(e.id) ? 'checked' : ''}> ${e.name} <small>(${e.kg} kg) ${tag('S')} ? $${COST_MODEL.equipment[e.id]}M ${tag('H')}</small>`;
+        l.innerHTML = `<input type="checkbox" ${state.equipment.has(e.id) ? 'checked' : ''}> ${e.name} <small>(${e.kg} kg) ${tag('S')} - $${COST_MODEL.equipment[e.id]}M ${tag('H')}</small>`;
         l.querySelector('input').onchange = (ev) => { ev.target.checked ? state.equipment.add(e.id) : state.equipment.delete(e.id); $('load-total').textContent = `${loadKg()} kg`; };
         f.append(l);
       }
@@ -124,7 +124,7 @@ const STEPS = [
     title: 'What protects your base?', lead: 'Choose a habitat concept and its shielding approach. These structures stay at the hypothetical base; you do not carry them on the walk.',
     ready: () => state.shelter,
     render(body) {
-      for (const shelter of SHELTERS) body.append(option({ title: `${shelter.name} ${tag('H')}`, text: `${shelter.material} - $${COST_MODEL.shelter[shelter.id]}M [H]`, hint: shelter.protection, details: `<strong>Benefit</strong> ${shelter.protection}<br><strong>Trade-off</strong> ${shelter.tradeoff}`, pressed: state.shelter === shelter.id, onClick: () => { state.shelter = shelter.id; render(); } }));
+      for (const shelter of SHELTERS) body.append(option({ title: `${shelter.name} ${tag('H')}`, text: `${shelter.material} - $${COST_MODEL.shelter[shelter.id]}M [H]`, hint: `${shelter.id === 'polymer' ? 'Suggested concept [H]: hydrogen-rich shielding is under NASA study. ' : ''}${shelter.protection}`, details: `<strong>Benefit</strong> ${shelter.protection}<br><strong>Trade-off</strong> ${shelter.tradeoff}`, pressed: state.shelter === shelter.id, onClick: () => { state.shelter = shelter.id; render(); } }));
       why(`${SHELTERS.find((x) => x.id === state.shelter).tradeoff} No shielding percentage or thermal rating can be inferred without thickness, geometry and testing. Habitat choice does not reduce the outdoor dose calculation. <a href="${SOURCE_LINKS.shielding}" target="_blank" rel="noopener">NASA shielding research</a>.`);
     },
   },
@@ -153,6 +153,26 @@ const STEPS = [
 
 ];
 
+
+// Destination precedes readiness and science; preserve the selected site when changing objectives.
+const [readinessStep, objectiveStep, destinationStep] = STEPS.splice(0, 3);
+STEPS.unshift(destinationStep, readinessStep, objectiveStep);
+STEPS.push({
+  title: 'Review your mission estimate.',
+  lead: 'Review the scenario and its limitations before opening the map.',
+  ready: () => true,
+  render(body) {
+    const life = [...state.essentials].reduce((sum, id) => sum + COST_MODEL.essentials[id], 0) * state.crew;
+    const equipment = [...state.equipment].reduce((sum, id) => sum + COST_MODEL.equipment[id], 0) * state.crew;
+    const launch = HISTORICAL_LAUNCH_COST.reduce((sum, item) => sum + item.millionUSD, 0);
+    const parts = [['Historical launch benchmark', launch], ['Life support', life], ['Equipment', equipment], ['Habitat', COST_MODEL.shelter[state.shelter]], ['Support rover', state.rover ? COST_MODEL.rover : 0], ['Operations', COST_MODEL.operations]];
+    const subtotal = parts.reduce((sum, row) => sum + row[1], 0);
+    const box = document.createElement('div'); box.className = 'estimate-preview wide';
+    box.innerHTML = `<p>Estimated scenario total [H]</p><strong>$${fmt(subtotal * (1 + COST_MODEL.contingency) / 1000, 2)} billion</strong><p>Includes ${COST_MODEL.contingency * 100}% illustrative contingency [H].</p>${parts.map(([name, value]) => `<div class="estimate-line"><span>${name}</span><b>$${fmt(value)}M [H]</b></div>`).join('')}<p>Hypothetical assumptions, not NASA Mars mission prices. The historical Artemis benchmark does not cover a Mars landing, transit or return. Propulsion selection is conceptual and has no validated price in this model.</p>`;
+    body.append(box); why('Review your choices before opening the route map. The full breakdown and sources remain in the report.');
+  },
+});
+
 let renderVersion = 0;
 async function render() {
   const version = ++renderVersion;
@@ -167,6 +187,12 @@ async function render() {
   $('back').style.visibility = state.step === 0 ? 'hidden' : 'visible';
   $('next').textContent = state.step === STEPS.length - 1 ? 'Plan the walk' : 'Next';
   $('next').disabled = !step.ready();
+  let risk = $('risk-advice');
+  if (!risk) { risk = document.createElement('aside'); risk.id = 'risk-advice'; risk.className = 'risk-advice'; $('q-why').after(risk); }
+  const missing = ESSENTIALS.filter((item) => !state.essentials.has(item.id));
+  const siteRisk = state.siteId === 'arcadia' ? 'No rover weather station or ground traverse is available here; treat the route as exploratory.' : state.siteId ? 'Terrain and radiation vary; the map cannot identify radiation-safe areas or small obstacles.' : 'Choose a destination to see its evidence limitations.';
+  risk.innerHTML = `<b>Risk and preparation</b><p>${siteRisk} ${missing.length ? `Before the walk, confirm: ${missing.map((item) => item.name).join(', ')}.` : 'All essential systems are confirmed in this scenario; verify them before departure.'}</p>${state.step > 1 && missing.length ? '<button type="button" id="review-essentials" class="btn ghost">Review essential systems</button>' : ''}`;
+  $('review-essentials')?.addEventListener('click', () => { state.step = 1; render(); });
 }
 
 $('back').onclick = () => { state.step--; render(); };
@@ -264,7 +290,7 @@ async function drawPlan(s, route) {
     <h2>${route.name}</h2>
     <p class="sub">${s.name} · Proposed human EVA ${tag('H')} · Waypoints ${tag(route.tag)}</p>
     ${s.routes.length > 1 ? `<label class="route-pick">Change route<select id="route">${s.routes.map((r) => `<option value="${r.id}" ${r.id === route.id ? 'selected' : ''}>${r.name}</option>`).join('')}</select></label>` : ''}
-    <div class="verdict ${p.go ? 'go' : 'nogo'}" role="status"><b>${p.go ? 'MODEL GO' : 'NO-GO'} ${tag('S')}</b>
+    <div class="verdict ${p.go ? 'go' : 'nogo'}" role="status"><b>${p.go ? 'MODEL GO' : 'NOT RECOMMENDED'} ${tag('S')}</b>
       <span>${p.go ? `Passes scenario checks${warn ? `, with ${warn} ${warn > 1 ? 'warnings' : 'warning'}` : ''}. Not a safety clearance.` : `${nogo} ${nogo > 1 ? 'reasons block' : 'reason blocks'} this scenario.`}</span></div>
     <ul class="alerts">${p.alerts.map((a) => `<li class="${a.level}">${a.msg}</li>`).join('')}</ul>
     <dl class="stats">
@@ -292,8 +318,8 @@ async function drawPlan(s, route) {
     <p class="note">Radiation: ${rad} (${RAD_MSV_PER_DAY} mSv per Earth day ${tag('R')}; Hassler et al., Science, 2014). The modeled dose excludes solar events and is not a local forecast. A small share of a career limit does not establish safety.</p>
     <p><a href="#mission-report">Read survival, route and cost analysis</a></p>
     <div class="actions">
-      ${s.hasSim ? `<a class="btn ghost" href="sim.html?${q}">Preview 3D page (under construction)</a>`
-        : `<a class="btn" aria-disabled="true" tabindex="-1">Walk it in the 3D visor</a><p class="note">The 3D simulation is only available for Jezero in this prototype.</p>`}
+      ${s.hasSim && p.go ? `<a class="btn ghost" href="sim.html?${q}">Preview 3D page (under construction)</a>`
+        : `<a class="btn" aria-disabled="true" tabindex="-1">Walk it in the 3D visor</a><p class="note">${p.go ? 'The 3D simulation is only available for Jezero in this prototype.' : 'Resolve the safety blockers before opening the 3D page.'}</p>`}
       <button type="button" class="btn ghost" id="redo">Plan again</button>
     </div>`;
   renderReport(s, route, p, inputs, w);
