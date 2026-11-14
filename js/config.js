@@ -19,6 +19,13 @@ export const HR_PER_EFFORT = 45;             // [S]
 export const TIME_SCALE = 30;                // demonstração: 1 s real = 30 s simulados (ajustável)
 export const ARRIVAL_RADIUS_M = 15;
 export const PEAK_TEMP_HOUR = 14;            // [S] hora da temperatura máxima do dia
+// Illustrative mission costing assumptions, millions USD [H], not NASA quotations.
+export const COST_MODEL = {
+  essentials: { pressure: 100, oxygen: 25, scrubber: 30, cooling: 20, power: 25, comms: 35, monitor: 10, rescue: 80 },
+  equipment: { amostrador: 3, camera: 2, espectrometro: 8, perfuratriz: 15, medico: 2 },
+  shelter: { shell: 480, polymer: 620, regolith: 900 },
+  rover: 250, operations: 493, contingency: 0.2,
+};
 
 // Planner extension approved by Gabriel: educational readiness, not flight certification.
 export const EQUIPMENT = [

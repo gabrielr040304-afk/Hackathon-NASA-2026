@@ -50,3 +50,7 @@ Route rankings first compare model blockers, then sampled maximum slope, duratio
 
 ## Use of AI
 Code and data-processing scripts were written with assistance from Claude (Anthropic) and Codex (OpenAI) under the team's direction. The readiness/report extension and deterministic recommendation rules were developed with Codex. No live AI is used to invent hazards or forecast conditions. The project idea, science choices and review belong to the team. No AI-generated images, video or audio are used; all images are NASA's.
+
+## Illustrative automatic mission budget
+
+The project assigns hypothetical costs [H] in `js/config.js` to each selected life-support system, equipment item, habitat, rover and operations. Suit systems and equipment are multiplied by crew count; a 20% hypothetical contingency is added to the subtotal. The subtotal also includes one historical OIG launch-system component sum [D]. This is a teaching scenario, not an actual or NASA-estimated Mars mission price. It does not independently price Mars landing, transit or return. Individual assumptions have no NASA cost source.
