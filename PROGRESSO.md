@@ -6,7 +6,7 @@
 - **Gabriel:** Tarefa 4 (fotos do Perseverance e textos dos alvos, hoje marcados "PROVISÓRIO" em `data/sites.json`) e Tarefa 3, passo 5 (escolher a área de Arcadia no mapa SWIM).
 
 ## Pendências e avisos
-- Criar o repositório no GitHub e fazer `git push` só com o "ok" do Gabriel. O GitHub Pages grátis exige repositório **público**.
+- Repositório: https://github.com/gabrielr040304-afk/guia-sobrevivencia-marte · Site: https://gabrielr040304-afk.github.io/guia-sobrevivencia-marte/ (GitHub Pages, branch main). Push só com o "ok" do Gabriel.
 - Arcadia Planitia está **provisória** (centro IAU, altitudes "PENDENTE").
 - Conferir na página do Space Apps os campos da entrega e os critérios de avaliação (Tarefa 9).
 
