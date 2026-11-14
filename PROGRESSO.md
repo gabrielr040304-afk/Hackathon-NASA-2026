@@ -44,3 +44,6 @@
 
 ### Simulador Jezero
 - TypeScript autorizado pelo usu?rio: main.ts/model.ts, gera??o JS via Node 24 sem depend?ncias. Um terreno HiRISE para as tr?s rotas; mouse/WASD, E alvos, M mapa, Esc pausa/relat?rio/proje??o. Prepara??o transferida via sessionStorage e conferida na entrada. HUD de recursos usa modelo existente; sem prever sobreviv?ncia real ou custo incremental inventado. Three.js CDN confirmado HTTP 200. 25 testes aprovados. Valida??o visual/WebGL n?o executada: browser access host unavailable. Conferir intera??o no navegador antes da demonstra??o.
+
+### Route guidance repair
+- Replaced sparse straight route line with a 1.2 m ribbon sampled every 2 m, interpolating rendered terrain triangles. Camera height uses rendered surface too. Animated view detections for terrain slope and science targets with view/terrain visibility checks; no fabricated directional radiation. 27 tests passed; measured triangle-center clearance positive on both full routes. Browser visual validation remains pending.

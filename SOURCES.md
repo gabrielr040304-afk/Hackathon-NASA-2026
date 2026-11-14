@@ -90,3 +90,7 @@ Jezero now colors valid low-slope cells green, warning cells yellow and steep ce
 The shared three-route scene uses the bundled USGS HiRISE height grid and NASA orbital texture; rendering resamples the grid to a 256-segment mesh [D]. Camera, movement, visit detection, suit resource use, accelerated time and dose accumulation are simulated [S]. Weather temperature is interpolated from a historical MEDA day; radiation is the historical Gale reference, not Jezero dosimetry. Survey-scale heights do not resolve all rocks or obstacles. No probability of survival is inferred.
 
 The planner transfers preparation using same-tab session storage. Simulator entry repeats planner checks and rejects missing essentials or blocked plans. Projection uses observed average effort; it does not forecast new hazards. TypeScript implementation was requested by the user and uses Three.js 0.187.0; generated JavaScript is committed for static hosting.
+
+## Simulator route guidance and view detections
+
+The route ribbon samples horizontal segments every 2 m and uses the same triangle interpolation as the rendered terrain, with a display-only elevation offset. No new route survey is implied. View detections flag local terrain slope [D] against project thresholds [S] or existing rover science targets [R]. Distance, visibility and arrival are simulated. Radiation is not spatially detected; the simulator has no directional dosimeter or Jezero radiation map.

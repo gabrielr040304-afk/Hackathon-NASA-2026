@@ -3,7 +3,7 @@ import * as C from '../config.js';
 import { parseTerrain, heightAt, slopeAt, lonLatToLocal } from './terrain.js';
 import { effort, walkSpeedKmh, airTempAt } from '../calc.js';
 import { assessMission, clockTime } from '../mission.js';
-import { consumption, projectUsage, type Usage } from './model.js';
+import { consumption, projectUsage, renderedHeight, drapeRoute, type Usage } from './model.js';
 const $ = (id: string): any => document.getElementById(id);
 const usage: Usage = { seconds: 0, effortSeconds: 0, distance: 0 };
 let active = false, ended = false, yaw = 0, pitch = 0, mapOpen = false, nextPoint = 1;
@@ -11,6 +11,7 @@ const keys = new Set<string>();
 let terrain: any, scene: any, camera: any, renderer: any, site: any, route: any, prep: any, weather: any, points: any[] = [], targets: any[] = [];
 let x = 0, z = 0, y = 0, baseHeight = 0, last = performance.now(), message = '';
 let image: HTMLImageElement;
+let lastScan = 0, scanKey = "";
 const fmt = (n: number, d = 1) => n.toFixed(d);
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 async function json(path: string) { const r = await fetch(path); if (!r.ok) throw Error(`Missing ${path}`); return r.json(); }
@@ -43,7 +44,10 @@ async function boot() {
   const pos=geometry.attributes.position; for(let i=0;i<pos.count;i++)pos.setY(i,heightAt(terrain,pos.getX(i),pos.getZ(i))-baseHeight); geometry.computeVertexNormals();
   const texture=await new THREE.TextureLoader().loadAsync('data/jezero/texture.jpg'); texture.colorSpace=THREE.SRGBColorSpace; image=texture.image;
   scene.add(new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({map:texture,color:'#d7a47d',roughness:1})));
-  const line=new THREE.BufferGeometry().setFromPoints(points.map((p)=>new THREE.Vector3(p.x,heightAt(terrain,p.x,p.z)-baseHeight+.6,p.z))); scene.add(new THREE.Line(line,new THREE.LineBasicMaterial({color:'#ffd284'})));
+  const ribbon = new THREE.BufferGeometry(); const positions = drapeRoute(terrain,points); for(let i=1;i<positions.length;i+=3) positions[i]-=baseHeight;
+  ribbon.setAttribute('position', new THREE.Float32BufferAttribute(positions,3));
+  scene.add(new THREE.Mesh(ribbon,new THREE.MeshBasicMaterial({color:'#ffe5a0',side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-1})));
+
   for(const p of [points[0],...targets]){ const beacon=new THREE.Mesh(new THREE.CylinderGeometry(.8,.8,9,8),new THREE.MeshBasicMaterial({color:p.target?'#ffda82':'#9ce8ff'})); beacon.position.set(p.x,heightAt(terrain,p.x,p.z)-baseHeight+4.5,p.z); scene.add(beacon); }
   yaw=Math.atan2(-(points[1].x-x),-(points[1].z-z)); $('mission-name').textContent=route.name; $('hud').hidden=false; $('loading').textContent='Terrain ready. All route points are inside the shared Jezero grid.'; $('controls').hidden=false; requestAnimationFrame(frame);
 }
@@ -59,15 +63,53 @@ function frame(now:number) {
     while(nextPoint<points.length&&Math.hypot(points[nextPoint].x-x,points[nextPoint].z-z)<C.SIM.waypointRadius)nextPoint++;
     const c=consumption(usage); if(c.reserve<=0)finish('Modeled suit resources exhausted.'); else if(nextPoint>=points.length)finish('Returned to base along the route.');
   }
-  y=heightAt(terrain,x,z); camera.position.set(x,y-baseHeight+C.SIM.eyeHeight,z); camera.rotation.set(pitch,yaw,0);
+  y=renderedHeight(terrain,x,z); camera.position.set(x,y-baseHeight+C.SIM.eyeHeight,z); camera.rotation.set(pitch,yaw,0);
   const c=consumption(usage); const start=prep.start.split(':').map(Number); const time=clockTime((start[0]*60+start[1]+usage.seconds/60)%1440);
   $('clock').textContent=`${time} local [S]`; const readings=[['Oxygen',100-c.oxygenUsed],['Cooling water',100-c.waterUsed],['Battery',100-c.batteryUsed]];
   $('readouts').innerHTML=readings.map(([name,value])=>`<div class="reading">${name} ${fmt(Math.max(0,Number(value)))}% [S]<meter min="0" max="100" value="${Math.max(0,Number(value))}"></meter></div>`).join('')+`<div class="reading">${fmt(airTempAt(weather,time))} C air [S]<br>RAD reference dose: ${fmt(c.dose,3)} mSv [S]<br>Extra load: ${prep.loadKg} kg [S]</div>`;
   const lat=terrain.center_lat-z/C.MARS_RADIUS_M*180/Math.PI, lon=terrain.center_lon+x/(C.MARS_RADIUS_M*Math.cos(terrain.center_lat*Math.PI/180))*180/Math.PI;
   const target=points[Math.min(nextPoint,points.length-1)]; $('navigation').textContent=`${fmt(lat,5)}, ${fmt(lon,5)} [S] | Next waypoint ${Math.min(nextPoint,points.length-1)}/${points.length-1}: ${fmt(Math.hypot(target.x-x,target.z-z))} m [S] | ${prep.rover?'Support rover model':'On foot'} | Tools: ${C.EQUIPMENT.filter((e:any)=>prep.equipment.includes(e.id)).map((e:any)=>e.name).join(', ')}`;
   const sunset=weather.sunset.split(':').map(Number); const late=start[0]*60+start[1]+usage.seconds/60>sunset[0]*60+sunset[1]-C.DAYLIGHT_MARGIN_MIN;
-  $('notice').textContent=message||(late?'Return daylight margin exceeded [S].':c.reserve<C.RESERVE_PCT?'Reserve below the project return margin [S].':targets.some(p=>Math.hypot(p.x-x,p.z-z)<C.ARRIVAL_RADIUS_M)?'Press E to inspect this science target.':'Follow the amber route. Radiation is a Gale reference, not a local forecast.'); renderer.render(scene,camera); requestAnimationFrame(frame);
+  $('notice').textContent=message||(late?'Return daylight margin exceeded [S].':c.reserve<C.RESERVE_PCT?'Reserve below the project return margin [S].':targets.some(p=>Math.hypot(p.x-x,p.z-z)<C.ARRIVAL_RADIUS_M)?'Press E to inspect this science target.':'Follow the amber route. Radiation is a Gale reference, not a local forecast.'); if(now-lastScan>C.SIM_GUIDANCE.scanIntervalMs){scanAhead();lastScan=now;} renderer.render(scene,camera); requestAnimationFrame(frame);
 }
+function scanAhead() {
+  const panel=$('scan-detection');
+  if(!active){panel.hidden=true;return;}
+  camera.updateMatrixWorld();
+  let detected:any=null;
+  // Directional terrain scan: derived from the height map, not radiation telemetry.
+  const hx=(terrain.width-1)*terrain.m_per_px_x/2,hz=(terrain.height-1)*terrain.m_per_px_y/2;
+  for(let distance=C.SIM_GUIDANCE.scanStepM;distance<=C.SIM_GUIDANCE.scanRangeM;distance+=C.SIM_GUIDANCE.scanStepM){
+    const tx=x-Math.sin(yaw)*distance,tz=z-Math.cos(yaw)*distance;
+    if(Math.abs(tx)>hx||Math.abs(tz)>hz)break;
+    const slope=slopeAt(terrain,tx,tz);
+    if(slope>C.SLOPE_WARN_DEG){detected={x:tx,z:tz,name:slope>C.SLOPE_NOGO_DEG?'STEEP TERRAIN AHEAD':'SLOPE CAUTION',detail:`${fmt(slope)} degrees [D] ? ${distance} m [S]. ${slope>C.SLOPE_NOGO_DEG?'Avoid this slope; stay on the planned corridor.':'Slow down and inspect footing.'}`,key:'slope',kind:'hazard'};break;}
+  }
+  if(!detected){
+    const direction=new THREE.Vector3();camera.getWorldDirection(direction);
+    for(const target of targets){
+      const delta=new THREE.Vector3(target.x-x,renderedHeight(terrain,target.x,target.z)-y,target.z-z);
+      const distance=delta.length();
+      if(distance<C.SIM_GUIDANCE.targetRangeM&&direction.dot(delta.normalize())>.8){detected={...target,name:target.target.name,detail:`Science target [R] ? ${fmt(distance)} m [S]. Follow the route; press E within ${C.ARRIVAL_RADIUS_M} m to inspect.`,key:target.target.name,kind:'science'};break;}
+    }
+  }
+  if(!detected){panel.hidden=true;scanKey='';return;}
+  const targetHeight=renderedHeight(terrain,detected.x,detected.z)+1;
+  const distance=Math.hypot(detected.x-x,detected.z-z);
+  for(let along=C.SIM_GUIDANCE.scanStepM;along<distance;along+=C.SIM_GUIDANCE.scanStepM){
+    const ratio=along/distance, tx=x+(detected.x-x)*ratio, tz=z+(detected.z-z)*ratio;
+    const sightHeight=y+C.SIM.eyeHeight+(targetHeight-y-C.SIM.eyeHeight)*ratio;
+    if(renderedHeight(terrain,tx,tz)>sightHeight){panel.hidden=true;return;}
+  }
+  const projected=new THREE.Vector3(detected.x,targetHeight-baseHeight,detected.z).project(camera);
+  // Suppress detections outside the actual view; do not suggest an invisible location.
+  if(projected.z>1||projected.z< -1||Math.abs(projected.x)>.95||Math.abs(projected.y)>.85){panel.hidden=true;return;}
+  panel.hidden=false;panel.style.left=`${(projected.x*.5+.5)*100}%`;panel.style.top=`${(-projected.y*.5+.5)*100}%`;
+  panel.className=detected.kind;
+  panel.innerHTML=`<b>${detected.name}</b><p>${detected.detail}</p><small>${detected.kind==='hazard'?'Height-map inference, not a live sensor.':'Orbital/rover science context; not a resource extraction guarantee.'}</small>`;
+  if(scanKey!==detected.key){panel.classList.remove('acquired');void panel.offsetWidth;panel.classList.add('acquired');scanKey=detected.key;}
+}
+
 document.addEventListener('pointerlockchange',()=>{ if(document.pointerLockElement===$('world')){active=true; $('overlay').hidden=true; $('pause').hidden=true;}else pause(); });
 document.addEventListener('mousemove',(e)=>{if(active){yaw-=e.movementX*C.SIM.mouseSensitivity;pitch=clamp(pitch-e.movementY*C.SIM.mouseSensitivity,-Math.PI/2+.01,Math.PI/2-.01);}});
 document.addEventListener('keydown',(e)=>{if(e.code==='KeyM'&&!ended&&terrain&&!$('science').open){mapOpen=!mapOpen; $('map-panel').hidden=!mapOpen; if(mapOpen){active=false;document.exitPointerLock();$('pause').hidden=true;miniMap();}else $('pause').hidden=false;return;}if(active){keys.add(e.code);if(e.code==='KeyE')inspect();if(e.code.startsWith('Arrow'))e.preventDefault();}});
