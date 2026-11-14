@@ -1,4 +1,4 @@
-// Planner: mission readiness, science, resources, shelter, daylight and cost context.
+﻿// Planner: mission readiness, science, resources, shelter, daylight and cost context.
 import { RESERVE_PCT, DAYLIGHT_MARGIN_MIN, EQUIPMENT, ESSENTIALS, SHELTERS, BUDGET_CATEGORIES, HISTORICAL_LAUNCH_COST, SOURCE_LINKS, RAD_MSV_PER_DAY, CAREER_LIMIT_MSV, LOAD_FACTOR_PER_KG, COST_MODEL, PREPARATION_EXTRAS, OPTIONAL_PREPARATION, RADIATION_EVIDENCE_URL } from './config.js';
 import { assessMission, compareRoutes, daylightWindow, clockTime, terrainCautions, preparationLevel } from './mission.js';
 import { terrainHazards } from './hazards.js';
@@ -334,7 +334,7 @@ async function drawPlan(s, route) {
   for (const wp of route.waypoints.filter((x) => x.target)) {
     const t = wp.target;
     L.marker([wp.lat, wp.lon], { icon: L.divIcon({ className: 'pin', iconSize: [16, 16] }), title: t.name })
-      .bindPopup(`<b>${t.name}</b> ${tag(route.tag)}<br>${t.why}${t.sol ? `<br><small>Sol ${t.sol}</small>` : ''}${t.photo ? `<br><img src="${t.photo}" alt="${t.name}" width="240"><br><small>${t.credit}</small>` : ''}`, { maxWidth: 260, maxHeight: 320 })
+      .bindPopup(`<b>${t.name}</b> ${tag(route.tag)}<br>${t.why}${t.sol ? `<br><small>Sol ${t.sol}</small>` : ''}${t.photo ? `<br><a href="${t.photo}" target="_blank" rel="noopener" aria-label="Open full image of ${t.name} in a new tab"><img src="${t.photo}" alt="${t.name}" width="240"></a><br><small>${t.credit} ? Select image to enlarge</small>` : ''}`, { maxWidth: 260, maxHeight: 320 })
       .addTo(routeLayer);
   }
   for (const hazard of terrainCautions(s, route, p)) {
@@ -361,7 +361,7 @@ async function drawPlan(s, route) {
   evidence.innerHTML = `<summary>+ Radiation evidence: what is measured, and what is unknown?</summary><p>Curiosity RAD measured about 4% less overall radiation near a cliff in Murray Buttes, Gale, during September 9-21, 2016 [R]. The observation is outside the supplied walking routes and is not a safe-zone boundary.</p><p>Solar events can raise exposure across broad areas. No live event feed or spatial radiation dataset is connected here. Red route marks indicate sampled slope limits, never invented radiation hot spots.</p><a href="${RADIATION_EVIDENCE_URL}" target="_blank" rel="noopener">NASA: measured shielding and radiation variability</a>`;
   $('panel').innerHTML = `
     <h2>${route.name}</h2>
-    <p class="sub">${s.name} · Proposed human EVA ${tag('H')} · Waypoints ${tag(route.tag)}</p>
+    <p class="sub">${s.name} · Proposed human EVA ${tag('H')} · Waypoints ${tag(route.id.endsWith('-short') ? 'R' : route.tag)}</p>
     ${s.routes.length > 1 ? `<label class="route-pick">Change route<select id="route">${s.routes.map((r) => `<option value="${r.id}" ${r.id === route.id ? 'selected' : ''}>${r.name}</option>`).join('')}</select></label>` : ''}
     <div class="verdict ${p.go ? 'go' : 'nogo'}" role="status"><b>${p.go ? 'MODEL GO' : 'NOT RECOMMENDED'} ${tag('S')}</b>
       <span>${p.go ? `Passes scenario checks${warn ? `, with ${warn} ${warn > 1 ? 'warnings' : 'warning'}` : ''}. Not a safety clearance.` : `${nogo} ${nogo > 1 ? 'reasons block' : 'reason blocks'} this scenario.`}</span></div>
@@ -474,6 +474,22 @@ function renderReport(s, route, p, inputs, weather) {
   };
 }
 
+// Curated shorter out-and-back scenarios built from existing rover stop records.
+function addShortRoutes(data) {
+  for (const [siteId, routeId, targetName, id, name] of [
+    ['jezero', 'neretva-encosta', 'Neretva Vallis channel floor', 'neretva-short', 'Neretva channel floor - short'],
+    ['gale', 'boxwork', 'Boxwork ridge', 'boxwork-ridge-short', 'Boxwork ridge - short'],
+  ]) {
+    const destination = data.find((item) => item.id === siteId);
+    const original = destination.routes.find((item) => item.id === routeId);
+    const end = original.waypoints.findIndex((point) => point.target?.name === targetName);
+    if (end < 0) continue;
+    const outbound = original.waypoints.slice(0, end + 1);
+    destination.routes.push({ ...original, id, name, tag: 'R', waypoints: [...outbound, ...outbound.slice(0, -1).reverse().map(({ target, ...point }) => point)] });
+  }
+  return data;
+}
 getJSON('data/sites.json')
-  .then((d) => { sites = d; render(); })
+  .then((d) => { sites = addShortRoutes(d); render(); })
   .catch((e) => { $('q-title').textContent = 'Could not load the site data.'; $('q-lead').textContent = `Open the site through a web server (npm run dev). Details: ${e.message}`; });
+

@@ -35,3 +35,6 @@
 
 ### Extras opcionais e cautelas no mapa
 - Total financeiro movido para baixo das op??es e avisos de prepara??o. Extras opcionais de ci?ncia/arquivo entram no custo, sem alterar checklist recomendado. Jezero continua com duas rotas selecionadas. Nova camada com c?lulas de cautela derivadas do relevo real HiRISE: 782 c?lulas sinalizadas, 237 acima do limiar simulado de 25 graus, m?ximo amostrado ~48,3 graus. Fonte e limita??es nos popups; n?o ? mapa de radia??o. 23 testes aprovados. Navegador automatizado indispon?vel para inspe??o visual.
+
+### Rotas curtas e fotos
+- Duas alternativas hipot?ticas geradas a partir dos pontos existentes: canal Neretva em Jezero e crista boxwork em Gale. Fotos dos popups abrem em nova aba para amplia??o. Trajetos s?o propostas, n?o rotas certificadas para astronautas.

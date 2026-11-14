@@ -74,3 +74,7 @@ The preparation page evaluates its own selectable systems, separately from later
 Jezero terrain squares use the bundled USGS HiRISE height grid (~3.9 m resampling). Central differences derive gradients [D]; display cells aggregate 16 by 16 samples (~63 m). The maximum sampled slope is compared to project thresholds: over 15 degrees caution, over 25 degrees avoid steep terrain [S]. A cell contains steep samples; it is not a surveyed exclusion polygon and may include walkable points. Unknown cells are not classified. No radiation class is inferred. Coverage is limited to the bundled 2 km crop.
 
 Optional science rehearsal and redundant data archiving [H] have illustrative costs and do not change preparation readiness, radiation exposure or suit capacity. Jezero currently supplies two curated route scenarios, not an exhaustive inventory of trails.
+
+## Short route scenarios
+
+The planner constructs two extra hypothetical [H] out-and-back scenarios by truncating existing NASA rover waypoint sequences [R]: Jezero to the Neretva channel-floor stop (sol 1168), and Gale to the boxwork ridge stop (sol 4628). The base and human walk remain hypothetical. Waypoints are linked by straight segments; gaps, current hazards and radiation are not surveyed, and rover traversability does not certify human safety. The planner compares them using its existing model. See [NASA Perseverance location map](https://science.nasa.gov/mission/mars-2020-perseverance/location-map/) and [NASA Curiosity traverse](https://mars.nasa.gov/files/mep/CuriosityPoster-small.pdf).
