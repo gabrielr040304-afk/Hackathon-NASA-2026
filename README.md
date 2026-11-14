@@ -1,7 +1,8 @@
-# Guia de Sobrevivência em Marte
+# Hackton-NASA-2026 — Guia de Sobrevivência em Marte
+
+Survival HUD for astronauts on exploratory missions to Mars. Overlays data from NASA missions, such as terrain, weather, radiation and resources, onto the Martian map to plan routes and monitor Marswalks safely. Built for NASA Space Apps Challenge 2026: Interplanetary Survival Guide – Martian Map.
 
 Planeje uma caminhada de astronauta em Marte com dados reais da NASA e execute-a num simulador 3D com visor no capacete.
-Projeto para o desafio "Interplanetary Survival Guide: Martian Map" do NASA Space Apps 2026.
 
 ## Como rodar
 1. `npm run dev` (ou `python -m http.server 8000`, ou `php -S localhost:8000`)
