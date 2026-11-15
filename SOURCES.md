@@ -94,3 +94,13 @@ The planner transfers preparation using same-tab session storage. Simulator entr
 ## Simulator route guidance and view detections
 
 The route ribbon samples horizontal segments every 2 m and uses the same triangle interpolation as the rendered terrain, with a display-only elevation offset. No new route survey is implied. View detections flag local terrain slope [D] against project thresholds [S] or existing rover science targets [R]. Distance, visibility and arrival are simulated. Radiation is not spatially detected; the simulator has no directional dosimeter or Jezero radiation map.
+# Evidence-linked science investigations (2026-11-14)
+
+- [NASA/JPL: potential biosignatures in Sapphire Canyon](https://www.jpl.nasa.gov/news/nasa-says-mars-rover-discovered-potential-biosignature-last-year/) (September 10, 2025): evidence context for Cheyava Falls; not confirmed life. Rendered rocks are hypothetical and do not reproduce measured mineral distributions.
+- [NASA: Cheyava Falls and Neretva Vallis](https://www.nasa.gov/solar-system/nasas-perseverance-rover-scientists-find-intriguing-mars-rock/): ancient river and sediment context, not a present water supply.
+- [NASA: Curiosity boxwork investigations](https://www.nasa.gov/missions/mars-science-laboratory/curiosity-rover/nasas-curiosity-rover-sees-martian-spiderwebs-up-close/): resistant ridges and ancient groundwater. The Gale science map uses the existing rover stops; no local terrain mesh is fabricated.
+- [NASA GISS Mars24 technical notes](https://www.giss.nasa.gov/tools/mars24/help/notes.html): mean sol duration, 88775.244 SI seconds. Used to convert elapsed SI durations to local Mars-clock minutes in planning and simulation.
+- [NASA GISS Mars24 guide](https://www.giss.nasa.gov/tools/mars24/help/guide.html): solar-time and sunrise/sunset calculation capabilities. Sunrise calculations do not account for local topography. No Mars24 prediction is presented as a weather measurement in this app.
+- [NASA Opportunity science highlights](https://science.nasa.gov/mission/mars-exploration-rovers-spirit-and-opportunity/science-highlights/): ancient-water evidence at Meridiani. Meridiani is excluded from selectable EVAs because this project lacks sufficient verified local route/terrain data, not because solar times cannot be calculated.
+
+Science marker coordinates come from the bundled rover stops and only approximate the science location. Added objects, geometry and rock distribution are [H]; target distance and visits are [S]. No quantitative rock-density product has been prepared. Selected tools support a simulated investigation log without fabricated readings. AI assisted this implementation and source synthesis; scientific claims are linked to the official sources above.

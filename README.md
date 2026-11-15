@@ -5,8 +5,8 @@ Survival HUD for astronauts on exploratory missions to Mars. Overlays data from 
 **Live site:** https://gabrielr040304-afk.github.io/Hackton-NASA-2026/
 
 ## What it does
-1. **Plan:** a 7-step questionnaire covers essential life-support systems, science goal, site, crew, additional equipment, habitat/shielding concept, recorded weather/departure time and an automatic illustrative cost estimate. The map shows sampled slope cautions, a MODEL GO / NO-GO assessment, resource use and a downloadable survival report. Candidate routes are compared using explicit rules.
-2. **Walk it:** a first-person 3D simulation of Jezero Crater built from the real 1 m HiRISE terrain, with a helmet HUD (in progress).
+1. **Plan:** an 8-step questionnaire covers essential life-support systems, science goal, site, crew, additional equipment, habitat/shielding concept, recorded weather/departure time and an automatic illustrative cost estimate. The map shows sampled slope cautions, a MODEL GO / NO-GO assessment, resource use and a downloadable survival report. Candidate routes are compared using explicit rules.
+2. **Walk it:** a first-person 3D simulation of Jezero Crater built from the real 1 m HiRISE terrain, with science navigation, field investigations and a helmet HUD.
 
 Every number on screen is labeled **R** (real NASA/USGS data), **D** (derived from real data), **S** (simulated) or **H** (hypothetical). Data sources: [SOURCES.md](SOURCES.md).
 
@@ -36,3 +36,10 @@ Start from a permitted Jezero plan to transfer preparation through session stora
 The HUD uses selected equipment and the existing suit/effort model. No individual rocks, solar events or survival probabilities are modeled. Esc opens a paused review; ending gives consumption and duration projections at observed average effort. Financial investment is shown separately; no validated incremental EVA rate is available.
 
 TypeScript sources: `js/sim/main.ts` and `model.ts`. User-authorized stack extension; deployable JavaScript is committed. Regenerate with `npm run compile:sim` using Node 24 built-in type erasure; no packages or browser compilation required. This command erases types and does not perform semantic TypeScript checking.
+### Evidence-linked EVA update
+
+Jezero now includes persistent science navigation, sourced observation guidance, hypothetical field objects and a complete preparation manifest (Esc). Approach a science stop, press **E**, then record an investigation; it consumes modeled stationary science time. **M** shows the route and named science stops. The EVA analysis separates the recorded session from hypothetical longer-duration projections.
+
+Objectives and route alternatives are filtered by destination. Gale includes a science-stop map; its 3D terrain is not implemented. Meridiani is excluded from selectable EVAs because local verified route/terrain data are incomplete. Its solar times are calculable, but a daylight calculation alone cannot validate a walk.
+
+Rover-stop markers approximate science locations. Added rocks, base and rover are hypothetical, not surveyed objects. Potential biosignatures do not confirm life; ancient-water evidence does not identify drinking water. AI-assisted changes and source references are documented in [SOURCES.md](SOURCES.md) and [ADR-003](docs/adr/ADR-003-science-eva.md).

@@ -31,7 +31,7 @@ test('unknown weather and hypothetical route never become a cleared candidate', 
 });
 
 test('daylight window allows exact margin and rejects long and overnight durations', () => {
-  assert.deepEqual(daylightWindow({ sunrise: '06:00', sunset: '18:00' }, 2), { earliest: 360, latest: 900, feasible: true });
+  assert.deepEqual(daylightWindow({ sunrise: '06:00', sunset: '18:00' }, 2), { earliest: 360, latest: 903, feasible: true });
   assert.equal(daylightWindow({ sunrise: '06:00', sunset: '18:00' }, 12).feasible, false);
   assert.equal(daylightWindow({ sunrise: '06:00', sunset: '18:00' }, 26).feasible, false);
   assert.equal(daylightWindow(null, 2), null);

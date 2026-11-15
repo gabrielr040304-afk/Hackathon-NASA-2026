@@ -1,5 +1,13 @@
 # Progresso
 
+## Revisão de ciência e EVA — 14/11/2026
+- Solicitação atual: objetivos filtrados por destino, alternativas de rota coerentes; Meridiani retirada das opções de EVA por falta de trajeto/relevo verificado (não por impossibilidade física ou inexistência de horário solar). Dados arquivados preservados.
+- Gale: camada de pontos científicos com fontes, além do trajeto Curiosity e imagem orbital existentes; permanece sem 3D local.
+- Jezero: orientação científica persistente com distância/rumo, minimapa com nomes, referências e ferramentas selecionadas por alvo; registrar investigação consome 30 minutos simulados uma única vez. Rochas instanciadas, habitat e rover ilustrativos [H]. Manifesto completo na pausa.
+- EVA analysis reorganizada com tabela de recursos, diário científico e projeção separada, com vidro translúcido. HUD atualizado em intervalos; limite de pixel ratio. Sem alegar ganho de FPS medido.
+- Corrigidos preços rotulados por equipe mas calculados por astronauta; conversão de duração SI para relógio marciano aplicada em planejador e simulador (NASA GISS).
+- 31 testes aprovados com `node --test --test-isolation=none "tests/*.test.mjs"`; sintaxe e diff conferidos. `npm test` tambem aprovado (31 testes) apos execucao fora da restricao de subprocessos. Verificação visual tentada: browser host indisponível; acesso nativo falhou com janelas minimizadas. Pendente testar WebGL, controles e composição visual como usuário antes da apresentação. Sem push.
+
 ## Próximo passo
 - **Ampliação autorizada pelo Gabriel (14/11): implementada localmente.** Planejamento de Marte com 8 etapas, suporte de vida, conceitos de abrigo/proteção, orçamento hipotético e contexto histórico NASA OIG; relatório para download e comparação de rotas.
 - **Validação visual pendente:** ferramenta de navegador retornou `The browser access host is unavailable`. Servidor local responde HTTP 200; não foi possível percorrer a interface visualmente nesta sessão. Conferir desktop/celular, alteração de rota, NO-GO por item essencial e download do resumo antes da apresentação.

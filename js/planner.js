@@ -1,3 +1,4 @@
+import { objectivesForSite, scienceFor, POSITION_NOTE } from './science.js';
 ﻿// Planner: mission readiness, science, resources, shelter, daylight and cost context.
 import { RESERVE_PCT, DAYLIGHT_MARGIN_MIN, EQUIPMENT, ESSENTIALS, SHELTERS, BUDGET_CATEGORIES, HISTORICAL_LAUNCH_COST, SOURCE_LINKS, RAD_MSV_PER_DAY, CAREER_LIMIT_MSV, LOAD_FACTOR_PER_KG, COST_MODEL, PREPARATION_EXTRAS, OPTIONAL_PREPARATION, RADIATION_EVIDENCE_URL } from './config.js';
 import { assessMission, compareRoutes, daylightWindow, clockTime, terrainCautions, preparationLevel } from './mission.js';
@@ -64,7 +65,7 @@ const STEPS = [
       body.classList.add('preparation-layout');
       for (const item of ESSENTIALS) {
         const label = document.createElement('label'); label.className = `readiness ${state.essentials.has(item.id) ? 'selected' : ''}`;
-        label.innerHTML = `<input type="checkbox" ${state.essentials.has(item.id) ? 'checked' : ''}><span><b>${item.name}</b><small>${item.why}</small><span class="choice-price">+ $${COST_MODEL.essentials[item.id]}M [H] / crew</span></span>`;
+        label.innerHTML = `<input type="checkbox" ${state.essentials.has(item.id) ? 'checked' : ''}><span><b>${item.name}</b><small>${item.why}</small><span class="choice-price">+ $${COST_MODEL.essentials[item.id]}M [H] / astronaut</span></span>`;
         label.querySelector('input').onchange = (e) => { e.target.checked ? state.essentials.add(item.id) : state.essentials.delete(item.id); updatePreparationCost(); e.target.closest('label').classList.toggle('selected', e.target.checked); updateRisk(); };
         const more = document.createElement('details'); more.className = 'item-more';
         more.innerHTML = `<summary aria-label="More about ${item.name}">+ Learn more</summary><p>${item.why}</p><a href="${SOURCE_LINKS.suit}" target="_blank" rel="noopener">NASA: spacesuit systems</a><p>Price is a hypothetical project assumption, per astronaut. It is not a NASA quotation.</p>`;
@@ -93,17 +94,17 @@ const STEPS = [
     },
   },
   {
-    title: 'What do you want to discover?', lead: 'At NASA the science goal comes first. It decides where the walk goes.',
+    title: 'What do you want to discover?', lead: 'Choose a science goal supported by the selected destination and its prepared routes.',
     ready: () => state.objective,
     render(body) {
-      for (const o of OBJECTIVES) body.append(option({ title: o.name, text: o.text, details: o.why, pressed: state.objective === o.id,
+      for (const o of objectivesForSite(site(), OBJECTIVES)) body.append(option({ title: o.name, text: o.text, details: o.why, pressed: state.objective === o.id,
         onClick: () => { state.objective = o.id;  render(); } }));
       const o = OBJECTIVES.find((x) => x.id === state.objective);
       why(o?.why, o?.src);
     },
   },
   {
-    title: 'Where will we walk?', lead: 'Three places with different amounts of data. The more a rover explored, the better we know the terrain.',
+    title: 'Where will we walk?', lead: 'Choose Jezero for a terrain-based 3D EVA, or Gale for a Curiosity route map and mission analysis.',
     ready: () => state.siteId,
     render(body) {
       const notes = {
@@ -113,8 +114,10 @@ const STEPS = [
       };
       for (const s of sites) body.append(option({ title: s.name, text: `${s.mission}. ${notes[s.id]?.[0] ?? ''}`,
         hint: s.objectives?.includes(state.objective) ? 'Matches your goal' : '', details: notes[s.id]?.[1], pressed: state.siteId === s.id,
-        onClick: () => { state.touched = true; state.siteId = s.id; state.sol = null; render(); } }));
-      why(notes[state.siteId]?.[1]);
+        onClick: () => { state.touched = true; state.siteId = s.id; if (!s.objectives.includes(state.objective)) state.objective = null; state.sol = null; render(); } }));
+      const unavailable = document.createElement('details'); unavailable.className = 'wide item-more';
+      unavailable.innerHTML = '<summary>Why is Meridiani not offered?</summary><p>Opportunity documented ancient water at Meridiani [R]. Mars24 can calculate solar times, even without a weather station. This project lacks a verified local route and fine terrain grid, so Meridiani is excluded from EVA planning; this does not establish that travel there is physically impossible.</p><a href="https://www.giss.nasa.gov/tools/mars24/help/guide.html" target="_blank" rel="noopener">NASA Mars24: daylight calculations and limitations</a>';
+      body.append(unavailable); why(notes[state.siteId]?.[1]);
     },
   },
   {
@@ -309,10 +312,20 @@ async function drawSite(s) {
     const c = s.center; const unknown = L.rectangle([[c.lat-delta,c.lon-delta],[c.lat+delta,c.lon+delta]], { color:'#a5adb8', weight:2, dashArray:'4 4', fillOpacity:.18 }).bindPopup('<b>Terrain classification unavailable</b><p>No suitable local elevation grid has been prepared for this area. Gray does not mean safe or unsafe; radiation and obstacles are unknown.</p>');
     unknown.addTo(map); map._ctl.addOverlay(unknown, 'Terrain: no local grid'); siteLayers.push(unknown);
   }
+  const scienceStops = L.layerGroup();
+  const seen = new Set();
+  for (const route of s.routes) for (const point of route.waypoints.filter((p) => p.target)) {
+    if (seen.has(point.target.name)) continue; seen.add(point.target.name);
+    const science = scienceFor(point.target);
+    L.circleMarker([point.lat, point.lon], {radius: 9, color: '#bce8df', fillColor: '#21483f', fillOpacity: .8})
+      .bindPopup(`<b>${point.target.name}</b><p>${science?.evidence ?? point.target.why}</p><p>${science?.look ?? ''}</p><small>${POSITION_NOTE}</small>${science ? `<p><a href="${science.source}" target="_blank" rel="noopener">NASA source</a></p>` : ''}`)
+      .bindTooltip(point.target.name).addTo(scienceStops);
+  }
+  scienceStops.addTo(map); map._ctl.addOverlay(scienceStops, `${s.name}: science stops [R/H]`); siteLayers.push(scienceStops);
   const local = localLayer(s.localLayer);
   map._local = local?.layer;
   $('opacity-wrap').hidden = !local;
-  if (local) { local.layer.addTo(map); map._ctl.addOverlay(local.layer, local.name); siteLayers.push(local.layer); }
+  if (local) { local.layer.on('tileerror', () => { $('tile-notice').hidden = false; }); local.layer.addTo(map); map._ctl.addOverlay(local.layer, local.name); siteLayers.push(local.layer); }
   if (s.traverse) {
     try {
       const t = L.geoJSON(await getJSON(s.traverse), { style: { color: '#9cc9e6', weight: 2, opacity: .7, dashArray: '4 4' }, interactive: false });
@@ -336,9 +349,9 @@ async function drawPlan(s, route) {
   const baseIcon = L.divIcon({ className: 'pin pin-base', iconSize: [16, 16] });
   L.marker([s.habitat.lat, s.habitat.lon], { icon: baseIcon, title: 'Base' }).bindPopup(`<b>Base</b> ${tag(s.habitat.tag ?? 'H')}<br>Start and end of the walk.`).addTo(routeLayer);
   for (const wp of route.waypoints.filter((x) => x.target)) {
-    const t = wp.target;
+    const t = wp.target; const science = scienceFor(t);
     L.marker([wp.lat, wp.lon], { icon: L.divIcon({ className: 'pin', iconSize: [16, 16] }), title: t.name })
-      .bindPopup(`<b>${t.name}</b> ${tag(route.tag)}<br>${t.why}${t.sol ? `<br><small>Sol ${t.sol}</small>` : ''}${t.photo ? `<br><a href="${t.photo}" target="_blank" rel="noopener" aria-label="Open full image of ${t.name} in a new tab"><img src="${t.photo}" alt="${t.name}" width="240"></a><br><small>${t.credit} ? Select image to enlarge</small>` : ''}`, { maxWidth: 260, maxHeight: 320 })
+      .bindPopup(`<b>${t.name}</b> ${tag(route.tag)}<br>${science?.evidence ?? t.why}<p>${science?.look ?? ""}</p><small>${POSITION_NOTE}</small>${science ? `<p><a href="${science.source}" target="_blank" rel="noopener">NASA science reference</a></p>` : ""}${t.sol ? `<br><small>Sol ${t.sol}</small>` : ''}${t.photo ? `<br><a href="${t.photo}" target="_blank" rel="noopener" aria-label="Open full image of ${t.name} in a new tab"><img src="${t.photo}" alt="${t.name}" width="240"></a><br><small>${t.credit} ? Select image to enlarge</small>` : ''}`, { maxWidth: 260, maxHeight: 320 })
       .addTo(routeLayer);
   }
   for (const hazard of terrainCautions(s, route, p)) {
@@ -356,7 +369,7 @@ async function drawPlan(s, route) {
   }
 
   // panel
-  const q = new URLSearchParams({ site: s.id, route: route.id, crew: state.crew, rover: state.rover ? 1 : 0, load: inputs.loadKg, start: state.start });
+  const q = new URLSearchParams({ site: s.id, route: route.id, objective: route.objective, propulsion: state.propulsion, crew: state.crew, rover: state.rover ? 1 : 0, load: inputs.loadKg, start: state.start });
   if (state.sol != null) q.set('sol', state.sol);
   const nogo = p.alerts.filter((a) => a.level === 'proibido').length, warn = p.alerts.length - nogo;
   const rad = s.id === 'gale' ? 'average measured here by Curiosity' : 'reference value measured by Curiosity in Gale crater';
@@ -371,7 +384,7 @@ async function drawPlan(s, route) {
   $('panel').innerHTML = `
     <h2>${route.name}</h2>
     <p class="sub">${s.name} · Proposed human EVA ${tag('H')} · Waypoints ${tag(route.id.endsWith('-short') ? 'R' : route.tag)}</p>
-    ${s.routes.length > 1 ? `<label class="route-pick">Change route<select id="route">${s.routes.map((r) => `<option value="${r.id}" ${r.id === route.id ? 'selected' : ''}>${r.name}</option>`).join('')}</select></label>` : ''}
+    ${s.routes.length > 1 ? `<label class="route-pick">Change route<select id="route">${s.routes.filter((r) => r.objective === state.objective).map((r) => `<option value="${r.id}" ${r.id === route.id ? 'selected' : ''}>${r.name}</option>`).join('')}</select></label>` : ''}
     <div class="verdict ${p.go ? 'go' : 'nogo'}" role="status"><b>${p.go ? 'MODEL GO' : 'NOT RECOMMENDED'} ${tag('S')}</b>
       <span>${p.go ? `Passes scenario checks${warn ? `, with ${warn} ${warn > 1 ? 'warnings' : 'warning'}` : ''}. Not a safety clearance.` : `${nogo} ${nogo > 1 ? 'reasons block' : 'reason blocks'} this scenario.`}</span></div>
     <ul class="alerts">${p.alerts.map((a) => `<li class="${a.level}">${a.msg}</li>`).join('')}</ul>
@@ -406,7 +419,7 @@ async function drawPlan(s, route) {
     </div>`;
   renderReport(s, route, p, inputs, w);
   $('start-sim')?.addEventListener('click', (event) => {
-    try { sessionStorage.setItem('mars-eva-preparation', JSON.stringify({ site: s.id, route: route.id, crew: state.crew, rover: state.rover, essentials: [...state.essentials], equipment: [...state.equipment], extras: [...state.extras], optional: [...state.optional], shelter: state.shelter, roles: [...state.roles], sol: state.sol, start: state.start, investmentMillion: state.investmentMillion })); }
+    try { sessionStorage.setItem('mars-eva-preparation', JSON.stringify({ site: s.id, route: route.id, objective: route.objective, propulsion: state.propulsion, crew: state.crew, rover: state.rover, essentials: [...state.essentials], equipment: [...state.equipment], extras: [...state.extras], optional: [...state.optional], shelter: state.shelter, roles: [...state.roles], sol: state.sol, start: state.start, investmentMillion: state.investmentMillion })); }
     catch { event.preventDefault(); alert('Browser storage is unavailable. Enable session storage to transfer your preparation.'); }
   });
   $('route')?.addEventListener('change', (e) => drawPlan(s, s.routes.find((r) => r.id === e.target.value)).catch(showError));
@@ -504,6 +517,6 @@ function addShortRoutes(data) {
   return data;
 }
 getJSON('data/sites.json')
-  .then((d) => { sites = addShortRoutes(d); render(); })
+  .then((d) => { sites = addShortRoutes(d.filter((s) => s.id !== 'meridiani')); render(); })
   .catch((e) => { $('q-title').textContent = 'Could not load the site data.'; $('q-lead').textContent = `Open the site through a web server (npm run dev). Details: ${e.message}`; });
 

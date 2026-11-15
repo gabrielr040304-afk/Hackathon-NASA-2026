@@ -1,5 +1,6 @@
 // Todas as constantes do modelo. Etiqueta: [R] real · [D] derivado · [S] simulado (suposição nossa).
 export const MARS_RADIUS_M = 3396190;        // [R] esfera IAU Mars 2000 (mesma do relevo HiRISE)
+export const MARS_SOL_SECONDS = 88775.244; // [R] NASA GISS Mars24 mean solar day, SI seconds.
 export const SUIT_CAPACITY_H = 8;            // [S] ordem de grandeza das EVAs da NASA
 export const RESERVE_PCT = 30;               // [S] reserva mínima ao voltar
 export const SUIT_SPEED_FACTOR = 0.5;        // [S] traje reduz a velocidade a pé pela metade
@@ -20,6 +21,8 @@ export const TIME_SCALE = 30;                // demonstração: 1 s real = 30 s 
 export const SIM = { eyeHeight: 1.7, mouseSensitivity: 0.002, meshSegments: 256, maxFrameSeconds: 0.1, waypointRadius: 18, fov: 75, far: 6000, projectionMaxHours: 72 };
 export const SIM_GUIDANCE = { routeStepM: 2, routeLiftM: 0.35, routeWidthM: 1.2, scanStepM: 5, scanRangeM: 90, targetRangeM: 350, scanIntervalMs: 180 };
 export const ARRIVAL_RADIUS_M = 15;
+// Visual geometry [H] and telemetry refresh; no measured rock-density claim.
+export const SIM_DETAIL = { hudIntervalMs: 180, pixelRatio: 1.5, rocksPerTarget: 28, rockFieldRadiusM: 24, rockMinM: 0.18, rockMaxM: 1.1, beaconHeightM: 5, baseOffsetM: 10 };
 export const PEAK_TEMP_HOUR = 14;            // [S] hora da temperatura máxima do dia
 export const HAZARD_CELL_PIXELS = 16; // Display aggregation only, ~63 m for the bundled Jezero DTM.
 export const OPTIONAL_PREPARATION = [

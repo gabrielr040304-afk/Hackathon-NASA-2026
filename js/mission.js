@@ -1,3 +1,4 @@
+import { marsMinutes } from './mars-time.js';
 // Pure planning helpers. Does not change the simulator's calc.js contract.
 import { planEva } from './calc.js';
 import { ESSENTIALS, DAYLIGHT_MARGIN_MIN, SLOPE_WARN_DEG, SLOPE_NOGO_DEG, BUDGET_CATEGORIES } from './config.js';
@@ -22,7 +23,7 @@ export function assessMission(site, route, inputs, weather, essentials) {
 export function daylightWindow(weather, durationHours) {
   if (!weather) return null;
   const earliest = minutes(weather.sunrise);
-  const latest = Math.floor(minutes(weather.sunset) - DAYLIGHT_MARGIN_MIN - durationHours * 60);
+  const latest = Math.floor(minutes(weather.sunset) - DAYLIGHT_MARGIN_MIN - marsMinutes(durationHours * 3600));
   return { earliest, latest, feasible: latest >= earliest };
 }
 
