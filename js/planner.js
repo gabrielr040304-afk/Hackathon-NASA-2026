@@ -120,6 +120,9 @@ const STEPS = [
       for (const s of sites) body.append(option({ title: s.name, text: `${s.mission}. ${notes[s.id]?.[0] ?? ''}`,
         hint: s.objectives?.includes(state.objective) ? 'Matches your goal' : '', details: notes[s.id]?.[1], pressed: state.siteId === s.id,
         onClick: () => { state.touched = true; state.siteId = s.id; if (!s.objectives.includes(state.objective)) state.objective = null; state.sol = null; render(); } }));
+      // Real rover view of each destination on its card (layout only).
+      const DEST_PHOTO = { jezero: ['data/photos/cheyava.jpg', 'Cheyava Falls workspace, Perseverance Mastcam-Z. NASA/JPL-Caltech/ASU/MSSS'], gale: ['data/photos/crista.jpg', 'Boxwork ridges, Curiosity Mastcam. NASA/JPL-Caltech/MSSS'] };
+      body.querySelectorAll('.opt').forEach((card, i) => { const ph = DEST_PHOTO[sites[i]?.id]; if (!ph) return; card.classList.add('has-photo'); card.insertAdjacentHTML('afterbegin', `<span class="opt-photo" role="img" aria-label="${ph[1]}" title="${ph[1]}" style="background-image:url('${ph[0]}')"></span>`); });
       const unavailable = document.createElement('details'); unavailable.className = 'wide item-more';
       unavailable.innerHTML = '<summary>Why is Meridiani not offered?</summary><p>Opportunity documented ancient water at Meridiani [R]. Mars24 can calculate solar times, even without a weather station. This project lacks a verified local route and fine terrain grid, so Meridiani is excluded from EVA planning; this does not establish that travel there is physically impossible.</p><a href="https://www.giss.nasa.gov/tools/mars24/help/guide.html" target="_blank" rel="noopener">NASA Mars24: daylight calculations and limitations</a>';
       body.append(unavailable); why(notes[state.siteId]?.[1]);
