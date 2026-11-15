@@ -64,4 +64,4 @@ The planner now offers user-requested [H] prices per selected item, a preparatio
 
 The cost review now groups personal systems, shared preparation, habitat/mobility and transport, with unit allowance, quantity, subtotal and relative budget bars. Personal provisions multiply by surface crew; shared items count once. Chemical and nuclear thermal transport have separate hypothetical budget scenarios with their assumptions disclosed. Optional provisions now describe integrated EVA rehearsal and science-record traceability.
 
-The simulator uses one adaptive exploration pace instead of 1x/30x modes. Its maximum presentation speed is 2.5 m/s on foot or 4 m/s in the support-rover model, with up to 5x time compression. Movement, elapsed time and consumption stay consistent. Esc pauses all three.
+The simulator uses one adaptive exploration pace instead of 1x/30x modes. Its maximum presentation speed is 3 m/s on foot or 4.8 m/s in the support-rover model, with up to 6x time compression. Movement, elapsed time and consumption stay consistent. Esc pauses all three.

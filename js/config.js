@@ -59,7 +59,7 @@ export const PRICE_ALLOWANCES = {
 };
 export const PERSONAL_PRICE_IDS = ['pressure','oxygen','scrubber','cooling','power','comms','monitor','backup','amostrador','camera','espectrometro','perfuratriz','medico','microscopia','ambiente']; // [H] one complete personal set per surface crew member.
 export const PRICE_GROUPS = {personal:'Personal systems', preparation:'Mission preparation', habitat:'Habitat and mobility', transport:'Interplanetary transport'};
-export const SIM_PACING = { maxTimeScale: 5, maxFootVisualMps: 2.5, maxRoverVisualMps: 4 }; // [S] presentation compression; distance, time and consumption share the same elapsed time.
+export const SIM_PACING = { maxTimeScale: 6, maxFootVisualMps: 3, maxRoverVisualMps: 4.8 }; // [S] presentation compression; distance, time and consumption share the same elapsed time.
 
 // Planner extension approved by Gabriel: educational readiness, not flight certification.
 export const EQUIPMENT = [

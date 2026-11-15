@@ -1,5 +1,9 @@
 # Progresso
 
+## Ajuste de ritmo ? 14/11/2026
+- Ritmo adaptativo ligeiramente acelerado: ate 6x, com limite visual de 3 m/s a pe e 4,8 m/s com rover. Tempo e recursos continuam sincronizados.
+
+
 ## Quantidades, transporte e ritmo ? 14/11/2026
 - Trajes, baterias e demais sistemas pessoais/ferramentas multiplicados por tripulante. Provisoes compartilhadas contam uma vez; tabela apresenta unidade, quantidade e subtotal, agrupamento e barras de participacao. Previa da equipe atualiza conforme tamanho.
 - Transporte quimico $4.068B [H] e nuclear termico $6.102B [H]: escala historica OIG mais provisao hipotetica de 50%, sem alegar comparacao economica validada. Uma opcao incluida no total; referencia historica nao duplicada.
