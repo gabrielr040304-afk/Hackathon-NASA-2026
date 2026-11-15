@@ -41,6 +41,20 @@ export const PREPARATION_EXTRAS = [
 export const RADIATION_EVIDENCE_URL = 'https://www.nasa.gov/missions/mars-science-laboratory/how-nasas-curiosity-rover-is-making-mars-safer-for-astronauts/';
 // Historical comparisons below are program estimates, never Mars unit prices.
 export const RADIATION_TERRAIN = { azimuths: 24, stepM: 10, rangeM: 250, eyeHeightM: 1.7, refreshMs: 1000, openSkyFraction: .95 }; // [S] sampling settings; geometry [D].
+// [H] scenario allowances in million USD, per mission/crew, not per astronaut.
+// Reference amounts are published; allocation shares and multipliers are ours.
+export const PRICE_REFERENCES = {
+  suit: { million: 228.5, name: 'NASA Axiom Artemis task order, 2022: $228.5M for development/services, not one suit', url: 'https://www.nasa.gov/news-release/nasa-taps-axiom-space-for-first-artemis-moonwalking-spacesuits/' },
+  habitat: { million: 65, name: 'NASA NextSTEP, 2016: ~$65M combined prototype/concept awards across six companies, not one habitat', url: 'https://www.nasa.gov/news-release/nasa-selects-six-companies-to-develop-prototypes-concepts-for-deep-space-habitats/' },
+  instrument: { million: .07, name: 'NASA Pandora Q&A, 2024: ~$70,000 for a ground-based two-spectrometer system; not Mars-rated handheld hardware', url: 'https://appliedsciences.nasa.gov/sites/default/files/2024-08/GroundNetworks_Q%26A_Part3.pdf' },
+  rover: { million: 30, name: 'Intuitive Machines, 2024: $30M lunar vehicle feasibility study, not vehicle purchase or Mars delivery', url: 'https://investors.intuitivemachines.com/news-releases/news-release-details/intuitive-machines-led-moon-racer-team-awarded-nasa-lunar' },
+};
+export const PRICE_ALLOWANCES = {
+  pressure:['suit',.30], oxygen:['suit',.12], scrubber:['suit',.12], cooling:['suit',.10], power:['suit',.10], comms:['suit',.10], monitor:['suit',.04], rescue:['suit',.12],
+  backup:['suit',.03], repair:['suit',.04], dust:['suit',.02], rehearsal:['suit',.01], archive:['instrument',2],
+  amostrador:['instrument',1], camera:['instrument',1], espectrometro:['instrument',1], perfuratriz:['instrument',3], medico:['instrument',1], microscopia:['instrument',1], ambiente:['instrument',1],
+  shell:['habitat',1], polymer:['habitat',1.5], regolith:['habitat',2], rover:['rover',10],
+};
 
 // Planner extension approved by Gabriel: educational readiness, not flight certification.
 export const EQUIPMENT = [

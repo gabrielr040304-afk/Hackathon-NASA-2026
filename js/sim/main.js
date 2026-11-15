@@ -1,4 +1,5 @@
 // Generated from TypeScript by tools/compile_sim.mjs
+import { moneyMillions } from '../money.js';
 import { terrainExposure } from '../radiation.js';
 import { preparedSites } from '../routes.js';
 import { marsMinutes } from '../mars-time.js';
@@ -37,7 +38,7 @@ async function enter() { if (ended) return; try { await $('world').requestPointe
 function finish(reason = 'Session ended by the traveler.') {
   ended=true; active=false; keys.clear(); document.exitPointerLock(); $('pause').hidden=true; $('science').close(); $('summary').hidden=false;
   const visited=targets.filter(t=>t.visited).length;
-  $('actual').innerHTML=`<p class="session-outcome">${reason}</p><h2>Recorded session</h2>${telemetry(usage)}<div class="science-result"><h3>Field investigation</h3><p>${visited} / ${targets.length} stops investigated [S] | ${nextPoint>=points.length?'Returned along the planned route':'Route incomplete'}</p><ul>${targets.map(t=>`<li>${t.visited?'Investigated':'Not investigated'}: ${t.target.name}${t.visited?` | ${t.observations.join(', ')}`:''}</li>`).join('')}</ul><p>Optional field specimens investigated: ${fieldSpecimens.filter(p=>p.visited).length} [S].</p><p>Investigations record simulated field work, not new discoveries.</p></div><details><summary>Cost evidence</summary><p>Mission price unavailable. No verified NASA unit-price total is calculated. Incremental EVA cost is not priced.</p></details>`;
+  $('actual').innerHTML=`<p class="session-outcome">${reason}</p><h2>Recorded session</h2>${telemetry(usage)}<div class="science-result"><h3>Field investigation</h3><p>${visited} / ${targets.length} stops investigated [S] | ${nextPoint>=points.length?'Returned along the planned route':'Route incomplete'}</p><ul>${targets.map(t=>`<li>${t.visited?'Investigated':'Not investigated'}: ${t.target.name}${t.visited?` | ${t.observations.join(', ')}`:''}</li>`).join('')}</ul><p>Optional field specimens investigated: ${fieldSpecimens.filter(p=>p.visited).length} [S].</p><p>Investigations record simulated field work, not new discoveries.</p></div><details><summary>Cost evidence</summary><p>Selected surface-planning allowance [H]: ${moneyMillions(prep.investmentMillion)} per mission. Hypothetical allocations use published analog budget scales; not a NASA quote. Transport and mission operations excluded. Incremental EVA cost is not priced.</p></details>`;
   forecast();
 }
 function forecast() { const hours = clamp(Number($('projection').value) || 0, 0, C.SIM.projectionMaxHours); $('forecast').innerHTML = telemetry(projectUsage(usage,hours)); }

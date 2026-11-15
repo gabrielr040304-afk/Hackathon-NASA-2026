@@ -55,3 +55,7 @@ Water objectives concern ancient-water evidence preserved in rocks. Topography a
 Unsupported per-item prices and automatic Mars mission totals have been removed. Only the NASA OIG 2021 SLS/Orion benchmark remains, with its historical scope and source. USD values use M below one billion and B from one billion; unknown costs remain unavailable.
 
 Both simulators include a radiation panel: accumulated historical-reference dose, reference rate and position-dependent terrain sky visibility. The latter is derived from the local elevation grid and is a geometric context indicator, not a dose-rate measurement. No universal terrain shielding factor, solar-event prediction or local radiation map is invented.
+
+### Item planning allowances
+
+The planner now offers user-requested [H] prices per selected item, a preparation subtotal and a surface-planning total. Each item's review includes a real budget reference, its original scope and the project's chosen allocation/multiplier. These are illustrative allowances rather than validated Mars unit prices. Costs count once per mission/crew and use M/B formatting. Transport and full mission operations remain outside the total. See SOURCES.md for methodology and limitations.

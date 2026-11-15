@@ -1,5 +1,11 @@
 # Progresso
 
+## Estimativas por item autorizadas ? 14/11/2026
+- Usuario autorizou estimativas [H] com busca de referencia real. Catalogo por item centralizado em config.js; referencias NASA Axiom/NextSTEP/Pandora e contrato de estudo LTV divulgado pela Intuitive Machines. Parcelas e multiplicadores sao hipoteses explicitas, nao precos unitarios NASA.
+- Valores nas selecoes, subtotal de preparacao, revisao, relatorio e analise EVA. Contados uma vez por missao/equipe, sem multiplicacao automatica por tripulante. Escopos/exclusoes e referencias mostrados por item; formatacao M/B preservada.
+- 42 testes aprovados; sintaxe conferida. Sem push.
+
+
 ## Precos e exposicao de radiacao ? 14/11/2026
 - Removidos precos hipoteticos por item e total automatico de missao: nao havia base NASA para considera-los aproximacoes fieis. Mantida referencia historica OIG 2021 SLS/Orion (~$4.1B), com escopo, fonte e formatacao M/B. Precos desconhecidos nao viram zero.
 - Novo painel nas duas crateras: dose acumulada de referencia, taxa historica e visibilidade do ceu conforme relevo/posicao. Obstrucao geometrica [D] nao altera dose nem promete protecao; bordas sem cobertura assinaladas. Sem dados locais inventados.
