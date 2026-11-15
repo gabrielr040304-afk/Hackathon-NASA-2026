@@ -14,3 +14,9 @@ test('paused presentation time never advances the model',()=>{
   assert.equal(explorationSeconds(0,.7),0);
   assert.equal(explorationSeconds(-1,.7),0);
 });
+
+test("faster pace scales movement and simulated time together and invalid values fall back",()=>{
+  const base=explorationSeconds(.1,.7,false,1);
+  assert.equal(explorationSeconds(.1,.7,false,2),base*2);
+  assert.equal(explorationSeconds(.1,.7,false,99),base);
+});

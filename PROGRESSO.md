@@ -1,5 +1,9 @@
 # Progresso
 
+## Total e velocidade na pausa
+- Total e media por tripulante destacados no fim da revisao e do relatorio [H]. Ritmo selecionavel na pausa: 1x, 1,5x ou 2x, com movimento, tempo e consumo sincronizados.
+
+
 ## Ajuste de ritmo ? 14/11/2026
 - Ritmo adaptativo ligeiramente acelerado: ate 6x, com limite visual de 3 m/s a pe e 4,8 m/s com rover. Tempo e recursos continuam sincronizados.
 

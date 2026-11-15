@@ -245,3 +245,9 @@ body::before { content: ''; position: fixed; inset: 0; background: linear-gradie
 .cost-group details p { font-size:.85rem; font-weight:400; color:var(--mute); max-width:65ch; }
 .cost-group details[open] summary { color:#c7e6f5; }
 @media(max-width:700px) { .cost-overview { flex-direction:column; align-items:flex-start; gap:.8rem; } .cost-group table { font-size:.85rem; } }
+
+.final-cost { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1.5rem; padding:2rem; margin-top:2rem; background:#142c2c; border:1px solid #65bd8a; border-radius:14px; }
+.final-cost span { display:block; color:#d4eee0; }
+.final-cost strong { display:block; color:#9ce8b3; font:700 clamp(2.2rem,5vw,4.5rem)/1.1 var(--display); font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.final-cost p { grid-column:1/-1; margin:0; color:#c9e4d7; }
+@media(max-width:700px){ .final-cost { grid-template-columns:1fr; padding:1.2rem; } .final-cost p { grid-column:auto; } }

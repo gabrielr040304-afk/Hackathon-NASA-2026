@@ -209,7 +209,7 @@ STEPS.push({
   ready: () => true,
   render(body) {
     const box = document.createElement('div'); box.className = 'estimate-preview wide';
-    box.innerHTML = priceSummaryHTML()+historicalCostHTML();
+    box.innerHTML = priceSummaryHTML()+historicalCostHTML()+priceFinalHTML();
     body.append(box); why('Review your choices before opening the route map. The full breakdown and sources remain in the report.');
   },
 });
@@ -251,6 +251,10 @@ function priceSummaryHTML() {
     if(!rows.length)return '';
     return `<section class="cost-group"><div class="cost-group-heading"><h3>${name}</h3><strong>${moneyMillions(sum)} [H]</strong></div><div class="cost-share" aria-label="${name}: ${Math.round(sum/result.total*100)} percent of budget"><span style="width:${sum/result.total*100}%"></span></div><div class="table-scroll"><table><thead><tr><th scope="col">Provision</th><th scope="col">Unit [H]</th><th scope="col">Quantity</th><th scope="col">Subtotal [H]</th></tr></thead><tbody>${rows.map(row=>`<tr><th scope="row"><details><summary>${catalog.find(item=>item.id===row.id)?.name ?? row.id}</summary><p>${priceDetail(row.id)}</p></details></th><td>${moneyMillions(row.million)}</td><td>${row.quantity}${row.personal?' crew':' mission'}</td><td>${moneyMillions(row.subtotal)}</td></tr>`).join('')}</tbody></table></div></section>`;
   }).join('')}</div>`;
+}
+function priceFinalHTML() {
+  const total=selectedPrices(state).total;
+  return `<section class="final-cost" aria-label="Total mission planning budget"><div><span>Total planning budget [H]</span><strong>${moneyMillions(total)}</strong></div><div><span>Average per crew member [H]</span><strong>${moneyMillions(total/state.crew)}</strong></div><p>Shared and personal allowances divided by ${state.crew} crew. Scenario estimate; not a NASA quote or a complete Mars mission cost.</p></section>`;
 }
 function preparationCostHTML() {
   const result=selectedPrices({...state,equipment:[],shelter:null,rover:false,propulsion:null});
@@ -488,7 +492,7 @@ function renderReport(s, route, p, inputs, weather) {
       <p><a href="https://trek.nasa.gov/mars/" target="_blank" rel="noopener">Mars Trek: imagery and terrain</a> · <a href="https://astrogeology-usgs.hub.arcgis.com/pages/interactive-maps-mars" target="_blank" rel="noopener">USGS: geology</a> · <a href="https://science.nasa.gov/resource/curiositys-proposed-path-up-mount-sharp/" target="_blank" rel="noopener">Curiosity route illustration</a> · <a href="https://mars.nasa.gov/mars2020/multimedia/raw-images/" target="_blank" rel="noopener">Perseverance ground images</a>.</p>
       <p class="note">NASA Worldview shows Earth. It is useful as a visualization reference, not a source of Mars terrain or radiation measurements. Recommendations here are deterministic rules developed with AI assistance, not predictions from a live AI.</p>
     </section>
-    <section class="cost-analysis"><h3>Cost evidence</h3>${priceSummaryHTML()}${historicalCostHTML()}</section>`;
+    <section class="cost-analysis"><h3>Cost evidence</h3>${priceSummaryHTML()}${historicalCostHTML()}${priceFinalHTML()}</section>`;
   $('download-report').onclick = () => {
     const report = `${$('mission-report').innerText}\n\nIdentified scenario alerts:\n${p.alerts.map((alert) => `- ${alert.msg}`).join('\n')}\n\nNASA sources and methods: ${new URL('SOURCES.md', location.href)}\n`;
     const url = URL.createObjectURL(new Blob([report], { type: 'text/plain;charset=utf-8' }));

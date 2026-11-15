@@ -124,7 +124,7 @@ async function boot() {
 function frame(now       ) {
   if(!active && now-lastHud<C.SIM_DETAIL.hudIntervalMs){last=now;requestAnimationFrame(frame);return;}
   const dt=Math.min((now-last)/1000,C.SIM.maxFrameSeconds); last=now;
-  if(active&&!ended){ const localSlope=slopeAt(terrain,x,z), riding=prep.rover&&localSlope<=C.ROVER_MAX_SLOPE_DEG, speed=walkSpeedKmh(localSlope,prep.loadKg,riding)/3.6, seconds=explorationSeconds(dt,speed,riding); const forward=(keys.has('KeyW')||keys.has('ArrowUp')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')?1:0); const side=(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0); const length=Math.hypot(forward,side); let multiplier=1; message='';
+  if(active&&!ended){ const localSlope=slopeAt(terrain,x,z), riding=prep.rover&&localSlope<=C.ROVER_MAX_SLOPE_DEG, speed=walkSpeedKmh(localSlope,prep.loadKg,riding)/3.6, seconds=explorationSeconds(dt,speed,riding,Number($('pace').value)); const forward=(keys.has('KeyW')||keys.has('ArrowUp')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')?1:0); const side=(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0); const length=Math.hypot(forward,side); let multiplier=1; message='';
     if(length){ const step=speed*seconds; const nx=x+(-Math.sin(yaw)*forward+Math.cos(yaw)*side)/length*step, nz=z+(-Math.cos(yaw)*forward-Math.sin(yaw)*side)/length*step;
       const hx=(terrain.width-1)*terrain.m_per_px_x/2, hz=(terrain.height-1)*terrain.m_per_px_y/2;
       if(Math.abs(nx)>hx||Math.abs(nz)>hz)message='Terrain boundary: no elevation data beyond this point.';
