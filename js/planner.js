@@ -1,7 +1,8 @@
+import { moneyMillions } from './money.js';
 import { preparedSites } from './routes.js';
 import { objectivesForSite, scienceFor, POSITION_NOTE } from './science.js';
 ﻿// Planner: mission readiness, science, resources, shelter, daylight and cost context.
-import { RESERVE_PCT, DAYLIGHT_MARGIN_MIN, EQUIPMENT, ESSENTIALS, SHELTERS, BUDGET_CATEGORIES, HISTORICAL_LAUNCH_COST, SOURCE_LINKS, RAD_MSV_PER_DAY, CAREER_LIMIT_MSV, LOAD_FACTOR_PER_KG, COST_MODEL, PREPARATION_EXTRAS, OPTIONAL_PREPARATION, RADIATION_EVIDENCE_URL } from './config.js';
+import { RESERVE_PCT, DAYLIGHT_MARGIN_MIN, EQUIPMENT, ESSENTIALS, SHELTERS, BUDGET_CATEGORIES, HISTORICAL_LAUNCH_COST, HISTORICAL_LAUNCH_ROUNDED_MILLION, SOURCE_LINKS, RAD_MSV_PER_DAY, CAREER_LIMIT_MSV, LOAD_FACTOR_PER_KG, PREPARATION_EXTRAS, OPTIONAL_PREPARATION, RADIATION_EVIDENCE_URL } from './config.js';
 import { assessMission, compareRoutes, daylightWindow, clockTime, terrainCautions, preparationLevel } from './mission.js';
 import { terrainHazards } from './hazards.js';
 import { parseTerrain } from './sim/terrain.js';
@@ -66,10 +67,10 @@ const STEPS = [
       body.classList.add('preparation-layout');
       for (const item of ESSENTIALS) {
         const label = document.createElement('label'); label.className = `readiness ${state.essentials.has(item.id) ? 'selected' : ''}`;
-        label.innerHTML = `<input type="checkbox" ${state.essentials.has(item.id) ? 'checked' : ''}><span><b>${item.name}</b><small>${item.why}</small><span class="choice-price">+ $${COST_MODEL.essentials[item.id]}M [H] / astronaut</span></span>`;
+        label.innerHTML = `<input type="checkbox" ${state.essentials.has(item.id) ? 'checked' : ''}><span><b>${item.name}</b><small>${item.why}</small><span class="choice-price">NASA unit price unavailable</span></span>`;
         label.querySelector('input').onchange = (e) => { e.target.checked ? state.essentials.add(item.id) : state.essentials.delete(item.id); updatePreparationCost(); e.target.closest('label').classList.toggle('selected', e.target.checked); updateRisk(); };
         const more = document.createElement('details'); more.className = 'item-more';
-        more.innerHTML = `<summary aria-label="More about ${item.name}">+ Learn more</summary><p>${item.why}</p><a href="${SOURCE_LINKS.suit}" target="_blank" rel="noopener">NASA: spacesuit systems</a><p>Price is a hypothetical project assumption, per astronaut. It is not a NASA quotation.</p>`;
+        more.innerHTML = `<summary aria-label="More about ${item.name}">+ Learn more</summary><p>${item.why}</p><a href="${SOURCE_LINKS.suit}" target="_blank" rel="noopener">NASA: spacesuit systems</a><p>No verified unit price for this Mars-ready system is available. Program development costs cannot be divided into a reliable price per astronaut.</p>`;
         const wrap = document.createElement('div'); wrap.className = 'item-wrap'; wrap.append(label, more); body.append(wrap);
       }
       const count = document.createElement('p'); count.id = 'readiness-count'; count.className = 'wide'; count.innerHTML = preparationCostHTML();
@@ -78,7 +79,7 @@ const STEPS = [
         section.innerHTML = `<h2>${group}</h2><p>Additional recommendations [H]. These procedures strengthen preparation; they do not extend modeled suit endurance.</p>`;
         for (const item of PREPARATION_EXTRAS.filter((entry) => entry.group === group)) {
           const row = document.createElement('div'); row.className = 'extra-row';
-          row.innerHTML = `<label><input type="checkbox" ${state.extras.has(item.id) ? 'checked' : ''}><span><b>${item.name}</b><small>${item.why}</small></span><strong class="money">$${item.millionUSD}M [H]</strong></label><details class="item-more"><summary>+ Learn more</summary><p>${item.why}</p><a href="${item.source}" target="_blank" rel="noopener">NASA reference</a></details>`;
+          row.innerHTML = `<label><input type="checkbox" ${state.extras.has(item.id) ? 'checked' : ''}><span><b>${item.name}</b><small>${item.why}</small></span><strong class="money">Price unavailable</strong></label><details class="item-more"><summary>+ Learn more</summary><p>${item.why}</p><a href="${item.source}" target="_blank" rel="noopener">NASA reference</a></details>`;
           row.querySelector('input').onchange = (e) => { e.target.checked ? state.extras.add(item.id) : state.extras.delete(item.id); updatePreparationCost(); updateRisk(); }; section.append(row);
         }
         body.append(section);
@@ -87,7 +88,7 @@ const STEPS = [
       optional.innerHTML = '<h2>Optional additions</h2><p>For additional science preparation. These do not change the minimum or recommended checklist level.</p>';
       for (const item of OPTIONAL_PREPARATION) {
         const row = document.createElement('div'); row.className = 'extra-row';
-        row.innerHTML = `<label><input type="checkbox" ${state.optional.has(item.id) ? 'checked' : ''}><span><b>${item.name}</b><small>${item.why}</small></span><strong class="money">$${item.millionUSD}M [H]</strong></label>`;
+        row.innerHTML = `<label><input type="checkbox" ${state.optional.has(item.id) ? 'checked' : ''}><span><b>${item.name}</b><small>${item.why}</small></span><strong class="money">Price unavailable</strong></label>`;
         row.querySelector('input').onchange = (e) => { e.target.checked ? state.optional.add(item.id) : state.optional.delete(item.id); updatePreparationCost(); }; optional.append(row);
       }
       body.append(optional, count);
@@ -151,10 +152,10 @@ const STEPS = [
       const f = document.createElement('div'); f.className = 'field';
       for (const e of EQUIPMENT) {
         const l = document.createElement('label');
-        l.innerHTML = `<input type="checkbox" ${state.equipment.has(e.id) ? 'checked' : ''}> ${e.name} <small>(${e.kg} kg) ${tag('S')} - $${COST_MODEL.equipment[e.id]}M ${tag('H')}</small>`;
+        l.innerHTML = `<input type="checkbox" ${state.equipment.has(e.id) ? 'checked' : ''}> ${e.name} <small>(${e.kg} kg) ${tag('S')} - price unavailable</small>`;
         l.querySelector('input').onchange = (ev) => { ev.target.checked ? state.equipment.add(e.id) : state.equipment.delete(e.id); $('load-total').textContent = `${loadKg()} kg`; updateRisk(); };
         const more = document.createElement('details'); more.className = 'item-more';
-        more.innerHTML = `<summary aria-label="More about ${e.name}">+ Learn more</summary><p>${e.name}: ${e.id === 'medico' ? 'Supports the emergency-response plan; it does not replace medical training.' : 'Use to document or investigate rock samples. NASA rover instruments combine imaging, spectroscopy and sampling; this handheld concept is not an actual rover instrument.'}</p><p>Mass and cost are project assumptions [S/H].</p><a href="https://science.nasa.gov/mission/mars-2020-perseverance/science-instruments/">NASA instrument reference</a>`;
+        more.innerHTML = `<summary aria-label="More about ${e.name}">+ Learn more</summary><p>${e.name}: ${e.id === 'medico' ? 'Supports the emergency-response plan; it does not replace medical training.' : 'Use to document or investigate rock samples. NASA rover instruments combine imaging, spectroscopy and sampling; this handheld concept is not an actual rover instrument.'}</p><p>Mass is a project assumption [S]. A verified Mars equipment price is unavailable.</p><a href="https://science.nasa.gov/mission/mars-2020-perseverance/science-instruments/">NASA instrument reference</a>`;
         f.append(l, more);
       }
       const t = document.createElement('div'); t.className = 'field';
@@ -167,7 +168,7 @@ const STEPS = [
     title: 'What protects your base?', lead: 'Choose a habitat concept and its shielding approach. These structures stay at the hypothetical base; you do not carry them on the walk.',
     ready: () => state.shelter,
     render(body) {
-      for (const shelter of SHELTERS) body.append(option({ title: `${shelter.name} ${tag('H')}`, text: `${shelter.material} - $${COST_MODEL.shelter[shelter.id]}M [H]`, hint: `${shelter.id === 'polymer' ? 'Suggested concept [H]: hydrogen-rich shielding is under NASA study. ' : ''}${shelter.protection}`, details: `<strong>Benefit</strong> ${shelter.protection}<br><strong>Trade-off</strong> ${shelter.tradeoff}`, pressed: state.shelter === shelter.id, onClick: () => { state.shelter = shelter.id; render(); } }));
+      for (const shelter of SHELTERS) body.append(option({ title: `${shelter.name} ${tag('H')}`, text: `${shelter.material} - price unavailable`, hint: `${shelter.id === 'polymer' ? 'Suggested concept [H]: hydrogen-rich shielding is under NASA study. ' : ''}${shelter.protection}`, details: `<strong>Benefit</strong> ${shelter.protection}<br><strong>Trade-off</strong> ${shelter.tradeoff}`, pressed: state.shelter === shelter.id, onClick: () => { state.shelter = shelter.id; render(); } }));
       why(`${SHELTERS.find((x) => x.id === state.shelter).tradeoff} No shielding percentage or thermal rating can be inferred without thickness, geometry and testing. Habitat choice does not reduce the outdoor dose calculation. <a href="${SOURCE_LINKS.shielding}" target="_blank" rel="noopener">NASA shielding research</a>.`);
     },
   },
@@ -201,17 +202,12 @@ const STEPS = [
 const [readinessStep, objectiveStep, destinationStep] = STEPS.splice(0, 3);
 STEPS.unshift(destinationStep, readinessStep, objectiveStep);
 STEPS.push({
-  title: 'Review your mission estimate.',
+  title: 'Review your mission and cost evidence.',
   lead: 'Review the scenario and its limitations before opening the map.',
   ready: () => true,
   render(body) {
-    const life = [...state.essentials].reduce((sum, id) => sum + COST_MODEL.essentials[id], 0) * state.crew + extraCost();
-    const equipment = [...state.equipment].reduce((sum, id) => sum + COST_MODEL.equipment[id], 0) * state.crew;
-    const launch = HISTORICAL_LAUNCH_COST.reduce((sum, item) => sum + item.millionUSD, 0);
-    const parts = [['Historical launch benchmark', launch], ['Life support', life], ['Equipment', equipment], ['Habitat', COST_MODEL.shelter[state.shelter]], ['Support rover', state.rover ? COST_MODEL.rover : 0], ['Operations', COST_MODEL.operations]];
-    const subtotal = parts.reduce((sum, row) => sum + row[1], 0);
     const box = document.createElement('div'); box.className = 'estimate-preview wide';
-    box.innerHTML = `<p>Estimated scenario total [H]</p><strong>$${fmt(subtotal * (1 + COST_MODEL.contingency) / 1000, 2)} billion</strong><p class="per-person">$${fmt(subtotal * (1 + COST_MODEL.contingency) / state.crew, 1)}M per traveler [H] - ${state.crew} travelers [H]</p><p>Includes ${COST_MODEL.contingency * 100}% illustrative contingency [H].</p>${parts.map(([name, value]) => `<div class="estimate-line"><span>${name}</span><b>$${fmt(value)}M [H]</b></div>`).join('')}<p>Hypothetical assumptions, not NASA Mars mission prices. The historical Artemis benchmark does not cover a Mars landing, transit or return. Propulsion selection is conceptual and has no validated price in this model.</p>`;
+    box.innerHTML = `<h2>Mission price: unavailable</h2><p>NASA does not provide verified unit prices for the selected Mars habitat, life support, tools, rover or rescue architecture in these sources. No unsupported total or price per astronaut is calculated.</p>${historicalCostHTML()}`;
     body.append(box); why('Review your choices before opening the route map. The full breakdown and sources remain in the report.');
   },
 });
@@ -234,8 +230,10 @@ async function render() {
   updateRisk();
 }
 
-function extraCost() { return (PREPARATION_EXTRAS.filter((item) => state.extras.has(item.id)).reduce((sum, item) => sum + item.millionUSD, 0) + OPTIONAL_PREPARATION.filter((item) => state.optional.has(item.id)).reduce((sum, item) => sum + item.millionUSD, 0)) * state.crew; }
-function preparationCostHTML() { const total = [...state.essentials].reduce((sum, id) => sum + COST_MODEL.essentials[id], 0) * state.crew + extraCost(); return `<span>${state.essentials.size} / ${ESSENTIALS.length} essential systems confirmed [H]</span><span>Selected preparation investment</span><strong class="money">$${fmt(total)}M <small>[H]</small></strong><small>For ${state.crew} travelers; illustrative assumptions.</small>`; }
+function historicalCostHTML() {
+  return `<h3>Historical NASA benchmark [R]</h3><p>SLS / Orion production and launch operations: approximately <strong>${moneyMillions(HISTORICAL_LAUNCH_ROUNDED_MILLION)}</strong> per launch, estimated by NASA OIG in 2021 for Artemis I?IV. This is a lunar-program benchmark, not a Mars mission quote.</p><dl>${HISTORICAL_LAUNCH_COST.map(item=>`<dt>${item.name}</dt><dd>${moneyMillions(item.millionUSD)} [R]</dd>`).join('')}</dl><p>Component sum: ${moneyMillions(HISTORICAL_LAUNCH_COST.reduce((sum,item)=>sum+item.millionUSD,0))} [D]; published rounded estimate: ${moneyMillions(HISTORICAL_LAUNCH_ROUNDED_MILLION)} [R]. Historical USD, not inflation-adjusted.</p><a href="${SOURCE_LINKS.budget}" target="_blank" rel="noopener">NASA OIG IG-22-003 (2021), pp. 22?23</a>`;
+}
+function preparationCostHTML() { return `<span>${state.essentials.size} / ${ESSENTIALS.length} essential systems confirmed [H]</span><strong>Price unavailable</strong><small>No verified Mars unit prices. Checklist selections do not imply a NASA quotation.</small>`; }
 function updatePreparationCost() { $('readiness-count').innerHTML = preparationCostHTML(); }
 function updateRisk() {
   let risk = $('risk-advice');
@@ -437,20 +435,7 @@ function renderReport(s, route, p, inputs, weather) {
   const preferred = ranked.find((entry) => entry.plan.go);
   const window = daylightWindow(weather, p.total_h);
   const shelter = SHELTERS.find((entry) => entry.id === state.shelter);
-  const assumptions = [
-    { name: 'Launch system benchmark', value: HISTORICAL_LAUNCH_COST.reduce((sum, row) => sum + row.millionUSD, 0) },
-    { name: 'Habitat and shielding', value: COST_MODEL.shelter[state.shelter] },
-    { name: 'Selected life-support systems', value: [...state.essentials].reduce((sum, id) => sum + COST_MODEL.essentials[id], 0) * state.crew + extraCost() },
-    { name: 'Science equipment', value: [...state.equipment].reduce((sum, id) => sum + COST_MODEL.equipment[id], 0) * state.crew },
-    { name: 'Support rover', value: state.rover ? COST_MODEL.rover : 0 },
-    { name: 'Mission operations', value: COST_MODEL.operations },
-  ];
-  const subtotal = assumptions.reduce((sum, item) => sum + item.value, 0);
-  const contingency = subtotal * COST_MODEL.contingency;
-  assumptions.push({ name: 'Contingency', value: contingency });
-  const estimate = subtotal + contingency;
-  state.investmentMillion = estimate;
-  const historicalTotal = HISTORICAL_LAUNCH_COST.reduce((sum, row) => sum + row.millionUSD, 0);
+  state.investmentMillion = null;
   const timeAdvice = !window ? 'No measured local sunrise or sunset is available. A departure window cannot be established.'
     : !window.feasible ? 'This walk does not fit within the recorded daylight and return margin. Shorten it or change the scenario.'
       : `Daylight-compatible departures: ${clockTime(window.earliest)}–${clockTime(window.latest)} Mars local time [S], using recorded sunrise ${weather.sunrise} and sunset ${weather.sunset} [R]. This is a daylight constraint, not an optimal temperature or radiation forecast.`;
@@ -465,7 +450,7 @@ function renderReport(s, route, p, inputs, weather) {
         <p>${state.essentials.size} of ${ESSENTIALS.length} essential systems confirmed for this concept ${tag('H')}. ${state.crew} crew ${tag('H')}; ${inputs.loadKg} kg extra load per astronaut ${tag('S')}. ${inputs.rover ? 'Support rover selected; human-rated capability and rescue range are unverified.' : 'On foot: remain able to return with the weakest crew member.'}</p>
         <ul>${p.missing.map((item) => `<li class="risk-text">Confirm ${item.name.toLowerCase()}.</li>`).join('') || '<li>Checklist complete. Equipment availability is self-reported, not verified.</li>'}${!state.equipment.has('medico') ? '<li>Medical kit omitted: add it to your equipment and emergency plan.</li>' : ''}</ul>
         <h3>Base structure and protection ${tag('H')}</h3><p><b>${shelter.name}.</b> ${shelter.protection} ${shelter.tradeoff}</p>
-        <p>Construction mass is unknown; cost is an illustrative assumption. This selection does not certify a shelter, change suit endurance or reduce outdoor radiation exposure.</p>
+        <p>Construction mass is unknown; cost is unavailable. This selection does not certify a shelter, change suit endurance or reduce outdoor radiation exposure.</p>
       </section>
       <section><h3>Departure and return</h3><p>${timeAdvice}</p>
         <p>Selected departure ${state.start}, modeled return ${p.end_time} ${tag('S')}; duration ${hhmm(p.total_h)} ${tag('S')}. Return reserve ${fmt(p.reserve_pct)}% ${tag('S')} against the scenario minimum ${RESERVE_PCT}% ${tag('S')}.</p>
@@ -481,19 +466,7 @@ function renderReport(s, route, p, inputs, weather) {
       <p><a href="https://trek.nasa.gov/mars/" target="_blank" rel="noopener">Mars Trek: imagery and terrain</a> · <a href="https://astrogeology-usgs.hub.arcgis.com/pages/interactive-maps-mars" target="_blank" rel="noopener">USGS: geology</a> · <a href="https://science.nasa.gov/resource/curiositys-proposed-path-up-mount-sharp/" target="_blank" rel="noopener">Curiosity route illustration</a> · <a href="https://mars.nasa.gov/mars2020/multimedia/raw-images/" target="_blank" rel="noopener">Perseverance ground images</a>.</p>
       <p class="note">NASA Worldview shows Earth. It is useful as a visualization reference, not a source of Mars terrain or radiation measurements. Recommendations here are deterministic rules developed with AI assistance, not predictions from a live AI.</p>
     </section>
-    <section class="cost-analysis"><h3>Mission cost analysis</h3>
-      <div class="report-grid"><div><h4>Estimated mission scenario ${tag('H')}</h4>
-        <p class="cost-total">$${fmt(estimate / 1000, 2)} billion ${tag('H')}</p>
-        <p>Illustrative total: $${fmt(estimate / state.crew, 1)}M per crew member ${tag('H')}. Costs change with your selections. These are scenario assumptions, not actual Mars mission prices.</p>
-        ${chart(assumptions, 'Estimated mission costs; millions of USD [H]', 'M USD', 'H')}
-        <p>Includes an illustrative ${COST_MODEL.contingency * 100}% contingency. One historical SLS/Orion launch benchmark is included, but Mars transit, landing and return are not independently priced; actual costs could be substantially different.</p>
-      </div><div><h4>Historical NASA comparison ${tag('R')}</h4>
-        ${chart(HISTORICAL_LAUNCH_COST.map((entry) => ({ name: entry.name, value: entry.millionUSD })), 'SLS / Orion estimate published in 2021; millions of USD [R]', 'M USD', 'R')}
-        <p>Component sum: <b>${fmt(historicalTotal, 0)} million USD ${tag('D')}</b>. The OIG rounded the launch-system estimate to about $4.1 billion ${tag('R')}.</p>
-        <p>Scope: production and launch operations at an approximately annual cadence. Excludes prior development, lunar landing, a Mars habitat and the selected surface walk. These are historical published estimates, not actual spending for this mission or current prices.</p>
-        <p><a href="${SOURCE_LINKS.budget}" target="_blank" rel="noopener">NASA OIG IG-22-003, November 15, 2021, pp. 22–23</a>.</p>
-      </div></div>
-    </section>`;
+    <section class="cost-analysis"><h3>Cost evidence</h3><p>Selected mission total: unavailable. Habitat, suits, equipment, transport, rescue and operations have no verified combined Mars price in the connected sources. Unknown amounts are not zero.</p>${historicalCostHTML()}</section>`;
   $('download-report').onclick = () => {
     const report = `${$('mission-report').innerText}\n\nIdentified scenario alerts:\n${p.alerts.map((alert) => `- ${alert.msg}`).join('\n')}\n\nNASA sources and methods: ${new URL('SOURCES.md', location.href)}\n`;
     const url = URL.createObjectURL(new Blob([report], { type: 'text/plain;charset=utf-8' }));

@@ -1,5 +1,11 @@
 # Progresso
 
+## Precos e exposicao de radiacao ? 14/11/2026
+- Removidos precos hipoteticos por item e total automatico de missao: nao havia base NASA para considera-los aproximacoes fieis. Mantida referencia historica OIG 2021 SLS/Orion (~$4.1B), com escopo, fonte e formatacao M/B. Precos desconhecidos nao viram zero.
+- Novo painel nas duas crateras: dose acumulada de referencia, taxa historica e visibilidade do ceu conforme relevo/posicao. Obstrucao geometrica [D] nao altera dose nem promete protecao; bordas sem cobertura assinaladas. Sem dados locais inventados.
+- 39 testes aprovados, incluindo limiar M/B, custos desconhecidos, planicie, vale e borda do relevo; sintaxe e contrato HUD verificados. Painel carregado no Chrome em Jezero (97,6% de ceu visivel na base), com transferencia da referencia Gale explicitada. Sem push.
+
+
 ## Finalizacao Gale e habitat ? 14/11/2026
 - Gale 3D habilitado para Boxwork formations e Boxwork ridge - short, catalogo compartilhado entre planejador e simulador. HiRISE DTEEC_019698_1750_019988_1750_U01 recortado em 1,6 km, 512 x 512, sem lacunas; textura Mars Trek propria. Cache bruto fora do Git.
 - Habitat refeito com modulo pressurizado, airlock, escotilha, apoios no terreno, escada, radiadores, paineis solares, antenas e itens conforme preparacao. Variantes de blindagem e rover conceituais [H]; inspecao explica fonte e escolhas.

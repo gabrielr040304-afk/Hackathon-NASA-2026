@@ -26,6 +26,14 @@ meter { display: block; height: .65rem; margin-top: .4rem; }
 #navigation { top: 6rem; right: 1.5rem; max-width: 21rem; font-size: .8rem; color: var(--muted); border-radius: 12px; background: var(--glass); line-height: 1.5; }
 #science-nav { position: absolute; top: 14rem; right: 1.5rem; width: 21rem; padding: 1rem; background: var(--glass); border: 1px solid #8db1b5; border-radius: 12px; display: grid; gap: .4rem; }
 #science-nav b { font-size: 1.2rem; color: var(--amber); }
+#radiation-panel { position:absolute; left:1.5rem; top:26rem; width:19rem; padding:1rem; background:var(--glass); border:1px solid #a8ac91; border-radius:12px; line-height:1.4; font-size:.82rem; }
+#radiation-panel h2 { font-size:1rem; margin:0 0 .5rem; color:#ffe2a3; }
+#radiation-panel p { margin:.5rem 0; }
+#radiation-panel .rad-dose { font-size:1.7rem; font-variant-numeric:tabular-nums; margin:0; }
+#radiation-panel small { font-size:.74rem; color:#d0e0e6; }
+#radiation-panel dl { display:grid; grid-template-columns:1fr auto; gap:.4rem; }
+#radiation-panel dd { margin:0; font-variant-numeric:tabular-nums; }
+@media(max-height:850px) { #radiation-panel { top:24rem; font-size:.75rem; width:22rem; padding:.7rem; } #radiation-panel .rad-dose {font-size:1.3rem;} #radiation-panel small {font-size:.68rem;} }
 #science-nav small, #science-nav span { color: #d7e6e9; font-size: .85rem; }
 #heading { position: absolute; top: 5.5rem; left: 50%; transform: translateX(-50%); padding: .45rem .8rem; border-radius: 6px; background: #102633e8; font-variant-numeric: tabular-nums; }
 #notice { bottom: 7rem; border-radius: 8px; font-size: .88rem; }

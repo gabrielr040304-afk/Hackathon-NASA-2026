@@ -29,23 +29,18 @@ export const OPTIONAL_FIELD_MIN = 5; // [S] extra observation duration; beyond t
 export const PEAK_TEMP_HOUR = 14;            // [S] hora da temperatura máxima do dia
 export const HAZARD_CELL_PIXELS = 16; // Display aggregation only, ~63 m for the bundled Jezero DTM.
 export const OPTIONAL_PREPARATION = [
-  { id: 'rehearsal', name: 'Additional field-science rehearsal', millionUSD: 3, why: 'Rehearse sample handling and documentation before departure. Additional training; not required for the checklist level.' },
-  { id: 'archive', name: 'Redundant science-data archive', millionUSD: 2, why: 'Keep an extra copy of field observations for science review. Does not improve suit endurance or reduce radiation.' },
-]; // [H] optional project enhancements, illustrative per-person costs.
+  { id: 'rehearsal', name: 'Additional field-science rehearsal', why: 'Rehearse sample handling and documentation before departure. Additional training; not required for the checklist level.' },
+  { id: 'archive', name: 'Redundant science-data archive', why: 'Keep an extra copy of field observations for science review. Does not improve suit endurance or reduce radiation.' },
+]; // [H] optional project enhancements; verified unit prices unavailable.
 // Additional project recommendations [H], informed by NASA maintenance/contingency research.
 export const PREPARATION_EXTRAS = [
-  { id: 'backup', name: 'Independent emergency oxygen check', group: 'Contingency and recovery', millionUSD: 15, why: 'Verify the backup supply and abort procedure independently of the primary oxygen system.', source: 'https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-002-eclss.pdf' },
-  { id: 'repair', name: 'Suit inspection and repair provision', group: 'Contingency and recovery', millionUSD: 12, why: 'Plan inspection, spare seals and qualified maintenance support; a spare part alone does not qualify a repair.', source: 'https://www.nasa.gov/reference/9-0-hardware-and-equipment-vol-2/' },
-  { id: 'dust', name: 'Dust-control and seal inspection procedure', group: 'Dust and equipment care', millionUSD: 8, why: 'Inspect sealing surfaces and control dust transfer when returning to the habitat.', source: 'https://www.nasa.gov/reference/9-0-hardware-and-equipment-vol-2/' },
+  { id: 'backup', name: 'Independent emergency oxygen check', group: 'Contingency and recovery', why: 'Verify the backup supply and abort procedure independently of the primary oxygen system.', source: 'https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-002-eclss.pdf' },
+  { id: 'repair', name: 'Suit inspection and repair provision', group: 'Contingency and recovery', why: 'Plan inspection, spare seals and qualified maintenance support; a spare part alone does not qualify a repair.', source: 'https://www.nasa.gov/reference/9-0-hardware-and-equipment-vol-2/' },
+  { id: 'dust', name: 'Dust-control and seal inspection procedure', group: 'Dust and equipment care', why: 'Inspect sealing surfaces and control dust transfer when returning to the habitat.', source: 'https://www.nasa.gov/reference/9-0-hardware-and-equipment-vol-2/' },
 ];
 export const RADIATION_EVIDENCE_URL = 'https://www.nasa.gov/missions/mars-science-laboratory/how-nasas-curiosity-rover-is-making-mars-safer-for-astronauts/';
-// Illustrative mission costing assumptions, millions USD [H], not NASA quotations.
-export const COST_MODEL = {
-  essentials: { pressure: 100, oxygen: 25, scrubber: 30, cooling: 20, power: 25, comms: 35, monitor: 10, rescue: 80 },
-  equipment: { amostrador: 3, camera: 2, espectrometro: 8, perfuratriz: 15, medico: 2, microscopia: 4, ambiente: 6 },
-  shelter: { shell: 480, polymer: 620, regolith: 900 },
-  rover: 250, operations: 493, contingency: 0.2,
-};
+// Historical comparisons below are program estimates, never Mars unit prices.
+export const RADIATION_TERRAIN = { azimuths: 24, stepM: 10, rangeM: 250, eyeHeightM: 1.7, refreshMs: 1000, openSkyFraction: .95 }; // [S] sampling settings; geometry [D].
 
 // Planner extension approved by Gabriel: educational readiness, not flight certification.
 export const EQUIPMENT = [
@@ -84,6 +79,7 @@ export const BUDGET_CATEGORIES = [
   { id: 'support', name: 'Suits, life support and equipment' },
   { id: 'operations', name: 'Operations, return and contingency' },
 ];
+export const HISTORICAL_LAUNCH_ROUNDED_MILLION = 4100; // [R] NASA OIG 2021 rounded published estimate.
 export const HISTORICAL_LAUNCH_COST = [
   { name: 'SLS production', millionUSD: 2200 },
   { name: 'Orion capsule', millionUSD: 1000 },

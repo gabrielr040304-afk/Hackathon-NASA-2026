@@ -49,3 +49,9 @@ Rover-stop markers approximate science locations. Added rocks, base and rover ar
 Both Gale routes now run in the visor: Boxwork formations and Boxwork ridge - short. Each uses a 1.6 km HiRISE crop and Mars Trek orbital texture. Inspect required science stops with E; optional illustrative trail specimens add five minutes of modeled observation time. The habitat includes a pressure module, airlock, terrain-adjusted supports, power, cooling and communications equipment, with visible changes for selected shielding, tools, procedures and support rover. Its geometry is a project concept informed by NASA studies.
 
 Water objectives concern ancient-water evidence preserved in rocks. Topography alone does not identify liquid water or an extractable deposit. Added geological details remain hypothetical reconstructions; reference images and NASA links explain the real observations.
+
+### Cost and radiation evidence correction
+
+Unsupported per-item prices and automatic Mars mission totals have been removed. Only the NASA OIG 2021 SLS/Orion benchmark remains, with its historical scope and source. USD values use M below one billion and B from one billion; unknown costs remain unavailable.
+
+Both simulators include a radiation panel: accumulated historical-reference dose, reference rate and position-dependent terrain sky visibility. The latter is derived from the local elevation grid and is a geometric context indicator, not a dose-rate measurement. No universal terrain shielding factor, solar-event prediction or local radiation map is invented.

@@ -1,3 +1,4 @@
+import { terrainExposure } from '../radiation.js';
 import { preparedSites } from '../routes.js';
 import { marsMinutes } from '../mars-time.js';
 import { scienceFor, investigationTools, POSITION_NOTE } from '../science.js';
@@ -15,7 +16,7 @@ const keys = new Set<string>();
 let terrain: any, scene: any, camera: any, renderer: any, site: any, route: any, prep: any, weather: any, points: any[] = [], targets: any[] = [];
 let x = 0, z = 0, y = 0, baseHeight = 0, last = performance.now(), message = '';
 let image: HTMLImageElement;
-let lastScan = 0, scanKey = "", lastHud = -Infinity;
+let lastScan = 0, scanKey = "", lastHud = -Infinity, lastRadiation = -Infinity;
 let currentScience: any = null, fieldSpecimens: any[] = [], habitat: any = null;
 const fmt = (n: number, d = 1) => n.toFixed(d);
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
@@ -35,7 +36,7 @@ async function enter() { if (ended) return; try { await $('world').requestPointe
 function finish(reason = 'Session ended by the traveler.') {
   ended=true; active=false; keys.clear(); document.exitPointerLock(); $('pause').hidden=true; $('science').close(); $('summary').hidden=false;
   const visited=targets.filter(t=>t.visited).length;
-  $('actual').innerHTML=`<p class="session-outcome">${reason}</p><h2>Recorded session</h2>${telemetry(usage)}<div class="science-result"><h3>Field investigation</h3><p>${visited} / ${targets.length} stops investigated [S] | ${nextPoint>=points.length?'Returned along the planned route':'Route incomplete'}</p><ul>${targets.map(t=>`<li>${t.visited?'Investigated':'Not investigated'}: ${t.target.name}${t.visited?` | ${t.observations.join(', ')}`:''}</li>`).join('')}</ul><p>Optional field specimens investigated: ${fieldSpecimens.filter(p=>p.visited).length} [S].</p><p>Investigations record simulated field work, not new discoveries.</p></div><details><summary>Preparation investment [H]</summary><p>$${fmt(prep.investmentMillion,1)}M for the mission scenario. Incremental EVA cost is not priced.</p></details>`;
+  $('actual').innerHTML=`<p class="session-outcome">${reason}</p><h2>Recorded session</h2>${telemetry(usage)}<div class="science-result"><h3>Field investigation</h3><p>${visited} / ${targets.length} stops investigated [S] | ${nextPoint>=points.length?'Returned along the planned route':'Route incomplete'}</p><ul>${targets.map(t=>`<li>${t.visited?'Investigated':'Not investigated'}: ${t.target.name}${t.visited?` | ${t.observations.join(', ')}`:''}</li>`).join('')}</ul><p>Optional field specimens investigated: ${fieldSpecimens.filter(p=>p.visited).length} [S].</p><p>Investigations record simulated field work, not new discoveries.</p></div><details><summary>Cost evidence</summary><p>Mission price unavailable. No verified NASA unit-price total is calculated. Incremental EVA cost is not priced.</p></details>`;
   forecast();
 }
 function forecast() { const hours = clamp(Number($('projection').value) || 0, 0, C.SIM.projectionMaxHours); $('forecast').innerHTML = telemetry(projectUsage(usage,hours)); }
@@ -132,6 +133,11 @@ function frame(now:number) {
   y=renderedHeight(terrain,x,z); camera.position.set(x,y-baseHeight+C.SIM.eyeHeight,z); camera.rotation.set(pitch,yaw,0);
   if(now-lastHud>=C.SIM_DETAIL.hudIntervalMs){ lastHud=now; scienceNavigation();
   const c=consumption(usage); const start=prep.start.split(':').map(Number); const time=clockTime((start[0]*60+start[1]+marsMinutes(usage.seconds))%1440);
+  if(now-lastRadiation>=C.RADIATION_TERRAIN.refreshMs){
+    lastRadiation=now;
+    const exposure=terrainExposure(terrain,x,z);
+    $('radiation-panel').innerHTML=`<h2>Radiation exposure</h2><p class="rad-dose">${fmt(c.dose,3)} <small>mSv [S]</small></p><p>Accumulated Gale-reference dose</p><dl><dt>Hourly reference [D]</dt><dd>${fmt(C.RAD_MSV_PER_DAY/24,4)} mSv/h</dd><dt>Sky visible in sampled terrain [D]</dt><dd>${fmt(exposure.visibleFraction*100,1)}%</dd></dl><p>${exposure.visibleFraction>=C.RADIATION_TERRAIN.openSkyFraction?'More open sky: less surrounding terrain shielding.':'Terrain obstructs part of the sky: potential shielding context.'}</p><small>${exposure.complete?'':'Scan reaches the data boundary; obstruction is incomplete. '}${site.id==='gale'?'Historical RAD reference from Gale; not a reading at this point.':'Gale RAD reference transferred to Jezero; no local dosimetry.'} Sky visibility does not quantify dose reduction or solar-event risk. Reference dose is not adjusted by terrain.</small>`;
+  }
   $('clock').textContent=`${time} local [S]`; const readings=[['Oxygen',100-c.oxygenUsed],['Cooling water',100-c.waterUsed],['Battery',100-c.batteryUsed]];
   $('readouts').innerHTML=readings.map(([name,value])=>`<div class="reading">${name} ${fmt(Math.max(0,Number(value)))}% [S]<meter min="0" max="100" value="${Math.max(0,Number(value))}"></meter></div>`).join('')+`<div class="reading">${fmt(airTempAt(weather,time))} C air [S]<br>RAD reference dose: ${fmt(c.dose,3)} mSv [S]<br>Extra load: ${prep.loadKg} kg [S]</div>`;
   const lat=terrain.center_lat-z/C.MARS_RADIUS_M*180/Math.PI, lon=terrain.center_lon+x/(C.MARS_RADIUS_M*Math.cos(terrain.center_lat*Math.PI/180))*180/Math.PI;
