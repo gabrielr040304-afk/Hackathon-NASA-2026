@@ -1,3 +1,4 @@
+import { marsMinutes } from './mars-time.js';
 // Cálculos puros da caminhada (sem DOM). Usado pelo planejador e pelo simulador.
 import * as C from './config.js';
 
@@ -58,10 +59,10 @@ export function planEva(site, route, inputs, weatherSol) {
   const used_pct = { o2: metabolic, water: metabolic, battery: (total_h / C.SUIT_CAPACITY_H) * 100 };
   const reserve_pct = Math.max(0, 100 - Math.max(used_pct.o2, used_pct.water, used_pct.battery));
   const dose_mSv = (C.RAD_MSV_PER_DAY * total_h) / 24;
-  const endMin = toMin(start) + total_h * 60;
+  const endMin = toMin(start) + marsMinutes(total_h * 3600);
 
   const alerts = [];
-  if (crew === 1) alerts.push({ level: 'aviso', code: 'solo', msg: 'NASA spacewalks are always done in pairs.' });
+  if (crew === 1) alerts.push({ level: 'aviso', code: 'solo', msg: 'Solo walk: no partner is available for immediate assistance.' });
   if (stats.max_slope_deg > C.SLOPE_NOGO_DEG) {
     alerts.push({ level: 'proibido', code: 'inclinacao', msg: `A stretch has a ${stats.max_slope_deg.toFixed(0)}° slope (limit ${C.SLOPE_NOGO_DEG}°).` });
   } else if (stats.max_slope_deg > C.SLOPE_WARN_DEG) {
@@ -71,7 +72,7 @@ export function planEva(site, route, inputs, weatherSol) {
     alerts.push({ level: 'proibido', code: 'consumivel', msg: `Suit reserve on return: ${reserve_pct.toFixed(0)}% (minimum ${C.RESERVE_PCT}%).` });
   }
   if (!weatherSol) {
-    alerts.push({ level: 'aviso', code: 'sem-clima', msg: 'No weather station at this site: sunset time not checked.' });
+    alerts.push({ level: 'aviso', code: 'sem-clima', msg: 'No local daylight record loaded: sunset time not checked.' });
   } else if (endMin > toMin(weatherSol.sunset) - C.DAYLIGHT_MARGIN_MIN) {
     alerts.push({ level: 'proibido', code: 'por-do-sol', msg: `Return at ${toHHMM(endMin)}; you must be back ${C.DAYLIGHT_MARGIN_MIN} min before sunset (${weatherSol.sunset.slice(0, 5)}).` });
   }

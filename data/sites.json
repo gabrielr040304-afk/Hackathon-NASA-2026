@@ -381,7 +381,7 @@
   "weather": "data/weather/gale.json",
   "traverse": "data/traverse/msl_traverse.json",
   "localLayer": "hirise_gale",
-  "hasSim": false,
+  "hasSim": true,
   "habitat": {
    "lat": -4.802326,
    "lon": 137.381251,
@@ -459,74 +459,45 @@
   ]
  },
  {
-  "id": "arcadia",
-  "name": "Arcadia Planitia",
-  "mission": "None (barely explored)",
+  "id": "meridiani",
+  "name": "Meridiani Planum / Eagle Crater",
+  "mission": "Opportunity (Mars Exploration Rover)",
   "center": {
-   "lat": 47.25,
-   "lon": -164.0
+   "lat": -1.9483,
+   "lon": -5.52583
   },
-  "zoom": 12,
+  "zoom": 15,
   "objectives": [
-   "gelo"
+   "agua-meridiani"
   ],
   "weather": null,
   "traverse": null,
   "localLayer": null,
   "hasSim": false,
   "habitat": {
-   "lat": 47.25,
-   "lon": -164.0,
-   "elev_m": -3980.0,
-   "elev_source": "MOLA 463 m (USGS), tools/mola_elev.py",
-   "tag": "H"
+   "lat": -1.9483,
+   "lon": -5.52583,
+   "elev_m": -1384,
+   "tag": "H",
+   "elev_source": "MOLA 463 m, same coarse cell; not a local slope measurement"
   },
-  "notes": "Hypothetical: center of the SWIM pilot-study map in Arcadia (196° E, 47.25° N; SWIM/PSI, LPSC 2019, abstract 2069). No rover has been here.",
   "routes": [
    {
-    "id": "gelo-raso",
-    "name": "Shallow ice for a human base",
-    "objective": "gelo",
+    "id": "eagle-exploratory",
+    "name": "Eagle Crater vicinity (exploratory)",
+    "objective": "agua-meridiani",
     "tag": "H",
     "waypoints": [
      {
-      "lat": 47.260122,
-      "lon": -163.992544,
-      "elev_m": -3978.0,
-      "elev_source": "MOLA 463 m (USGS), tools/mola_elev.py"
-     },
-     {
-      "lat": 47.270245,
-      "lon": -163.985088,
-      "elev_m": -3978.0,
-      "elev_source": "MOLA 463 m (USGS), tools/mola_elev.py",
+      "lat": -1.9473,
+      "lon": -5.52583,
+      "elev_m": -1384,
+      "elev_source": "MOLA 463 m coarse cell; not rover stop",
       "target": {
-       "name": "Fresh crater with exposed ice (hypothetical)",
-       "why": "Hypothetical target. At northern mid-latitudes, the HiRISE camera has caught fresh impact craters exposing bright ice that vanished within months. Finding one near the base would confirm the ice is shallow.",
+       "name": "Eagle Crater vicinity",
+       "why": "Opportunity landed at Eagle Crater in 2004 and investigated water-altered rocks. This nearby point is hypothetical; it is not a recorded rover stop.",
        "photo": null,
-       "credit": null,
-       "sol": null,
-       "camera": null
-      }
-     },
-     {
-      "lat": 47.265184,
-      "lon": -163.970176,
-      "elev_m": -3977.0,
-      "elev_source": "MOLA 463 m (USGS), tools/mola_elev.py"
-     },
-     {
-      "lat": 47.255061,
-      "lon": -163.96769,
-      "elev_m": -3978.0,
-      "elev_source": "MOLA 463 m (USGS), tools/mola_elev.py",
-      "target": {
-       "name": "Ice depth profile (hypothetical)",
-       "why": "Hypothetical target. Dig or use radar to measure how deep the ice begins: if it is less than 1 m down, it can become water, oxygen and fuel for a human base.",
-       "photo": null,
-       "credit": null,
-       "sol": null,
-       "camera": null
+       "credit": "NASA/JPL-Caltech"
       }
      }
     ]

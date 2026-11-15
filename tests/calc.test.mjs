@@ -117,7 +117,7 @@ test('sites.json: todas as rotas calculam sem NaN; Jezero e Gale dão GO com ent
       const p = planEva(site, route, inputs(), w);
       const nums = [p.total_h, p.reserve_pct, p.dose_mSv, p.used_pct.o2, p.stats.distance_m, p.stats.max_slope_deg];
       for (const n of nums) assert.ok(Number.isFinite(n), `${site.id}/${route.id}: valor não finito`);
-      if (site.id !== 'arcadia') assert.equal(p.go, true, `${site.id}/${route.id}: ${p.alerts.map((a) => a.msg).join(' | ')}`);
+      if (site.id !== 'meridiani') assert.equal(p.go, true, `${site.id}/${route.id}: ${p.alerts.map((a) => a.msg).join(' | ')}`);
       console.log(`${site.id}/${route.id}: ${(p.stats.distance_m / 1000).toFixed(2)} km, ${p.total_h.toFixed(2)} h, reserva ${p.reserve_pct.toFixed(0)}%, máx ${p.stats.max_slope_deg.toFixed(1)}°, go=${p.go}`);
     }
   }
