@@ -110,3 +110,4 @@ export const SOURCE_LINKS = {
   shielding: 'https://science.nasa.gov/resource/real-martians-how-to-protect-astronauts-from-space-radiation-on-mars/',
   budget: 'https://oig.nasa.gov/wp-content/uploads/2024/02/ig-22-003.pdf',
 };
+export const ROVER_RECOMMEND_KM = 4;         // [S] acima disso (ida e volta, sem encostas > limite do rover) o rover é recomendado

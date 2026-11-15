@@ -8,6 +8,7 @@ import { RESERVE_PCT, DAYLIGHT_MARGIN_MIN, EQUIPMENT, ESSENTIALS, SHELTERS, BUDG
 import { assessMission, compareRoutes, daylightWindow, clockTime, terrainCautions, preparationLevel } from './mission.js';
 import { terrainHazards } from './hazards.js';
 import { parseTerrain } from './sim/terrain.js';
+import { evaTimeline, recommendMobility, planEva } from './calc.js';
 import { baseLayers, localLayer } from './layers.js';
 
 const $ = (id) => document.getElementById(id);
@@ -131,7 +132,15 @@ const STEPS = [
       const field = document.createElement('div'); field.className = 'field';
       field.innerHTML = `<label for="crew-count">Mission crew size [H]</label><input id="crew-count" type="number" min="1" max="50" value="${state.crew}"><small>NASA's 2025 Mars architecture targets at least four surface crew, with six considered for added capability. <a href="https://www.nasa.gov/wp-content/uploads/2025/12/2025-architecture-update-for-publication.pdf">NASA architecture update</a></small><p id="crew-cost">Budget for ${state.crew} crew: ${moneyMillions(selectedPrices(state).total)} [H]</p>`;
       field.querySelector('input').onchange = (e) => { state.crew = Math.max(1, Math.min(50, Number(e.target.value) || 1)); e.target.value = state.crew; $('crew-cost').textContent = `Budget for ${state.crew} crew: ${moneyMillions(selectedPrices(state).total)} [H]`; updateRisk(); };
-      body.append(field, option({ title: 'Support rover', text: `${moneyMillions(priceFor('rover').million)} [H] / mission. Hypothetical crewed surface vehicle; mobility uses a simulated model.`, details: priceDetail('rover'), pressed: state.rover, onClick: () => { state.rover = !state.rover; render(); } }));
+      const sr = site()?.routes.find((r) => r.objective === state.objective) ?? site()?.routes[0];
+      let roverHint = '';
+      if (sr) {
+        const base = { crew: state.crew, loadKg: loadKg(), start: state.start };
+        const foot = planEva(site(), sr, { ...base, rover: false }, null), car = planEva(site(), sr, { ...base, rover: true }, null);
+        const dmin = Math.round((car.total_h - foot.total_h) * 60);
+        roverHint = `${recommendMobility(foot.stats) === 'rover' ? 'Recommended for this route' : 'Not needed for this route'} [S]: ${fmt(foot.stats.distance_m / 1000, 1)} km, steepest ${fmt(foot.stats.max_slope_deg)}°; rover changes duration by ${dmin > 0 ? '+' : '−'}${Math.abs(dmin)} min.`;
+      }
+      body.append(field, option({ title: 'Support rover', text: `${moneyMillions(priceFor('rover').million)} [H] / mission. Hypothetical crewed surface vehicle; mobility uses a simulated model.`, hint: roverHint, details: priceDetail('rover'), pressed: state.rover, onClick: () => { state.rover = !state.rover; render(); } }));
       const transport = document.createElement('section'); transport.className = 'transport-section wide';
       transport.innerHTML = '<h2>Transportation</h2><p>Interplanetary propulsion is separate from walking or riding on the surface. Chemical rockets are established technology; nuclear thermal systems remain a research concept. Neither choice represents an available human Mars transport. Select a transport budget scenario [H]. Chemical uses a historical launch-system budget scale; nuclear thermal adds an assumed 50% development provision. These are not equivalent-scope engineering estimates, and travel time is not predicted.</p><a href="https://www.nasa.gov/space-technology-mission-directorate/tdm/space-nuclear-propulsion/">NASA propulsion research</a>';
       const choices = document.createElement('div'); choices.className = 'q-body';
@@ -439,7 +448,7 @@ async function drawPlan(s, route) {
     <p><a href="#mission-report">Read survival, route and cost analysis</a></p>
     <div class="actions">
       ${s.hasSim && p.go ? `<a id="start-sim" class="btn" href="sim.html?${q}">Start the ${s.id === 'gale' ? 'Gale' : 'Jezero'} 3D walk</a>`
-        : `<a class="btn" aria-disabled="true" tabindex="-1">Walk it in the 3D visor</a><p class="note">${p.go ? 'No prepared terrain is available for this destination.' : 'Resolve the safety blockers before opening the 3D page.'}</p>`}
+        : `<a class="btn" aria-disabled="true" tabindex="-1">Walk it in the 3D visor</a><p class="note">${p.go ? 'No prepared terrain is available for this destination.' : `The 3D walk opens when the plan has no blockers. Still blocking: ${p.alerts.filter((a) => a.level === 'proibido').map((a) => a.msg).join(' ')}`}</p>${p.missing?.length ? `<button type="button" class="btn ghost" id="fix-essentials">Confirm the ${p.missing.length} essential ${p.missing.length > 1 ? 'systems' : 'system'}</button>` : ''}`}
       <button type="button" class="btn ghost" id="redo">Plan again</button>
     </div>`;
   renderReport(s, route, p, inputs, w);
@@ -447,6 +456,7 @@ async function drawPlan(s, route) {
     try { sessionStorage.setItem('mars-eva-preparation', JSON.stringify({ site: s.id, route: route.id, objective: route.objective, propulsion: state.propulsion, crew: state.crew, rover: state.rover, essentials: [...state.essentials], equipment: [...state.equipment], extras: [...state.extras], optional: [...state.optional], shelter: state.shelter, roles: [...state.roles], sol: state.sol, start: state.start, investmentMillion: state.investmentMillion })); }
     catch { event.preventDefault(); alert('Browser storage is unavailable. Enable session storage to transfer your preparation.'); }
   });
+  $('fix-essentials')?.addEventListener('click', () => { $('result').hidden = true; $('quiz').hidden = false; state.step = Math.max(0, STEPS.findIndex((x) => x.title.startsWith('Prepare to stay alive'))); render(); window.scrollTo(0, 0); });
   $('route')?.addEventListener('change', (e) => drawPlan(s, s.routes.find((r) => r.id === e.target.value)).catch(showError));
   $('redo').onclick = () => { $('result').hidden = true; $('quiz').hidden = false; state.step = 0; render(); window.scrollTo(0, 0); };
 }
@@ -454,6 +464,24 @@ async function drawPlan(s, route) {
 function chart(rows, label, unit, origin) {
   const max = Math.max(...rows.map((row) => row.value), 0);
   return `<figure class="cost-chart"><figcaption>${label}</figcaption>${rows.map((row) => `<div class="chart-row"><span>${row.name}</span><strong>${fmt(row.value, 1)} ${unit} ${tag(origin)}</strong><div class="bar-track"><div class="bar-fill" style="width:${max ? row.value / max * 100 : 0}%"></div></div></div>`).join('')}</figure>`;
+}
+
+// Restored: minute-by-minute walk timeline (same model as the plan) [S].
+function timelineHTML(s, route, inputs) {
+  const tl = evaTimeline(s, route, inputs);
+  return `<section class="route-analysis" id="walk-timeline"><h3>Walk timeline ${tag('S')}</h3><div class="table-scroll"><table><caption>Mars local time. Oxygen left assumes the modeled suit capacity and effort; not a hardware measurement.</caption><thead><tr><th scope="col">Time</th><th scope="col">Event</th><th scope="col">Oxygen left [S]</th></tr></thead><tbody>${tl.map((e) => `<tr><td>${e.time}</td><td>${e.kind === 'depart' ? 'Leave the base' : e.kind === 'return' ? 'Back at the base' : `Arrive at <b>${e.name}</b>; modeled science stop`}</td><td>${fmt(e.o2_left_pct)}%</td></tr>`).join('')}</tbody></table></div></section>`;
+}
+
+// Restored: same route under alternative choices (time, reserve, verdict; no prices) [S].
+function alternativesHTML(s, route, inputs, weather) {
+  const medicalOnly = EQUIPMENT.filter((e) => e.id === 'medico').reduce((a, e) => a + e.kg, 0);
+  const rows = [
+    ['Your plan', inputs],
+    [inputs.rover ? 'Same, on foot' : 'Same, with support rover', { ...inputs, rover: !inputs.rover }],
+    ['Same, carrying only the medical kit', { ...inputs, loadKg: medicalOnly }],
+  ].map(([name, inp]) => ({ name, p: assessMission(s, route, inp, weather, state.essentials) }));
+  const rec = recommendMobility(rows[0].p.stats);
+  return `<section class="route-analysis" id="alternatives"><h3>Alternatives compared ${tag('S')}</h3><p>Mobility suggestion for this route: <b>${rec === 'rover' ? 'support rover' : 'on foot'}</b> [S] (rover suggested only above the project distance threshold and without slopes beyond its limit).</p><div class="table-scroll"><table><caption>Same route, crew and departure. Modeled duration, return time and suit reserve.</caption><thead><tr><th scope="col">Option</th><th scope="col">Duration [S]</th><th scope="col">Return [S]</th><th scope="col">Reserve [S]</th><th scope="col">Assessment [S]</th></tr></thead><tbody>${rows.map((r, i) => `<tr ${i === 0 ? 'class="current-route"' : ''}><th scope="row">${r.name}</th><td>${hhmm(r.p.total_h)}</td><td>${r.p.end_time}</td><td>${fmt(r.p.reserve_pct)}%</td><td>${r.p.go ? 'Passes model checks' : 'Blocked'}</td></tr>`).join('')}</tbody></table></div></section>`;
 }
 
 function renderReport(s, route, p, inputs, weather) {
@@ -484,6 +512,8 @@ function renderReport(s, route, p, inputs, weather) {
         <h3>Risks still unresolved</h3><ul><li>Solar particle events and local radiation variability: no live alerts or spatial dose map.</li><li>Rocks, sand, dust, traction and small slopes between waypoints: not fully resolved.</li><li>Wind, visibility, communication coverage, human health and rescue timing: not modeled.</li><li>Hypothetical base location and proposed human route: no installed infrastructure.</li></ul>
       </section>
     </div>
+    ${timelineHTML(s, route, inputs)}
+    ${alternativesHTML(s, route, inputs, weather)}
     <section class="route-analysis"><h3>Which route is the better candidate?</h3><p>${recommendation}</p>
       <p>Follow the sampled rover corridor where available, check terrain at ground level and plan an abort to base. Do not draw shortcuts across crater walls or assume an existing rover trail is certified for a crew.</p>
       <div class="table-scroll"><table><caption>Same site, crew, load and departure. Waypoint slopes [D]; duration and reserve [S].</caption><thead><tr><th scope="col">Candidate</th><th scope="col">Max slope [D]</th><th scope="col">Duration [S]</th><th scope="col">Reserve [S]</th><th scope="col">Assessment [S]</th></tr></thead><tbody>${ranked.map((entry) => `<tr ${entry.route.id === route.id ? 'class="current-route"' : ''}><th scope="row">${entry.route.name}${entry.route.id === route.id ? ' (selected)' : ''}</th><td>${fmt(entry.plan.stats.max_slope_deg, 1)}°</td><td>${hhmm(entry.plan.total_h)}</td><td>${fmt(entry.plan.reserve_pct)}%</td><td>${entry.plan.go ? 'Passes model checks' : 'Blocked'}</td></tr>`).join('')}</tbody></table></div>

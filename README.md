@@ -67,3 +67,7 @@ The cost review now groups personal systems, shared preparation, habitat/mobilit
 The simulator uses one adaptive exploration pace instead of 1x/30x modes. Its maximum presentation speed is 3 m/s on foot or 4.8 m/s in the support-rover model, with up to 6x time compression. Movement, elapsed time and consumption stay consistent. Esc pauses all three.
 
 The paused EVA menu offers standard, 1.5x and 2x exploration multipliers [S]. These apply equally to simulated elapsed time, movement and consumption; the selected multiplier is relative to the adaptive base pace.
+
+### Walk timeline, alternatives and 3D unlock
+
+The report again shows a minute-by-minute walk timeline (Mars local time, modeled oxygen left at each stop) and compares the same route on foot, with the support rover and carrying only the medical kit (duration, return time, reserve and verdict; no prices). The mobility step says whether the rover is suggested for the chosen route. When the 3D walk is locked, the plan lists every blocker and offers a shortcut to the essential-systems checklist. The simulator now follows the site, route, sol and departure in its link instead of a stale stored preparation.

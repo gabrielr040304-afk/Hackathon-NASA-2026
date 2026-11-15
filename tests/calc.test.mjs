@@ -122,3 +122,28 @@ test('sites.json: todas as rotas calculam sem NaN; Jezero e Gale dão GO com ent
     }
   }
 });
+
+// ---------- restaurados: cronograma e recomendação de mobilidade ----------
+import { evaTimeline, recommendMobility } from '../js/calc.js';
+
+test('evaTimeline: sai às 09:00, passa pelos alvos em ordem e volta na mesma hora do plano', () => {
+  const { site, route } = fakeSite(1);
+  const p = planEva(site, route, inputs(), weather());
+  const tl = evaTimeline(site, route, inputs());
+  assert.equal(tl[0].kind, 'depart');
+  assert.equal(tl[0].time, '09:00');
+  assert.ok(tl.some((e) => e.kind === 'target' && e.name === 'alvo'));
+  assert.equal(tl.at(-1).kind, 'return');
+  assert.equal(tl.at(-1).time, p.end_time);
+  for (let i = 1; i < tl.length; i++) {
+    assert.ok(tl[i].t_h >= tl[i - 1].t_h);
+    assert.ok(tl[i].o2_left_pct <= tl[i - 1].o2_left_pct);
+  }
+  assert.ok(Math.abs(tl.at(-1).o2_left_pct - (100 - p.used_pct.o2)) < 1e-9);
+});
+
+test('recommendMobility: rover só em rota longa e sem encosta acima do limite do rover', () => {
+  assert.equal(recommendMobility({ distance_m: 2000, max_slope_deg: 5 }), 'foot');
+  assert.equal(recommendMobility({ distance_m: 6000, max_slope_deg: 5 }), 'rover');
+  assert.equal(recommendMobility({ distance_m: 6000, max_slope_deg: 20 }), 'foot');
+});

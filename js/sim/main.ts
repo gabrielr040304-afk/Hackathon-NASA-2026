@@ -88,6 +88,9 @@ function scienceNavigation() {
 }
 async function boot() {
   const raw=sessionStorage.getItem('mars-eva-preparation'); if(!raw) throw Error('No prepared mission found. Complete the planner first.'); prep=JSON.parse(raw); if(!Array.isArray(prep.equipment)||!Array.isArray(prep.essentials)||!Number.isFinite(prep.crew)||!/^\d{2}:\d{2}$/.test(prep.start)) throw Error('Invalid mission preparation. Return to planner.');
+  // The link's site/route/objective win over a stale stored preparation (e.g. after switching destination).
+  const q=new URLSearchParams(location.search); for (const k of ['site','route','objective'] as const) { const v=q.get(k); if(v) prep[k]=v; }
+  if (q.get('sol')) prep.sol=Number(q.get('sol')); if (/^\d{2}:\d{2}$/.test(q.get('start') ?? '')) prep.start=q.get('start');
   const sites=preparedSites(await json('data/sites.json')); site=sites.find((s:any)=>s.id===prep.site && s.hasSim); route=site?.routes.find((r:any)=>r.id===prep.route);
   if(!route) throw Error('Choose a prepared Jezero or Gale route in the planner.');
   const essentials=new Set<string>(prep.essentials); if(C.ESSENTIALS.some((e:any)=>!essentials.has(e.id))) throw Error('Essential life-support systems are missing. Return to preparation.');

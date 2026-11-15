@@ -91,3 +91,8 @@
 
 ### Route guidance repair
 - Replaced sparse straight route line with a 1.2 m ribbon sampled every 2 m, interpolating rendered terrain triangles. Camera height uses rendered surface too. Animated view detections for terrain slope and science targets with view/terrain visibility checks; no fabricated directional radiation. 27 tests passed; measured triangle-center clearance positive on both full routes. Browser visual validation remains pending.
+
+### 2026-11-15
+- Restaurados após o merge que manteve a versão do Pedro: cronograma da caminhada, comparação com alternativas (sem preços) e recomendação de rover.
+- 3D bloqueado: causa era a lista de 8 sistemas essenciais vazia (regra intencional). Agora a tela lista os bloqueios e tem atalho para a lista.
+- Simulador: o link (site, rota, sol, hora) passa a valer sobre a preparação antiga guardada no navegador.

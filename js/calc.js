@@ -97,3 +97,32 @@ export function airTempAt(weatherSol, hhmm) {
   if (t <= peak) return lo + ((hi - lo) * (t - rise)) / (peak - rise);
   return hi - ((hi - lo) * (t - peak)) / (rise + 1440 - peak);
 }
+
+// Cronograma da caminhada: mesmos trechos, velocidades e esforço de planEva (que não é alterado).
+export function evaTimeline(site, route, inputs) {
+  const { rover, loadKg, start } = inputs;
+  const pts = [site.habitat, ...route.waypoints, site.habitat];
+  const { segments } = routeStats(pts);
+  const s0 = toMin(start);
+  const row = (kind, name, t_h, eff) => ({ kind, name, t_h, time: toHHMM(s0 + marsMinutes(t_h * 3600)), o2_left_pct: 100 - (eff / C.SUIT_CAPACITY_H) * 100 });
+  const out = [row('depart', 'Base', 0, 0)];
+  let t = 0, eff = 0;
+  segments.forEach((s, i) => {
+    const h = s.distance_m / 1000 / walkSpeedKmh(s.slope_deg, loadKg, rover);
+    const riding = rover && Math.abs(s.slope_deg) <= C.ROVER_MAX_SLOPE_DEG;
+    t += h; eff += h * (riding ? 1 : effort(s.slope_deg, loadKg));
+    const wp = pts[i + 1];
+    if (wp.target) {
+      out.push(row('target', wp.target.name, t, eff));
+      const sh = C.SCIENCE_MIN_PER_TARGET / 60;
+      t += sh; eff += sh * effort(0, loadKg);
+    }
+  });
+  out.push(row('return', 'Base', t, eff));
+  return out;
+}
+
+// Rover só compensa em rota longa e suave (limites [S] em config.js).
+export function recommendMobility(stats) {
+  return stats.distance_m / 1000 > C.ROVER_RECOMMEND_KM && stats.max_slope_deg <= C.ROVER_MAX_SLOPE_DEG ? 'rover' : 'foot';
+}
