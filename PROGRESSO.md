@@ -96,3 +96,4 @@
 - Restaurados após o merge que manteve a versão do Pedro: cronograma da caminhada, comparação com alternativas (sem preços) e recomendação de rover.
 - 3D bloqueado: causa era a lista de 8 sistemas essenciais vazia (regra intencional). Agora a tela lista os bloqueios e tem atalho para a lista.
 - Simulador: o link (site, rota, sol, hora) passa a valer sobre a preparação antiga guardada no navegador.
+- Novo visual liquid glass (referências: shell de vidro índigo + dashboard fosco): barra lateral com os 8 passos nomeados e clicáveis (vira índice no resultado), painel "Your mission" ao vivo com prévia do veredito e dos bloqueios, fundo com o céu real de Marte (NASA PIA26680). Nenhuma função removida; lógica do planejador intacta.

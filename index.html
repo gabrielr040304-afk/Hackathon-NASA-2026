@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mars Survival Guide — EVA Planner</title>
   <meta name="description" content="Plan an astronaut walk on Mars with real NASA data, then walk it in a helmet HUD.">
+  <meta name="theme-color" content="#0d1222">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..800&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
@@ -12,46 +13,78 @@
   <link rel="stylesheet" href="css/planner.css">
 </head>
 <body>
-  <header class="top">
-    <a class="brand" href="./">Mars Survival Guide</a>
-    <p class="tagline">Plan the Marswalk. Then walk it in the visor.</p>
-  </header>
+  <div class="backdrop" aria-hidden="true"></div>
 
-  <main>
-    <section id="quiz" class="quiz" aria-live="polite">
-      <ol class="progress" id="progress" aria-label="Steps"></ol>
-      <h1 id="q-title">Loading mission planner…</h1>
-      <p id="q-lead" class="lead"></p>
-      <div id="q-body" class="q-body"></div>
-      <aside id="q-why" class="why" hidden></aside>
-      <div class="nav">
-        <button type="button" id="back" class="btn ghost">Back</button>
-        <button type="button" id="next" class="btn" disabled>Next</button>
+  <div class="shell">
+    <aside class="sidebar glass" aria-label="Navigation">
+      <a class="brand" href="./">
+        <span class="mark" aria-hidden="true"></span>
+        <span class="brand-text"><b>Mars Survival Guide</b><small>EVA planner</small></span>
+      </a>
+      <nav aria-label="Planning steps">
+        <p class="nav-title">Plan your walk</p>
+        <ol id="steps" class="steps"></ol>
+      </nav>
+      <nav id="result-nav" aria-label="Report sections" hidden>
+        <p class="nav-title">Your plan</p>
+        <ul class="steps result-links">
+          <li><a href="#map">Route map</a></li>
+          <li><a href="#panel">Verdict and numbers</a></li>
+          <li><a href="#walk-timeline">Walk timeline</a></li>
+          <li><a href="#alternatives">Alternatives</a></li>
+          <li><a href="#mission-report">Survival and cost report</a></li>
+        </ul>
+      </nav>
+      <div class="side-foot">
+        <a href="SOURCES.md">Data sources</a>
+        <a href="https://github.com/gabrielr040304-afk/Hackton-NASA-2026">Code on GitHub</a>
       </div>
-    </section>
+    </aside>
 
-    <section id="result" class="result" hidden>
-      <div class="map-wrap">
-        <div id="map" role="application" aria-label="Map of Mars with the planned route"></div>
-        <div class="map-tools">
-          <p id="legend" class="legend"></p>
-          <label id="opacity-wrap" class="opacity">Detail layer opacity
-            <input type="range" id="opacity" min="0" max="100" value="100">
-          </label>
-          <p class="map-key">Ochre: proposed walk [H], using rover stops [R] where available. Dashed blue: rover traverse [R]. Jezero grid: green means sampled slope below the project warning threshold; yellow and red contain steeper samples [D/S]. Gray means local terrain is unknown. No color certifies safety or measures radiation. Gale and Meridiani have no local slope grid in this prototype. No local radiation hazard layer is available.</p>
-          <p id="tile-notice" class="tile-notice" hidden>NASA map layers are unavailable right now. Route geometry remains visible; inspect terrain before drawing conclusions.</p>
+    <main class="stage">
+      <section id="quiz" class="quiz glass" aria-live="polite">
+        <div class="quiz-head">
+          <p id="q-step" class="step-label"></p>
+          <ol class="progress" id="progress" aria-label="Steps"></ol>
         </div>
-      </div>
-      <div id="panel" class="panel"></div>
-      <section id="mission-report" class="mission-report" aria-label="Survival and cost report"></section>
-    </section>
-  </main>
+        <h1 id="q-title">Loading mission planner…</h1>
+        <p id="q-lead" class="lead"></p>
+        <div id="q-body" class="q-body"></div>
+        <aside id="q-why" class="why" hidden></aside>
+        <div class="nav">
+          <button type="button" id="back" class="btn ghost">Back</button>
+          <button type="button" id="next" class="btn" disabled>Next</button>
+        </div>
+      </section>
 
-  <footer class="foot">
-    <p>Labels: <b class="tag t-R">R</b> real (NASA/USGS) <b class="tag t-D">D</b> derived by us from real data <b class="tag t-S">S</b> simulated <b class="tag t-H">H</b> hypothetical.
-      Data: Mars Trek (NASA/JPL), USGS Astrogeology, Perseverance and Curiosity (NASA/JPL-Caltech), HiRISE (NASA/JPL/University of Arizona). <a href="SOURCES.md">Sources</a>.
-      Educational prototype, not operational guidance. Code written with AI assistance (Claude, Anthropic, and Codex, OpenAI). Recommendations follow explicit rules, not a live AI or space-weather service; review by the team.</p>
-  </footer>
+      <section id="result" class="result" hidden>
+        <div class="map-wrap glass">
+          <div id="map" role="application" aria-label="Map of Mars with the planned route"></div>
+          <div class="map-tools">
+            <p id="legend" class="legend"></p>
+            <label id="opacity-wrap" class="opacity">Detail layer opacity
+              <input type="range" id="opacity" min="0" max="100" value="100">
+            </label>
+            <details class="map-key-wrap">
+              <summary>How to read the map colors</summary>
+              <p class="map-key">Ochre: proposed walk [H], using rover stops [R] where available. Dashed blue: rover traverse [R]. Jezero grid: green means sampled slope below the project warning threshold; yellow and red contain steeper samples [D/S]. Gray means local terrain is unknown. No color certifies safety or measures radiation. Gale and Meridiani have no local slope grid in this prototype. No local radiation hazard layer is available.</p>
+            </details>
+            <p id="tile-notice" class="tile-notice" hidden>NASA map layers are unavailable right now. Route geometry remains visible; inspect terrain before drawing conclusions.</p>
+          </div>
+        </div>
+        <div id="panel" class="panel glass"></div>
+        <section id="mission-report" class="mission-report glass" aria-label="Survival and cost report"></section>
+      </section>
+
+      <footer class="foot">
+        <p>Labels: <b class="tag t-R">R</b> real (NASA/USGS) <b class="tag t-D">D</b> derived by us from real data <b class="tag t-S">S</b> simulated <b class="tag t-H">H</b> hypothetical.
+          Data: Mars Trek (NASA/JPL), USGS Astrogeology, Perseverance and Curiosity (NASA/JPL-Caltech), HiRISE (NASA/JPL/University of Arizona). Background: NASA/JPL-Caltech/MSSS (PIA26680). <a href="SOURCES.md">Sources</a>.
+          Educational prototype, not operational guidance. Code written with AI assistance (Claude, Anthropic, and Codex, OpenAI). Recommendations follow explicit rules, not a live AI or space-weather service; review by the team.</p>
+      </footer>
+    </main>
+
+    <aside id="summary" class="summary glass" aria-label="Your mission so far" aria-live="polite"></aside>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
   <script type="module" src="js/planner.js"></script>

@@ -223,12 +223,59 @@ STEPS.push({
   },
 });
 
+// ---------- navigation and live summary (layout only; planning logic unchanged) ----------
+const STEP_NAMES = [['Where will we walk', 'Destination'], ['Prepare to stay alive', 'Life support'], ['What do you want to discover', 'Science goal'], ['Who goes', 'Crew and mobility'], ['Equip the science walk', 'Equipment'], ['What protects your base', 'Base shelter'], ['Choose a daylight window', 'Daylight'], ['Review your mission', 'Review and cost']];
+const stepName = (step) => STEP_NAMES.find(([prefix]) => step.title.startsWith(prefix))?.[1] ?? step.title;
+function setMode(result) {
+  document.body.classList.toggle('is-result', result);
+  $('steps').closest('nav').hidden = result;
+  $('result-nav').hidden = !result;
+}
+function renderNav() {
+  $('steps').innerHTML = STEPS.map((step, i) => `<li><button type="button" data-i="${i}" class="${i === state.step ? 'current' : i <= state.maxStep ? 'done' : ''}" ${i > state.maxStep ? 'disabled' : ''} ${i === state.step ? 'aria-current="step"' : ''}><span class="num" aria-hidden="true">${i < state.maxStep && i !== state.step ? '✓' : i + 1}</span><span>${stepName(step)}</span></button></li>`).join('');
+  $('steps').querySelectorAll('button:not(:disabled)').forEach((b) => { b.onclick = () => { if (Number(b.dataset.i) !== state.step) { state.step = Number(b.dataset.i); render(); window.scrollTo(0, 0); } }; });
+}
+async function renderSummary() {
+  const el = $('summary'); if (!el) return;
+  const s = site(), objective = OBJECTIVES.find((o) => o.id === state.objective);
+  const shelter = SHELTERS.find((x) => x.id === state.shelter);
+  const done = state.essentials.size, total = ESSENTIALS.length;
+  const level = done < total ? 'red' : 'green';
+  let check = '<p class="sum-hint">Choose a destination and a science goal to preview the walk.</p>';
+  if (s && objective && s.id !== 'meridiani') {
+    const route = s.routes.find((r) => r.objective === state.objective) ?? s.routes[0];
+    const list = await weatherOf(s);
+    const provisional = state.sol == null && list.length > 0; // same default the Daylight step proposes
+    const w = list.find((x) => x.sol === state.sol) ?? (provisional ? list.at(-1) : null);
+    const p = assessMission(s, route, { crew: state.crew, rover: state.rover, loadKg: loadKg(), start: state.start }, w, state.essentials);
+    const blockers = p.alerts.filter((a) => a.level === 'proibido');
+    check = `<div class="sum-status ${p.go ? 'ok' : 'blocked'}"><b>${p.go ? 'Passes model checks' : `${blockers.length} ${blockers.length > 1 ? 'blockers' : 'blocker'} so far`} [S]</b>
+      <small>${p.go ? '3D walk will unlock at the end. Not a safety clearance.' : blockers.some((a) => a.code.startsWith('missing-')) ? `Confirm the ${p.missing.length} remaining essential ${p.missing.length > 1 ? 'systems' : 'system'} to unlock the 3D walk.` : blockers[0].msg}</small></div>
+      <div class="sum-big"><span>${hhmm(p.total_h)}</span><small>${route.name} · ${fmt(p.stats.distance_m / 1000, 1)} km [D] · back ${p.end_time} [S]${provisional ? ` · using sol ${w.sol} until you pick a day` : ''}</small></div>
+      <div class="sum-meter"><span>Suit reserve on return [S]</span><b>${fmt(p.reserve_pct)}%</b><i><em style="width:${Math.min(100, p.reserve_pct)}%"></em></i></div>`;
+  }
+  el.innerHTML = `<h2>Your mission</h2><p class="sum-sub">Updates with every choice</p>${check}
+    <dl class="sum-rows">
+      <div><dt>Destination</dt><dd>${s ? s.name : '—'}</dd></div>
+      <div><dt>Science goal</dt><dd>${objective ? objective.name : '—'}</dd></div>
+      <div><dt>Life support</dt><dd><span class="dot ${level}"></span>${done} / ${total} confirmed</dd></div>
+      <div><dt>Crew</dt><dd>${state.crew} · ${state.rover ? 'with rover' : 'on foot'}</dd></div>
+      <div><dt>Extra load</dt><dd>${loadKg()} kg / astronaut</dd></div>
+      <div><dt>Base shelter</dt><dd>${shelter ? shelter.name : '—'}</dd></div>
+      <div><dt>Departure</dt><dd>${state.sol != null ? `Sol ${state.sol}, ` : ''}${state.start}</dd></div>
+      <div class="sum-money"><dt>Planning budget [H]</dt><dd>${moneyMillions(selectedPrices(state).total)}</dd></div>
+    </dl>`;
+}
+
 let renderVersion = 0;
 async function render() {
   const version = ++renderVersion;
   $('next').disabled = true;
   const step = STEPS[state.step];
   $('progress').innerHTML = STEPS.map((_, i) => `<li class="${i <= state.step ? 'done' : ''}" aria-current="${i === state.step ? 'step' : 'false'}"></li>`).join('');
+  state.maxStep = Math.max(state.maxStep ?? 0, state.step);
+  $('q-step').textContent = `Step ${state.step + 1} of ${STEPS.length} · ${stepName(step)}`;
+  setMode(false); renderNav(); renderSummary();
   $('q-title').textContent = step.title;
   $('q-lead').textContent = step.lead;
   $('readiness-count')?.remove();
@@ -271,6 +318,7 @@ function preparationCostHTML() {
 }
 function updatePreparationCost() { $('readiness-count').innerHTML = preparationCostHTML(); }
 function updateRisk() {
+  renderSummary();
   let risk = $('risk-advice');
   if (!risk) { risk = document.createElement('aside'); risk.id = 'risk-advice'; $('q-why').after(risk); }
   risk.hidden = !state.touched;
@@ -286,6 +334,7 @@ function updateRisk() {
   $('review-essentials')?.addEventListener('click', () => { state.step = 1; render(); });
 }
 
+$('q-body').addEventListener('change', () => renderSummary());
 $('back').onclick = () => { state.step--; render(); };
 $('next').onclick = () => { if (state.step < STEPS.length - 1) { state.step++; render(); } else showResult().catch(showError); };
 function showError(error) { $('panel').textContent = `The plan could not be loaded. Reload the page to retry. ${error.message}`; }
@@ -295,6 +344,7 @@ let map, routeLayer;
 
 async function showResult() {
   $('quiz').hidden = true; $('result').hidden = false;
+  setMode(true);
   $('panel').textContent = 'Analyzing the mission…';
   const s = site();
   const route = s.routes.find((r) => r.objective === state.objective) ?? s.routes[0];
