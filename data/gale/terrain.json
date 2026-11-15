@@ -1,0 +1,22 @@
+{
+  "width": 512,
+  "height": 512,
+  "m_per_px_x": 3.131115459882583,
+  "m_per_px_y": 3.131115459882583,
+  "center_lat": -4.8052,
+  "center_lon": 137.38,
+  "bbox": [
+    137.36645591217692,
+    -4.818696483886493,
+    137.39354408782307,
+    -4.7917035161135075
+  ],
+  "elev_min": -3833.131726198191,
+  "elev_max": -3426.89606703354,
+  "source": "HiRISE DTEEC_019698_1750_019988_1750_U01; bilinear resampling [D]",
+  "source_url": "https://www.uahirise.org/PDS/DTM/ESP/ORB_019600_019699/ESP_019698_1750_ESP_019988_1750/DTEEC_019698_1750_019988_1750_U01.IMG",
+  "source_resolution_m": 1.0117467945795,
+  "source_radius_m": 3396190.0,
+  "source_projection": "Equirectangular, planetocentric, east-positive; PDS projection offsets",
+  "void_count": 0
+}

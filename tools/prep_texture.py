@@ -2,7 +2,7 @@
 que cobrem exatamente o bbox de data/jezero/terrain.json.
 Uso: python tools/prep_texture.py   (requer Pillow 13.0.0)
 """
-import io, json, math, urllib.request
+import io, json, math, urllib.request, sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from PIL import Image
@@ -12,6 +12,9 @@ TILE = 256
 URL = ("https://trek.nasa.gov/tiles/Mars/EQ/JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first_dd/"
        "1.0.0/default/default028mm/{z}/{y}/{x}.png")
 DIR = Path(__file__).resolve().parent.parent / "data" / "jezero"
+if '--gale' in sys.argv:
+    DIR = DIR.parent / 'gale'
+    URL = 'https://trek.nasa.gov/tiles/Mars/EQ/curiosity_hirise_mosaic/1.0.0/default/default028mm/{z}/{y}/{x}.png'
 
 
 def tile(xy):

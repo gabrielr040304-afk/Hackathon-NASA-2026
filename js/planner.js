@@ -1,3 +1,4 @@
+import { preparedSites } from './routes.js';
 import { objectivesForSite, scienceFor, POSITION_NOTE } from './science.js';
 ﻿// Planner: mission readiness, science, resources, shelter, daylight and cost context.
 import { RESERVE_PCT, DAYLIGHT_MARGIN_MIN, EQUIPMENT, ESSENTIALS, SHELTERS, BUDGET_CATEGORIES, HISTORICAL_LAUNCH_COST, SOURCE_LINKS, RAD_MSV_PER_DAY, CAREER_LIMIT_MSV, LOAD_FACTOR_PER_KG, COST_MODEL, PREPARATION_EXTRAS, OPTIONAL_PREPARATION, RADIATION_EVIDENCE_URL } from './config.js';
@@ -104,12 +105,12 @@ const STEPS = [
     },
   },
   {
-    title: 'Where will we walk?', lead: 'Choose Jezero for a terrain-based 3D EVA, or Gale for a Curiosity route map and mission analysis.',
+    title: 'Where will we walk?', lead: 'Choose Jezero or Gale for a terrain-based 3D EVA following recorded rover stops.',
     ready: () => state.siteId,
     render(body) {
       const notes = {
         jezero: ['Route along real Perseverance stops. 3D simulation available.', 'The terrain is known down to 1 meter by the HiRISE camera in orbit.'],
-        gale: ['Route along real Curiosity stops. The only site with radiation measured on the ground.', 'Curiosity has measured radiation since 2012; it is the best reference we have for astronauts.'],
+        gale: ['Route along real Curiosity stops. 3D exploration of boxwork ridges and hollows is available.', 'Curiosity has measured radiation since 2012; it is the best reference we have for astronauts.'],
         meridiani: ['Opportunity explored Eagle Crater and Meridiani. Local route data is incomplete.', 'Opportunity discovered evidence of ancient water. Our nearby route is hypothetical; fine-scale terrain and local weather are unavailable.'],
       };
       for (const s of sites) body.append(option({ title: s.name, text: `${s.mission}. ${notes[s.id]?.[0] ?? ''}`,
@@ -294,20 +295,20 @@ let siteLayers = [];
 async function drawSite(s) {
   siteLayers.forEach((l) => { map.removeLayer(l); map._ctl.removeLayer(l); });
   siteLayers = [];
-  if (s.id === 'jezero') {
+  if (s.hasSim) {
     try {
-      const meta = await getJSON('data/jezero/terrain.json');
-      const response = await fetch('data/jezero/terrain.bin');
+      const meta = await getJSON(`data/${s.id}/terrain.json`);
+      const response = await fetch(`data/${s.id}/terrain.bin`);
       if (!response.ok) throw new Error('Terrain unavailable');
       const cells = terrainHazards(parseTerrain(meta, await response.arrayBuffer()));
       if (!map.getPane('hazards')) { map.createPane('hazards'); map.getPane('hazards').style.zIndex = 450; }
       const hazards = L.layerGroup(cells.map((cell) => L.rectangle(cell.bounds, {
         pane: 'hazards', color: ({red:'#ff5d63', yellow:'#ffc469', green:'#68d592', unknown:'#a5adb8'})[cell.status], weight: 1, fillOpacity: .14,
       }).bindPopup(`<b>${({red:'Steep samples: avoid', yellow:'Steep samples: caution', green:'Slope criterion passed only', unknown:'Terrain data unknown'})[cell.status]}</b><p>Maximum sampled slope: ${cell.slope === null ? 'Unknown' : fmt(cell.slope, 1) + ' degrees [D]'}. Source: USGS HiRISE terrain, resampled to approximately 4 m.</p><p>Project slope thresholds [S]. Green only means the sampled slope passed the project threshold. Unseen obstacles and radiation are not assessed; no color certifies safety.</p>`)));
-      hazards.addTo(map); map._ctl.addOverlay(hazards, 'Jezero terrain cautions [D/S]'); siteLayers.push(hazards);
+      hazards.addTo(map); map._ctl.addOverlay(hazards, `${s.name} terrain cautions [D/S]`); siteLayers.push(hazards);
     } catch { $('tile-notice').hidden = false; $('tile-notice').textContent = 'Terrain caution layer unavailable. Unmarked areas must not be assumed safe.'; }
   }
-  if (s.id !== 'jezero') {
+  if (!s.hasSim) {
     const delta = 0.02; // Display extent only; not a surveyed boundary.
     const c = s.center; const unknown = L.rectangle([[c.lat-delta,c.lon-delta],[c.lat+delta,c.lon+delta]], { color:'#a5adb8', weight:2, dashArray:'4 4', fillOpacity:.18 }).bindPopup('<b>Terrain classification unavailable</b><p>No suitable local elevation grid has been prepared for this area. Gray does not mean safe or unsafe; radiation and obstacles are unknown.</p>');
     unknown.addTo(map); map._ctl.addOverlay(unknown, 'Terrain: no local grid'); siteLayers.push(unknown);
@@ -413,8 +414,8 @@ async function drawPlan(s, route) {
     <p class="note">Radiation: ${rad} (${RAD_MSV_PER_DAY} mSv per Earth day ${tag('R')}; Hassler et al., Science, 2014). The modeled dose excludes solar events and is not a local forecast. A small share of a career limit does not establish safety.</p>
     <p><a href="#mission-report">Read survival, route and cost analysis</a></p>
     <div class="actions">
-      ${s.hasSim && p.go ? `<a id="start-sim" class="btn" href="sim.html?${q}">Start the Jezero 3D walk</a>`
-        : `<a class="btn" aria-disabled="true" tabindex="-1">Walk it in the 3D visor</a><p class="note">${p.go ? 'The 3D simulation is only available for Jezero in this prototype.' : 'Resolve the safety blockers before opening the 3D page.'}</p>`}
+      ${s.hasSim && p.go ? `<a id="start-sim" class="btn" href="sim.html?${q}">Start the ${s.id === 'gale' ? 'Gale' : 'Jezero'} 3D walk</a>`
+        : `<a class="btn" aria-disabled="true" tabindex="-1">Walk it in the 3D visor</a><p class="note">${p.go ? 'No prepared terrain is available for this destination.' : 'Resolve the safety blockers before opening the 3D page.'}</p>`}
       <button type="button" class="btn ghost" id="redo">Plan again</button>
     </div>`;
   renderReport(s, route, p, inputs, w);
@@ -501,22 +502,7 @@ function renderReport(s, route, p, inputs, weather) {
   };
 }
 
-// Curated shorter out-and-back scenarios built from existing rover stop records.
-function addShortRoutes(data) {
-  for (const [siteId, routeId, targetName, id, name] of [
-    ['jezero', 'neretva-encosta', 'Neretva Vallis channel floor', 'neretva-short', 'Neretva channel floor - short'],
-    ['gale', 'boxwork', 'Boxwork ridge', 'boxwork-ridge-short', 'Boxwork ridge - short'],
-  ]) {
-    const destination = data.find((item) => item.id === siteId);
-    const original = destination.routes.find((item) => item.id === routeId);
-    const end = original.waypoints.findIndex((point) => point.target?.name === targetName);
-    if (end < 0) continue;
-    const outbound = original.waypoints.slice(0, end + 1);
-    destination.routes.push({ ...original, id, name, tag: 'R', waypoints: [...outbound, ...outbound.slice(0, -1).reverse().map(({ target, ...point }) => point)] });
-  }
-  return data;
-}
 getJSON('data/sites.json')
-  .then((d) => { sites = addShortRoutes(d.filter((s) => s.id !== 'meridiani')); render(); })
+  .then((d) => { sites = preparedSites(d.filter((s) => s.id !== 'meridiani')); render(); })
   .catch((e) => { $('q-title').textContent = 'Could not load the site data.'; $('q-lead').textContent = `Open the site through a web server (npm run dev). Details: ${e.message}`; });
 

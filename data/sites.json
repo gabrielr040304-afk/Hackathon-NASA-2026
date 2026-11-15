@@ -381,7 +381,7 @@
   "weather": "data/weather/gale.json",
   "traverse": "data/traverse/msl_traverse.json",
   "localLayer": "hirise_gale",
-  "hasSim": false,
+  "hasSim": true,
   "habitat": {
    "lat": -4.802326,
    "lon": 137.381251,

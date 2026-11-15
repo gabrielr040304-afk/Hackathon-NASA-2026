@@ -40,6 +40,12 @@ TypeScript sources: `js/sim/main.ts` and `model.ts`. User-authorized stack exten
 
 Jezero now includes persistent science navigation, sourced observation guidance, hypothetical field objects and a complete preparation manifest (Esc). Approach a science stop, press **E**, then record an investigation; it consumes modeled stationary science time. **M** shows the route and named science stops. The EVA analysis separates the recorded session from hypothetical longer-duration projections.
 
-Objectives and route alternatives are filtered by destination. Gale includes a science-stop map; its 3D terrain is not implemented. Meridiani is excluded from selectable EVAs because local verified route/terrain data are incomplete. Its solar times are calculable, but a daylight calculation alone cannot validate a walk.
+Objectives and route alternatives are filtered by destination. Gale includes a science-stop map and a separate HiRISE terrain grid for both boxwork routes. Meridiani is excluded from selectable EVAs because local verified route/terrain data are incomplete. Its solar times are calculable, but a daylight calculation alone cannot validate a walk.
 
 Rover-stop markers approximate science locations. Added rocks, base and rover are hypothetical, not surveyed objects. Potential biosignatures do not confirm life; ancient-water evidence does not identify drinking water. AI-assisted changes and source references are documented in [SOURCES.md](SOURCES.md) and [ADR-003](docs/adr/ADR-003-science-eva.md).
+
+### Gale 3D and surface habitat
+
+Both Gale routes now run in the visor: Boxwork formations and Boxwork ridge - short. Each uses a 1.6 km HiRISE crop and Mars Trek orbital texture. Inspect required science stops with E; optional illustrative trail specimens add five minutes of modeled observation time. The habitat includes a pressure module, airlock, terrain-adjusted supports, power, cooling and communications equipment, with visible changes for selected shielding, tools, procedures and support rover. Its geometry is a project concept informed by NASA studies.
+
+Water objectives concern ancient-water evidence preserved in rocks. Topography alone does not identify liquid water or an extractable deposit. Added geological details remain hypothetical reconstructions; reference images and NASA links explain the real observations.

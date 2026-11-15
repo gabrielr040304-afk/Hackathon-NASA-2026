@@ -1,5 +1,13 @@
 # Progresso
 
+## Finalizacao Gale e habitat ? 14/11/2026
+- Gale 3D habilitado para Boxwork formations e Boxwork ridge - short, catalogo compartilhado entre planejador e simulador. HiRISE DTEEC_019698_1750_019988_1750_U01 recortado em 1,6 km, 512 x 512, sem lacunas; textura Mars Trek propria. Cache bruto fora do Git.
+- Habitat refeito com modulo pressurizado, airlock, escotilha, apoios no terreno, escada, radiadores, paineis solares, antenas e itens conforme preparacao. Variantes de blindagem e rover conceituais [H]; inspecao explica fonte e escolhas.
+- Rochas procedurais com detalhe, afloramentos ilustrativos, boxwork com fraturas/nodulos e referencia ao furo de Nevado Sajama. Pedras opcionais ao longo da trilha inspecionaveis com E e referencias NASA, sem fingir coordenadas individuais reais.
+- Verificacao: 36 testes de modelo aprovados; todas as 15 combinacoes de rota/abrigo geraram geometrias validas no Three.js real. Chrome abriu Gale, HUD ativo e inspecao do habitat visualmente confirmados. Nao foi percorrido manualmente o trajeto inteiro. Contrato HTML/HUD corrigido.
+- Fontes e limites atualizados no README/SOURCES; agua antiga distinguida de agua disponivel hoje. Diferenca de altitude DTM versus rover documentada (11?15 m). Sem push.
+
+
 ## Revisão de ciência e EVA — 14/11/2026
 - Solicitação atual: objetivos filtrados por destino, alternativas de rota coerentes; Meridiani retirada das opções de EVA por falta de trajeto/relevo verificado (não por impossibilidade física ou inexistência de horário solar). Dados arquivados preservados.
 - Gale: camada de pontos científicos com fontes, além do trajeto Curiosity e imagem orbital existentes; permanece sem 3D local.
