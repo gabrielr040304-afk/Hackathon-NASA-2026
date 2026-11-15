@@ -29,8 +29,8 @@ export const OPTIONAL_FIELD_MIN = 5; // [S] extra observation duration; beyond t
 export const PEAK_TEMP_HOUR = 14;            // [S] hora da temperatura máxima do dia
 export const HAZARD_CELL_PIXELS = 16; // Display aggregation only, ~63 m for the bundled Jezero DTM.
 export const OPTIONAL_PREPARATION = [
-  { id: 'rehearsal', name: 'Additional field-science rehearsal', why: 'Rehearse sample handling and documentation before departure. Additional training; not required for the checklist level.' },
-  { id: 'archive', name: 'Redundant science-data archive', why: 'Keep an extra copy of field observations for science review. Does not improve suit endurance or reduce radiation.' },
+  { id: 'rehearsal', name: 'Integrated EVA operations rehearsal', why: 'Rehearse crew coordination, sample identification, contamination control and abort procedures. Additional mission preparation; does not increase suit endurance.' },
+  { id: 'archive', name: 'Redundant science data and sample records', why: 'Maintain independent copies of imagery, instrument records and sample identifiers for traceability. A shared mission provision; does not reduce radiation or extend life support.' },
 ]; // [H] optional project enhancements; verified unit prices unavailable.
 // Additional project recommendations [H], informed by NASA maintenance/contingency research.
 export const PREPARATION_EXTRAS = [
@@ -41,9 +41,10 @@ export const PREPARATION_EXTRAS = [
 export const RADIATION_EVIDENCE_URL = 'https://www.nasa.gov/missions/mars-science-laboratory/how-nasas-curiosity-rover-is-making-mars-safer-for-astronauts/';
 // Historical comparisons below are program estimates, never Mars unit prices.
 export const RADIATION_TERRAIN = { azimuths: 24, stepM: 10, rangeM: 250, eyeHeightM: 1.7, refreshMs: 1000, openSkyFraction: .95 }; // [S] sampling settings; geometry [D].
-// [H] scenario allowances in million USD, per mission/crew, not per astronaut.
+// [H] unit planning allowances in million USD; PERSONAL_PRICE_IDS scale with crew.
 // Reference amounts are published; allocation shares and multipliers are ours.
 export const PRICE_REFERENCES = {
+  transport: { million: 4068, name: 'NASA OIG 2021: $4.068B SLS/Orion component sum; historical lunar launch-system scope, not Mars transport', url: 'https://oig.nasa.gov/wp-content/uploads/2024/02/ig-22-003.pdf' },
   suit: { million: 228.5, name: 'NASA Axiom Artemis task order, 2022: $228.5M for development/services, not one suit', url: 'https://www.nasa.gov/news-release/nasa-taps-axiom-space-for-first-artemis-moonwalking-spacesuits/' },
   habitat: { million: 65, name: 'NASA NextSTEP, 2016: ~$65M combined prototype/concept awards across six companies, not one habitat', url: 'https://www.nasa.gov/news-release/nasa-selects-six-companies-to-develop-prototypes-concepts-for-deep-space-habitats/' },
   instrument: { million: .07, name: 'NASA Pandora Q&A, 2024: ~$70,000 for a ground-based two-spectrometer system; not Mars-rated handheld hardware', url: 'https://appliedsciences.nasa.gov/sites/default/files/2024-08/GroundNetworks_Q%26A_Part3.pdf' },
@@ -54,7 +55,11 @@ export const PRICE_ALLOWANCES = {
   backup:['suit',.03], repair:['suit',.04], dust:['suit',.02], rehearsal:['suit',.01], archive:['instrument',2],
   amostrador:['instrument',1], camera:['instrument',1], espectrometro:['instrument',1], perfuratriz:['instrument',3], medico:['instrument',1], microscopia:['instrument',1], ambiente:['instrument',1],
   shell:['habitat',1], polymer:['habitat',1.5], regolith:['habitat',2], rover:['rover',10],
+  chemical:['transport',1], nuclear:['transport',1.5],
 };
+export const PERSONAL_PRICE_IDS = ['pressure','oxygen','scrubber','cooling','power','comms','monitor','backup','amostrador','camera','espectrometro','perfuratriz','medico','microscopia','ambiente']; // [H] one complete personal set per surface crew member.
+export const PRICE_GROUPS = {personal:'Personal systems', preparation:'Mission preparation', habitat:'Habitat and mobility', transport:'Interplanetary transport'};
+export const SIM_PACING = { maxTimeScale: 5, maxFootVisualMps: 2.5, maxRoverVisualMps: 4 }; // [S] presentation compression; distance, time and consumption share the same elapsed time.
 
 // Planner extension approved by Gabriel: educational readiness, not flight certification.
 export const EQUIPMENT = [

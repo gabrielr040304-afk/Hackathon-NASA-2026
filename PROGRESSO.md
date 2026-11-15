@@ -1,5 +1,13 @@
 # Progresso
 
+## Quantidades, transporte e ritmo ? 14/11/2026
+- Trajes, baterias e demais sistemas pessoais/ferramentas multiplicados por tripulante. Provisoes compartilhadas contam uma vez; tabela apresenta unidade, quantidade e subtotal, agrupamento e barras de participacao. Previa da equipe atualiza conforme tamanho.
+- Transporte quimico $4.068B [H] e nuclear termico $6.102B [H]: escala historica OIG mais provisao hipotetica de 50%, sem alegar comparacao economica validada. Uma opcao incluida no total; referencia historica nao duplicada.
+- Optional additions reformulada como Mission assurance and science operations com ensaio integrado EVA e registros cientificos redundantes.
+- Removidos modos 1x/30x: ritmo adaptativo ate 5x, limites visuais 2,5 m/s a pe e 4 m/s rover. Distancia, tempo e recursos usam os mesmos segundos simulados. Entrada atualizada confirmada no Chrome.
+- 45 testes aprovados, sintaxe e diff conferidos; testes de quantidade, transporte exclusivo e limites de movimento. Sem push.
+
+
 ## Estimativas por item autorizadas ? 14/11/2026
 - Usuario autorizou estimativas [H] com busca de referencia real. Catalogo por item centralizado em config.js; referencias NASA Axiom/NextSTEP/Pandora e contrato de estudo LTV divulgado pela Intuitive Machines. Parcelas e multiplicadores sao hipoteses explicitas, nao precos unitarios NASA.
 - Valores nas selecoes, subtotal de preparacao, revisao, relatorio e analise EVA. Contados uma vez por missao/equipe, sem multiplicacao automatica por tripulante. Escopos/exclusoes e referencias mostrados por item; formatacao M/B preservada.

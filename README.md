@@ -59,3 +59,9 @@ Both simulators include a radiation panel: accumulated historical-reference dose
 ### Item planning allowances
 
 The planner now offers user-requested [H] prices per selected item, a preparation subtotal and a surface-planning total. Each item's review includes a real budget reference, its original scope and the project's chosen allocation/multiplier. These are illustrative allowances rather than validated Mars unit prices. Costs count once per mission/crew and use M/B formatting. Transport and full mission operations remain outside the total. See SOURCES.md for methodology and limitations.
+
+### Crew-aware budget and exploration pace
+
+The cost review now groups personal systems, shared preparation, habitat/mobility and transport, with unit allowance, quantity, subtotal and relative budget bars. Personal provisions multiply by surface crew; shared items count once. Chemical and nuclear thermal transport have separate hypothetical budget scenarios with their assumptions disclosed. Optional provisions now describe integrated EVA rehearsal and science-record traceability.
+
+The simulator uses one adaptive exploration pace instead of 1x/30x modes. Its maximum presentation speed is 2.5 m/s on foot or 4 m/s in the support-rover model, with up to 5x time compression. Movement, elapsed time and consumption stay consistent. Esc pauses all three.

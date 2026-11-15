@@ -1,4 +1,6 @@
 // Generated from TypeScript by tools/compile_sim.mjs
+import { selectedPrices } from '../prices.js';
+import { explorationSeconds } from './pacing.js';
 import { moneyMillions } from '../money.js';
 import { terrainExposure } from '../radiation.js';
 import { preparedSites } from '../routes.js';
@@ -38,7 +40,7 @@ async function enter() { if (ended) return; try { await $('world').requestPointe
 function finish(reason = 'Session ended by the traveler.') {
   ended=true; active=false; keys.clear(); document.exitPointerLock(); $('pause').hidden=true; $('science').close(); $('summary').hidden=false;
   const visited=targets.filter(t=>t.visited).length;
-  $('actual').innerHTML=`<p class="session-outcome">${reason}</p><h2>Recorded session</h2>${telemetry(usage)}<div class="science-result"><h3>Field investigation</h3><p>${visited} / ${targets.length} stops investigated [S] | ${nextPoint>=points.length?'Returned along the planned route':'Route incomplete'}</p><ul>${targets.map(t=>`<li>${t.visited?'Investigated':'Not investigated'}: ${t.target.name}${t.visited?` | ${t.observations.join(', ')}`:''}</li>`).join('')}</ul><p>Optional field specimens investigated: ${fieldSpecimens.filter(p=>p.visited).length} [S].</p><p>Investigations record simulated field work, not new discoveries.</p></div><details><summary>Cost evidence</summary><p>Selected surface-planning allowance [H]: ${moneyMillions(prep.investmentMillion)} per mission. Hypothetical allocations use published analog budget scales; not a NASA quote. Transport and mission operations excluded. Incremental EVA cost is not priced.</p></details>`;
+  $('actual').innerHTML=`<p class="session-outcome">${reason}</p><h2>Recorded session</h2>${telemetry(usage)}<div class="science-result"><h3>Field investigation</h3><p>${visited} / ${targets.length} stops investigated [S] | ${nextPoint>=points.length?'Returned along the planned route':'Route incomplete'}</p><ul>${targets.map(t=>`<li>${t.visited?'Investigated':'Not investigated'}: ${t.target.name}${t.visited?` | ${t.observations.join(', ')}`:''}</li>`).join('')}</ul><p>Optional field specimens investigated: ${fieldSpecimens.filter(p=>p.visited).length} [S].</p><p>Investigations record simulated field work, not new discoveries.</p></div><details><summary>Cost evidence</summary><p>Selected planning budget [H]: ${moneyMillions(prep.investmentMillion)} for the selected crew and transport. Personal systems count per astronaut; shared items count once. Hypothetical allocations use published analog budget scales; not a NASA quote. Full landing, return and operations costs excluded. Incremental EVA cost is not priced.</p></details>`;
   forecast();
 }
 function forecast() { const hours = clamp(Number($('projection').value) || 0, 0, C.SIM.projectionMaxHours); $('forecast').innerHTML = telemetry(projectUsage(usage,hours)); }
@@ -91,6 +93,7 @@ async function boot() {
   if(!route) throw Error('Choose a prepared Jezero or Gale route in the planner.');
   const essentials=new Set        (prep.essentials); if(C.ESSENTIALS.some((e    )=>!essentials.has(e.id))) throw Error('Essential life-support systems are missing. Return to preparation.');
   prep.loadKg=C.EQUIPMENT.filter((e    )=>prep.equipment.includes(e.id)).reduce((sum       ,e    )=>sum+e.kg,0);
+  prep.investmentMillion=selectedPrices({...prep,extras:prep.extras??[],optional:prep.optional??[],propulsion:prep.propulsion??'chemical'}).total;
   weather=(await json(site.weather)).find((w    )=>w.sol===prep.sol);
   const plan=assessMission(site,route,{crew:prep.crew,rover:prep.rover,loadKg:prep.loadKg,start:prep.start},weather,essentials); if(!plan.go) throw Error('This mission is blocked by planner checks. Return to preparation.');
   const meta=await json(`data/${site.id}/terrain.json`); const r=await fetch(`data/${site.id}/terrain.bin`); if(!r.ok)throw Error('Terrain unavailable'); terrain=parseTerrain(meta,await r.arrayBuffer());
@@ -121,8 +124,8 @@ async function boot() {
 function frame(now       ) {
   if(!active && now-lastHud<C.SIM_DETAIL.hudIntervalMs){last=now;requestAnimationFrame(frame);return;}
   const dt=Math.min((now-last)/1000,C.SIM.maxFrameSeconds); last=now;
-  if(active&&!ended){ const scale=Number($('speed').value), seconds=dt*scale; const forward=(keys.has('KeyW')||keys.has('ArrowUp')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')?1:0); const side=(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0); const length=Math.hypot(forward,side); let multiplier=1; message='';
-    if(length){ const localSlope=slopeAt(terrain,x,z); const riding=prep.rover&&localSlope<=C.ROVER_MAX_SLOPE_DEG; const speed=walkSpeedKmh(localSlope,prep.loadKg,riding)/3.6; const step=speed*seconds; const nx=x+(-Math.sin(yaw)*forward+Math.cos(yaw)*side)/length*step, nz=z+(-Math.cos(yaw)*forward-Math.sin(yaw)*side)/length*step;
+  if(active&&!ended){ const localSlope=slopeAt(terrain,x,z), riding=prep.rover&&localSlope<=C.ROVER_MAX_SLOPE_DEG, speed=walkSpeedKmh(localSlope,prep.loadKg,riding)/3.6, seconds=explorationSeconds(dt,speed,riding); const forward=(keys.has('KeyW')||keys.has('ArrowUp')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')?1:0); const side=(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0); const length=Math.hypot(forward,side); let multiplier=1; message='';
+    if(length){ const step=speed*seconds; const nx=x+(-Math.sin(yaw)*forward+Math.cos(yaw)*side)/length*step, nz=z+(-Math.cos(yaw)*forward-Math.sin(yaw)*side)/length*step;
       const hx=(terrain.width-1)*terrain.m_per_px_x/2, hz=(terrain.height-1)*terrain.m_per_px_y/2;
       if(Math.abs(nx)>hx||Math.abs(nz)>hz)message='Terrain boundary: no elevation data beyond this point.';
       else if(habitat&&Math.hypot(nx-habitat.x,nz-habitat.z)<habitat.radius)message='Habitat pressure shell: walk around to the airlock.';
@@ -143,7 +146,7 @@ function frame(now       ) {
   $('clock').textContent=`${time} local [S]`; const readings=[['Oxygen',100-c.oxygenUsed],['Cooling water',100-c.waterUsed],['Battery',100-c.batteryUsed]];
   $('readouts').innerHTML=readings.map(([name,value])=>`<div class="reading">${name} ${fmt(Math.max(0,Number(value)))}% [S]<meter min="0" max="100" value="${Math.max(0,Number(value))}"></meter></div>`).join('')+`<div class="reading">${fmt(airTempAt(weather,time))} C air [S]<br>RAD reference dose: ${fmt(c.dose,3)} mSv [S]<br>Extra load: ${prep.loadKg} kg [S]</div>`;
   const lat=terrain.center_lat-z/C.MARS_RADIUS_M*180/Math.PI, lon=terrain.center_lon+x/(C.MARS_RADIUS_M*Math.cos(terrain.center_lat*Math.PI/180))*180/Math.PI;
-  const target=points[Math.min(nextPoint,points.length-1)]; $('navigation').textContent=`${fmt(lat,5)}, ${fmt(lon,5)} [S] | Next waypoint ${Math.min(nextPoint,points.length-1)}/${points.length-1}: ${fmt(Math.hypot(target.x-x,target.z-z))} m [S] | ${prep.rover?'Support rover model [S]':'On foot'} | Esc: mission manifest`;
+  const target=points[Math.min(nextPoint,points.length-1)]; $('navigation').textContent=`${fmt(lat,5)}, ${fmt(lon,5)} [S] | Next waypoint ${Math.min(nextPoint,points.length-1)}/${points.length-1}: ${fmt(Math.hypot(target.x-x,target.z-z))} m [S] | ${prep.rover?'Support rover model [S]':'On foot'} | Adaptive exploration pace [S] | Esc: mission manifest`;
   const sunset=weather.sunset.split(':').map(Number); const late=start[0]*60+start[1]+marsMinutes(usage.seconds)>sunset[0]*60+sunset[1]-C.DAYLIGHT_MARGIN_MIN;
   $('notice').textContent=message||(late?'Return daylight margin exceeded [S].':c.reserve<C.RESERVE_PCT?'Reserve below the project return margin [S].':nearbyScience()?'Press E to inspect the nearby rock or science stop.':habitat&&Math.hypot(habitat.inspectX-x,habitat.inspectZ-z)<C.HABITAT_VISUAL.inspectionRadiusM?'Press E to inspect your habitat configuration.':'Follow the amber route. Radiation is a Gale reference, not a local forecast.'); } if(now-lastScan>C.SIM_GUIDANCE.scanIntervalMs){scanAhead();lastScan=now;} renderer.render(scene,camera); requestAnimationFrame(frame);
 }

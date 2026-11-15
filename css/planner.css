@@ -225,3 +225,23 @@ body::before { content: ''; position: fixed; inset: 0; background: linear-gradie
 #readiness-count .money small { font-size: .9rem; }
 #readiness-count > small { grid-column: 1 / -1; color: var(--mute); }
 @media (max-width: 700px) { .preparation-layout { grid-template-columns: 1fr; } #readiness-count { grid-template-columns: 1fr; } .extra-row label { flex-wrap: wrap; } }
+.cost-overview { display:flex; justify-content:space-between; align-items:center; gap:2rem; padding:1.5rem; background:rgba(24,40,57,.85); border-radius:14px; margin:1.5rem 0; }
+.cost-overview h2 { margin:0 0 .5rem; font-size:1.6rem; }
+.cost-overview p { margin:0; color:var(--mute); }
+.cost-overview > strong { font:700 clamp(1.8rem,4vw,3.2rem)/1.1 var(--display); color:#9ce8b3; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.cost-group { margin:1.5rem 0 2rem; }
+.cost-group-heading { display:flex; justify-content:space-between; align-items:baseline; gap:1rem; }
+.cost-group-heading h3 { margin:0 0 .6rem; }
+.cost-group-heading strong { color:#9ce8b3; font-variant-numeric:tabular-nums; }
+.cost-share { height:5px; background:#25344a; margin-bottom:.8rem; border-radius:3px; overflow:hidden; }
+.cost-share span { display:block; height:100%; background:#9cc9e6; }
+.cost-group table { width:100%; border-collapse:collapse; text-align:left; }
+.cost-group th,.cost-group td { padding:.85rem .6rem; border-bottom:1px solid var(--line); vertical-align:top; }
+.cost-group thead th { color:var(--mute); font-weight:500; font-size:.85rem; }
+.cost-group tbody th { font-weight:500; min-width:14rem; width:50%; }
+.cost-group td { white-space:nowrap; font-variant-numeric:tabular-nums; }
+.cost-group td:last-child { color:#9ce8b3; font-weight:650; }
+.cost-group summary { cursor:pointer; line-height:1.5; }
+.cost-group details p { font-size:.85rem; font-weight:400; color:var(--mute); max-width:65ch; }
+.cost-group details[open] summary { color:#c7e6f5; }
+@media(max-width:700px) { .cost-overview { flex-direction:column; align-items:flex-start; gap:.8rem; } .cost-group table { font-size:.85rem; } }

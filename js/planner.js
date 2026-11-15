@@ -1,4 +1,5 @@
 import { priceFor, selectedPrices } from './prices.js';
+import { PRICE_GROUPS } from './config.js';
 import { moneyMillions } from './money.js';
 import { preparedSites } from './routes.js';
 import { objectivesForSite, scienceFor, POSITION_NOTE } from './science.js';
@@ -68,7 +69,7 @@ const STEPS = [
       body.classList.add('preparation-layout');
       for (const item of ESSENTIALS) {
         const label = document.createElement('label'); label.className = `readiness ${state.essentials.has(item.id) ? 'selected' : ''}`;
-        label.innerHTML = `<input type="checkbox" ${state.essentials.has(item.id) ? 'checked' : ''}><span><b>${item.name}</b><small>${item.why}</small><span class="choice-price">${moneyMillions(priceFor(item.id).million)} [H] / mission</span></span>`;
+        label.innerHTML = `<input type="checkbox" ${state.essentials.has(item.id) ? 'checked' : ''}><span><b>${item.name}</b><small>${item.why}</small><span class="choice-price">${priceLabel(item.id)}</span></span>`;
         label.querySelector('input').onchange = (e) => { e.target.checked ? state.essentials.add(item.id) : state.essentials.delete(item.id); updatePreparationCost(); e.target.closest('label').classList.toggle('selected', e.target.checked); updateRisk(); };
         const more = document.createElement('details'); more.className = 'item-more';
         more.innerHTML = `<summary aria-label="More about ${item.name}">+ Learn more</summary><p>${item.why}</p><a href="${SOURCE_LINKS.suit}" target="_blank" rel="noopener">NASA: spacesuit systems</a><p>${priceDetail(item.id)}</p>`;
@@ -80,16 +81,16 @@ const STEPS = [
         section.innerHTML = `<h2>${group}</h2><p>Additional recommendations [H]. These procedures strengthen preparation; they do not extend modeled suit endurance.</p>`;
         for (const item of PREPARATION_EXTRAS.filter((entry) => entry.group === group)) {
           const row = document.createElement('div'); row.className = 'extra-row';
-          row.innerHTML = `<label><input type="checkbox" ${state.extras.has(item.id) ? 'checked' : ''}><span><b>${item.name}</b><small>${item.why}</small></span><strong class="money">${moneyMillions(priceFor(item.id).million)} [H]</strong></label><details class="item-more"><summary>+ Learn more</summary><p>${item.why}</p><p>${priceDetail(item.id)}</p><a href="${item.source}" target="_blank" rel="noopener">NASA reference</a></details>`;
+          row.innerHTML = `<label><input type="checkbox" ${state.extras.has(item.id) ? 'checked' : ''}><span><b>${item.name}</b><small>${item.why}</small></span><strong class="money">${priceLabel(item.id)}</strong></label><details class="item-more"><summary>+ Learn more</summary><p>${item.why}</p><p>${priceDetail(item.id)}</p><a href="${item.source}" target="_blank" rel="noopener">NASA reference</a></details>`;
           row.querySelector('input').onchange = (e) => { e.target.checked ? state.extras.add(item.id) : state.extras.delete(item.id); updatePreparationCost(); updateRisk(); }; section.append(row);
         }
         body.append(section);
       }
       const optional = document.createElement('section'); optional.className = 'preparation-category wide';
-      optional.innerHTML = '<h2>Optional additions</h2><p>For additional science preparation. These do not change the minimum or recommended checklist level. Prices are hypothetical allowances [H] per mission; reference details appear in the review.</p>';
+      optional.innerHTML = '<h2>Mission assurance and science operations</h2><p>Optional operational provisions support crew readiness and scientific traceability. Each is funded once per mission [H]. They do not replace essential life support or change modeled resource capacity.</p>';
       for (const item of OPTIONAL_PREPARATION) {
         const row = document.createElement('div'); row.className = 'extra-row';
-        row.innerHTML = `<label><input type="checkbox" ${state.optional.has(item.id) ? 'checked' : ''}><span><b>${item.name}</b><small>${item.why}</small></span><strong class="money">${moneyMillions(priceFor(item.id).million)} [H]</strong></label>`;
+        row.innerHTML = `<label><input type="checkbox" ${state.optional.has(item.id) ? 'checked' : ''}><span><b>${item.name}</b><small>${item.why}</small></span><strong class="money">${priceLabel(item.id)}</strong></label>`;
         row.querySelector('input').onchange = (e) => { e.target.checked ? state.optional.add(item.id) : state.optional.delete(item.id); updatePreparationCost(); }; optional.append(row);
       }
       body.append(optional, count);
@@ -128,13 +129,13 @@ const STEPS = [
     ready: () => true,
     render(body) {
       const field = document.createElement('div'); field.className = 'field';
-      field.innerHTML = `<label for="crew-count">Mission crew size [H]</label><input id="crew-count" type="number" min="1" max="50" value="${state.crew}"><small>NASA's 2025 Mars architecture targets at least four surface crew, with six considered for added capability. <a href="https://www.nasa.gov/wp-content/uploads/2025/12/2025-architecture-update-for-publication.pdf">NASA architecture update</a></small>`;
-      field.querySelector('input').onchange = (e) => { state.crew = Math.max(1, Math.min(50, Number(e.target.value) || 1)); e.target.value = state.crew; updateRisk(); };
+      field.innerHTML = `<label for="crew-count">Mission crew size [H]</label><input id="crew-count" type="number" min="1" max="50" value="${state.crew}"><small>NASA's 2025 Mars architecture targets at least four surface crew, with six considered for added capability. <a href="https://www.nasa.gov/wp-content/uploads/2025/12/2025-architecture-update-for-publication.pdf">NASA architecture update</a></small><p id="crew-cost">Budget for ${state.crew} crew: ${moneyMillions(selectedPrices(state).total)} [H]</p>`;
+      field.querySelector('input').onchange = (e) => { state.crew = Math.max(1, Math.min(50, Number(e.target.value) || 1)); e.target.value = state.crew; $('crew-cost').textContent = `Budget for ${state.crew} crew: ${moneyMillions(selectedPrices(state).total)} [H]`; updateRisk(); };
       body.append(field, option({ title: 'Support rover', text: `${moneyMillions(priceFor('rover').million)} [H] / mission. Hypothetical crewed surface vehicle; mobility uses a simulated model.`, details: priceDetail('rover'), pressed: state.rover, onClick: () => { state.rover = !state.rover; render(); } }));
       const transport = document.createElement('section'); transport.className = 'transport-section wide';
-      transport.innerHTML = '<h2>Transportation</h2><p>Interplanetary propulsion is separate from walking or riding on the surface. Chemical rockets are established technology; nuclear thermal systems remain a research concept. Neither choice represents an available human Mars transport. Travel time and cost are not predicted here.</p><a href="https://www.nasa.gov/space-technology-mission-directorate/tdm/space-nuclear-propulsion/">NASA propulsion research</a>';
+      transport.innerHTML = '<h2>Transportation</h2><p>Interplanetary propulsion is separate from walking or riding on the surface. Chemical rockets are established technology; nuclear thermal systems remain a research concept. Neither choice represents an available human Mars transport. Select a transport budget scenario [H]. Chemical uses a historical launch-system budget scale; nuclear thermal adds an assumed 50% development provision. These are not equivalent-scope engineering estimates, and travel time is not predicted.</p><a href="https://www.nasa.gov/space-technology-mission-directorate/tdm/space-nuclear-propulsion/">NASA propulsion research</a>';
       const choices = document.createElement('div'); choices.className = 'q-body';
-      for (const [id, name, text] of [['chemical', 'Chemical propulsion', 'Established technology; Mars crew architecture still conceptual.'], ['nuclear', 'Nuclear thermal propulsion', 'Research concept; not an operational human Mars vehicle.']]) choices.append(option({ title: name, text, pressed: state.propulsion === id, onClick: () => { state.propulsion = id; render(); } }));
+      for (const [id, name, text] of [['chemical', 'Chemical propulsion', 'Established technology; Mars crew architecture still conceptual.'], ['nuclear', 'Nuclear thermal propulsion', 'Research concept; not an operational human Mars vehicle.']]) choices.append(option({ title: name, text: `${text} ${priceLabel(id)}`, details: priceDetail(id), pressed: state.propulsion === id, onClick: () => { state.propulsion = id; render(); } }));
       transport.append(choices); body.append(transport);
       const roles = document.createElement('div'); roles.className = 'field wide';
       roles.innerHTML = '<h3>Crew capabilities</h3><p>Project recommendations [H], not mandatory NASA job titles. Cross-trained crew can cover more than one capability.</p>';
@@ -153,7 +154,7 @@ const STEPS = [
       const f = document.createElement('div'); f.className = 'field';
       for (const e of EQUIPMENT) {
         const l = document.createElement('label');
-        l.innerHTML = `<input type="checkbox" ${state.equipment.has(e.id) ? 'checked' : ''}> ${e.name} <small>(${e.kg} kg) ${tag('S')} - ${moneyMillions(priceFor(e.id).million)} [H] / mission</small>`;
+        l.innerHTML = `<input type="checkbox" ${state.equipment.has(e.id) ? 'checked' : ''}> ${e.name} <small>(${e.kg} kg) ${tag('S')} - ${priceLabel(e.id)}</small>`;
         l.querySelector('input').onchange = (ev) => { ev.target.checked ? state.equipment.add(e.id) : state.equipment.delete(e.id); $('load-total').textContent = `${loadKg()} kg`; updateRisk(); };
         const more = document.createElement('details'); more.className = 'item-more';
         more.innerHTML = `<summary aria-label="More about ${e.name}">+ Learn more</summary><p>${e.name}: ${e.id === 'medico' ? 'Supports the emergency-response plan; it does not replace medical training.' : 'Use to document or investigate rock samples. NASA rover instruments combine imaging, spectroscopy and sampling; this handheld concept is not an actual rover instrument.'}</p><p>Mass is a project assumption [S]. ${priceDetail(e.id)}</p><a href="https://science.nasa.gov/mission/mars-2020-perseverance/science-instruments/">NASA instrument reference</a>`;
@@ -234,18 +235,26 @@ async function render() {
 function historicalCostHTML() {
   return `<h3>Historical NASA benchmark [R]</h3><p>SLS / Orion production and launch operations: approximately <strong>${moneyMillions(HISTORICAL_LAUNCH_ROUNDED_MILLION)}</strong> per launch, estimated by NASA OIG in 2021 for Artemis I?IV. This is a lunar-program benchmark, not a Mars mission quote.</p><dl>${HISTORICAL_LAUNCH_COST.map(item=>`<dt>${item.name}</dt><dd>${moneyMillions(item.millionUSD)} [R]</dd>`).join('')}</dl><p>Component sum: ${moneyMillions(HISTORICAL_LAUNCH_COST.reduce((sum,item)=>sum+item.millionUSD,0))} [D]; published rounded estimate: ${moneyMillions(HISTORICAL_LAUNCH_ROUNDED_MILLION)} [R]. Historical USD, not inflation-adjusted.</p><a href="${SOURCE_LINKS.budget}" target="_blank" rel="noopener">NASA OIG IG-22-003 (2021), pp. 22?23</a>`;
 }
-function priceDetail(id) {
+function priceLabel(id) {
   const price=priceFor(id);
-  return `Planning allowance [H]: ${moneyMillions(price.million)} per mission. Reference: <a href="${price.reference.url}" target="_blank" rel="noopener">${price.reference.name}</a>. Our chosen multiplier/allocation: ${price.factor.toLocaleString('en-US')}x [H]. This is a scale anchor, not a validated unit-price conversion, accuracy bound or supplier quote.`;
+  return `${moneyMillions(price.million)} [H] / ${price.personal?'astronaut':'mission'}`;
+}
+function priceDetail(id) {
+  const price=priceFor(id),quantity=price.personal?state.crew:1;
+  return `Unit planning allowance [H]: ${moneyMillions(price.million)}. Quantity: ${quantity} ${price.personal?'personal sets':'shared mission provision'}; subtotal ${moneyMillions(price.million*quantity)} [H]. Reference: <a href="${price.reference.url}" target="_blank" rel="noopener">${price.reference.name}</a>. Project allocation/multiplier: ${price.factor.toLocaleString('en-US')}x [H]. ${id==='nuclear'?'The 1.5x factor is an assumed development premium, not a demonstrated economic comparison. ':''}Reference budgets set context; they do not validate these unit prices.`;
 }
 function priceSummaryHTML() {
   const result=selectedPrices(state);
-  const catalog=[...ESSENTIALS,...EQUIPMENT,...PREPARATION_EXTRAS,...OPTIONAL_PREPARATION,...SHELTERS,{id:'rover',name:'Support rover'}];
-  return `<h2>Selected surface-planning allowance [H]</h2><strong class="money">${moneyMillions(result.total)}</strong><p>Per mission/crew, counted once per selection. These scenario allocations use real published budget anchors with hypothetical shares/multipliers. They are not validated Mars unit prices. Launch, transit, landing, operations and return are excluded; the historical launch benchmark below is not added.</p>${result.rows.map(row=>`<details><summary>${catalog.find(item=>item.id===row.id)?.name ?? row.id}: ${moneyMillions(row.million)} [H]</summary><p>${priceDetail(row.id)}</p></details>`).join('')}`;
+  const catalog=[...ESSENTIALS,...EQUIPMENT,...PREPARATION_EXTRAS,...OPTIONAL_PREPARATION,...SHELTERS,{id:'rover',name:'Support rover'},{id:'chemical',name:'Chemical transport scenario'},{id:'nuclear',name:'Nuclear thermal transport scenario'}];
+  return `<div class="cost-overview"><div><h2>Mission planning budget [H]</h2><p>Personal systems scale with crew. Shared provisions count once.</p></div><strong>${moneyMillions(result.total)}</strong></div><p class="note">Illustrative allowances using published analog budget scales and project assumptions. Includes one transport scenario; excludes a complete Mars landing, return architecture and operations budget. These are not NASA quotations or validated procurement estimates.</p><div class="cost-groups">${Object.entries(PRICE_GROUPS).map(([key,name])=>{
+    const rows=result.rows.filter(row=>row.group===key),sum=rows.reduce((total,row)=>total+row.subtotal,0);
+    if(!rows.length)return '';
+    return `<section class="cost-group"><div class="cost-group-heading"><h3>${name}</h3><strong>${moneyMillions(sum)} [H]</strong></div><div class="cost-share" aria-label="${name}: ${Math.round(sum/result.total*100)} percent of budget"><span style="width:${sum/result.total*100}%"></span></div><div class="table-scroll"><table><thead><tr><th scope="col">Provision</th><th scope="col">Unit [H]</th><th scope="col">Quantity</th><th scope="col">Subtotal [H]</th></tr></thead><tbody>${rows.map(row=>`<tr><th scope="row"><details><summary>${catalog.find(item=>item.id===row.id)?.name ?? row.id}</summary><p>${priceDetail(row.id)}</p></details></th><td>${moneyMillions(row.million)}</td><td>${row.quantity}${row.personal?' crew':' mission'}</td><td>${moneyMillions(row.subtotal)}</td></tr>`).join('')}</tbody></table></div></section>`;
+  }).join('')}</div>`;
 }
 function preparationCostHTML() {
-  const result=selectedPrices({...state,equipment:[],shelter:null,rover:false});
-  return `<span>${state.essentials.size} / ${ESSENTIALS.length} essential systems confirmed [H]</span><span>Selected preparation allowance / mission</span><strong class="money">${moneyMillions(result.total)} [H]</strong><small>Hypothetical allocation; development, hardware and support scopes overlap. Do not interpret as an actual mission quote. Item references appear in the review.</small>`;
+  const result=selectedPrices({...state,equipment:[],shelter:null,rover:false,propulsion:null});
+  return `<span>${state.essentials.size} / ${ESSENTIALS.length} essential systems confirmed [H]</span><span>Preparation allowance for ${state.crew} crew [H]</span><strong class="money">${moneyMillions(result.total)} [H]</strong><small>Personal suit systems and backup oxygen count per astronaut. Rescue, maintenance procedures and mission-assurance provisions count once. Review quantities and references in the budget.</small>`;
 }
 function updatePreparationCost() { $('readiness-count').innerHTML = preparationCostHTML(); }
 function updateRisk() {
