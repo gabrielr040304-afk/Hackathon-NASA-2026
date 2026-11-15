@@ -20,3 +20,10 @@ test("faster pace scales movement and simulated time together and invalid values
   assert.equal(explorationSeconds(.1,.7,false,2),base*2);
   assert.equal(explorationSeconds(.1,.7,false,99),base);
 });
+
+test('uphill walking (~15 degrees, ~0.25 m/s modeled) still reaches the visual walking speed, and that speed is at least 5 m/s', () => {
+  const modeled = 0.25;
+  const seconds = explorationSeconds(.1, modeled, false, 1);
+  assert.ok(C.maxFootVisualMps >= 5);
+  assert.ok(Math.abs(modeled * seconds - .1 * C.maxFootVisualMps) < 1e-9, `visual ${modeled * seconds / .1} m/s`);
+});

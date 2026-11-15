@@ -79,3 +79,6 @@ summary { cursor: pointer; padding: .6rem 0; color: var(--ice); }
 #science img { margin-top: .5rem; border-radius: 8px; }
 @media(max-width:900px) { #science-nav { width: 17rem; } #navigation { width: 17rem; } }
 @media(max-width:600px) { .session-stats { gap: .5rem; } .session-stats dd { font-size: 1.3rem; } .resource-table meter { display:none; } .manifest-meta, .manifest-columns { grid-template-columns: 1fr; } .overlay { padding: .7rem; } .dose-note { display: block; } .dose-note strong { display: block; } }
+/* Frame-rate readout from the automatic quality governor */
+.perf { position: fixed; right: .75rem; bottom: .6rem; z-index: 5; font: 600 11px/1.2 system-ui, sans-serif; color: rgba(240,236,228,.7); background: rgba(10,14,24,.45); padding: .25rem .5rem; border-radius: 8px; pointer-events: none; }
+.perf:empty { display: none; }

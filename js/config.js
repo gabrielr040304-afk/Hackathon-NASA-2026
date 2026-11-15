@@ -59,7 +59,7 @@ export const PRICE_ALLOWANCES = {
 };
 export const PERSONAL_PRICE_IDS = ['pressure','oxygen','scrubber','cooling','power','comms','monitor','backup','amostrador','camera','espectrometro','perfuratriz','medico','microscopia','ambiente']; // [H] one complete personal set per surface crew member.
 export const PRICE_GROUPS = {personal:'Personal systems', preparation:'Mission preparation', habitat:'Habitat and mobility', transport:'Interplanetary transport'};
-export const SIM_PACING = { maxTimeScale: 6, maxFootVisualMps: 3, maxRoverVisualMps: 4.8, paceMultipliers: [1, 1.5, 2] }; // [S] presentation compression; distance, time and consumption share the same elapsed time.
+export const SIM_PACING = { maxTimeScale: 20, maxFootVisualMps: 5, maxRoverVisualMps: 8, paceMultipliers: [1, 1.5, 2] }; // [S] presentation compression; distance, time and consumption share the same elapsed time.
 
 // Planner extension approved by Gabriel: educational readiness, not flight certification.
 export const EQUIPMENT = [
@@ -111,3 +111,5 @@ export const SOURCE_LINKS = {
   budget: 'https://oig.nasa.gov/wp-content/uploads/2024/02/ig-22-003.pdf',
 };
 export const ROVER_RECOMMEND_KM = 4;         // [S] acima disso (ida e volta, sem encostas > limite do rover) o rover é recomendado
+// [S] Rendering quality governor: drop internal resolution/shadows until the frame rate holds the target.
+export const SIM_PERF = { targetFps: 30, throttledFps: 2, sampleMs: 1500, tiers: [ { scale: 1, shadows: true, antialias: true }, { scale: .75, shadows: true }, { scale: .6, shadows: false }, { scale: .45, shadows: false }, { scale: .33, shadows: false } ], softwareStartTier: 1 };

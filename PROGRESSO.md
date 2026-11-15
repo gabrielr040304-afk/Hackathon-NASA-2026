@@ -97,3 +97,4 @@
 - 3D bloqueado: causa era a lista de 8 sistemas essenciais vazia (regra intencional). Agora a tela lista os bloqueios e tem atalho para a lista.
 - Simulador: o link (site, rota, sol, hora) passa a valer sobre a preparação antiga guardada no navegador.
 - Novo visual liquid glass (referências: shell de vidro índigo + dashboard fosco): barra lateral com os 8 passos nomeados e clicáveis (vira índice no resultado), painel "Your mission" ao vivo com prévia do veredito e dos bloqueios, fundo com o céu real de Marte (NASA PIA26680). Nenhuma função removida; lógica do planejador intacta.
+- Simulador: controle automático de qualidade (mínimo 30 fps), sombras estáticas calculadas uma vez, modo leve quando não há placa de vídeo; personagem mais rápido (5 m/s a pé, 8 m/s rover, até 20x de tempo) inclusive em subidas. Medição nesta máquina (sem GPU): desenho foi de 27 fps (100%) para 68 fps (75%).

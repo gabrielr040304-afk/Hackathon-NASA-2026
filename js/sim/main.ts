@@ -21,6 +21,27 @@ let x = 0, z = 0, y = 0, baseHeight = 0, last = performance.now(), message = '';
 let image: HTMLImageElement;
 let lastScan = 0, scanKey = "", lastHud = -Infinity, lastRadiation = -Infinity;
 let currentScience: any = null, fieldSpecimens: any[] = [], habitat: any = null;
+// Rendering quality governor [S]: keeps the frame rate at or above SIM_PERF.targetFps by lowering internal resolution and shadows.
+let sun: any = null, tier = 0, perfFrames = 0, perfStart = 0, perfFps = 0, softwareGpu = false;
+function detectSoftwareGpu(): boolean {
+  try { const gl: any = document.createElement('canvas').getContext('webgl2') || document.createElement('canvas').getContext('webgl'); const ext = gl?.getExtension('WEBGL_debug_renderer_info');
+    return /Basic Render|SwiftShader|llvmpipe|Software/i.test(String(ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl?.getParameter(gl.RENDERER))); } catch { return false; }
+}
+function applyTier(next: number) {
+  tier = clamp(next, 0, C.SIM_PERF.tiers.length - 1); const t = C.SIM_PERF.tiers[tier];
+  renderer.setPixelRatio(Math.min(devicePixelRatio, C.SIM_DETAIL.pixelRatio) * t.scale); renderer.setSize(innerWidth, innerHeight);
+  if (sun) sun.castShadow = t.shadows; renderer.shadowMap.needsUpdate = true;
+}
+function governFrameRate(now: number) {
+  if (!perfStart) { perfStart = now; perfFrames = 0; return; }
+  perfFrames++;
+  if (now - perfStart < C.SIM_PERF.sampleMs) return;
+  perfFps = perfFrames * 1000 / (now - perfStart); perfStart = now; perfFrames = 0;
+  // Below ~2 fps the browser is throttling a hidden/occluded window, not struggling to draw: never degrade quality for that.
+  const throttled = document.visibilityState !== 'visible' || perfFps < C.SIM_PERF.throttledFps;
+  if (!throttled && perfFps < C.SIM_PERF.targetFps && tier < C.SIM_PERF.tiers.length - 1) applyTier(tier + 1);
+  $('perf').textContent = `${Math.round(perfFps)} fps · render ${Math.round(C.SIM_PERF.tiers[tier].scale * 100)}% ${C.SIM_PERF.tiers[tier].shadows ? '' : '· shadows off '}(auto)`;
+}
 const fmt = (n: number, d = 1) => n.toFixed(d);
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 async function json(path: string) { const r = await fetch(path); if (!r.ok) throw Error(`Missing ${path}`); return r.json(); }
@@ -104,10 +125,10 @@ async function boot() {
   if(points.some((p)=>Math.abs(p.x)>halfX||Math.abs(p.z)>halfZ))throw Error('Route exceeds the available elevation grid.');
   targets=points.filter((p)=>p.target).map((p)=>({...p,visited:false})); x=points[0].x; z=points[0].z; baseHeight=terrain.elev_min;
   scene=new THREE.Scene(); scene.background=new THREE.Color('#b67b52'); scene.fog=new THREE.FogExp2('#bd8159',.0004);
-  renderer=new THREE.WebGLRenderer({canvas:$('world'),antialias:true}); renderer.setPixelRatio(Math.min(devicePixelRatio,C.SIM_DETAIL.pixelRatio)); renderer.setSize(innerWidth,innerHeight); renderer.outputColorSpace=THREE.SRGBColorSpace;
+  softwareGpu=detectSoftwareGpu(); renderer=new THREE.WebGLRenderer({canvas:$('world'),antialias:!softwareGpu,powerPreference:'high-performance'}); renderer.setPixelRatio(Math.min(devicePixelRatio,C.SIM_DETAIL.pixelRatio)); renderer.setSize(innerWidth,innerHeight); renderer.outputColorSpace=THREE.SRGBColorSpace;
   camera=new THREE.PerspectiveCamera(C.SIM.fov,innerWidth/innerHeight,.1,C.SIM.far); camera.rotation.order='YXZ';
-  renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1; renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-  scene.add(new THREE.HemisphereLight('#e8d4bc','#493b30',1.3)); const sun=new THREE.DirectionalLight('#fff0cf',2.5); sun.position.set(x-120,180,z+90);sun.target.position.set(x+C.HABITAT_VISUAL.offsetM,0,z);scene.add(sun.target);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-40;sun.shadow.camera.right=40;sun.shadow.camera.top=40;sun.shadow.camera.bottom=-40;sun.shadow.camera.far=900;sun.shadow.normalBias=.05;scene.add(sun);
+  renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1; renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;
+  scene.add(new THREE.HemisphereLight('#e8d4bc','#493b30',1.3)); sun=new THREE.DirectionalLight('#fff0cf',2.5); sun.position.set(x-120,180,z+90);sun.target.position.set(x+C.HABITAT_VISUAL.offsetM,0,z);scene.add(sun.target);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-40;sun.shadow.camera.right=40;sun.shadow.camera.top=40;sun.shadow.camera.bottom=-40;sun.shadow.camera.far=900;sun.shadow.normalBias=.05;scene.add(sun);
   const geometry=new THREE.PlaneGeometry(halfX*2,halfZ*2,C.SIM.meshSegments,C.SIM.meshSegments); geometry.rotateX(-Math.PI/2);
   const pos=geometry.attributes.position; for(let i=0;i<pos.count;i++)pos.setY(i,heightAt(terrain,pos.getX(i),pos.getZ(i))-baseHeight); geometry.computeVertexNormals();
   const texture=await new THREE.TextureLoader().loadAsync(`data/${site.id}/texture.jpg`); texture.colorSpace=THREE.SRGBColorSpace; image=texture.image; texture.anisotropy=renderer.capabilities.getMaxAnisotropy();
@@ -121,7 +142,7 @@ async function boot() {
     const ring=new THREE.Mesh(new THREE.RingGeometry(1.6,1.7,48),new THREE.MeshBasicMaterial({color:p.target?'#e8ca8e':'#95c5d7',side:THREE.DoubleSide}));
     ring.rotation.x=-Math.PI/2;ring.position.set(p.x,renderedHeight(terrain,p.x,p.z)-baseHeight+.12,p.z);scene.add(ring);
   }
-  yaw=Math.atan2(-(points[1].x-x),-(points[1].z-z)); $('mission-name').textContent=route.name; $('terrain-name').textContent=`${site.name} | HiRISE [R/D]`; $('sim-title').textContent=`${site.name} EVA`;  $('hud').hidden=false; $('loading').textContent=`${site.name}: terrain ready. Orbital relief [R/D]; field objects [H].`; $('controls').hidden=false; requestAnimationFrame(frame);
+  yaw=Math.atan2(-(points[1].x-x),-(points[1].z-z)); $('mission-name').textContent=route.name; $('terrain-name').textContent=`${site.name} | HiRISE [R/D]`; $('sim-title').textContent=`${site.name} EVA`;  $('hud').hidden=false; $('loading').textContent=`${site.name}: terrain ready. Orbital relief [R/D]; field objects [H].`; $('controls').hidden=false; applyTier(softwareGpu?C.SIM_PERF.softwareStartTier:0); requestAnimationFrame(frame);
 }
 function frame(now:number) {
   if(!active && now-lastHud<C.SIM_DETAIL.hudIntervalMs){last=now;requestAnimationFrame(frame);return;}
@@ -137,6 +158,7 @@ function frame(now:number) {
     while(nextPoint<points.length&&Math.hypot(points[nextPoint].x-x,points[nextPoint].z-z)<C.SIM.waypointRadius)nextPoint++;
     const c=consumption(usage); if(c.reserve<=0)finish('Modeled suit resources exhausted.'); else if(nextPoint>=points.length)finish('Returned to base along the route.');
   }
+  if(active&&!ended) governFrameRate(now); else perfStart=0;
   y=renderedHeight(terrain,x,z); camera.position.set(x,y-baseHeight+C.SIM.eyeHeight,z); camera.rotation.set(pitch,yaw,0);
   if(now-lastHud>=C.SIM_DETAIL.hudIntervalMs){ lastHud=now; scienceNavigation();
   const c=consumption(usage); const start=prep.start.split(':').map(Number); const time=clockTime((start[0]*60+start[1]+marsMinutes(usage.seconds))%1440);
@@ -195,6 +217,6 @@ document.addEventListener('mousemove',(e)=>{if(active){yaw-=e.movementX*C.SIM.mo
 document.addEventListener('keydown',(e)=>{if(e.code==='KeyM'&&!ended&&terrain&&!$('science').open){mapOpen=!mapOpen; $('map-panel').hidden=!mapOpen; if(mapOpen){active=false;document.exitPointerLock();$('pause').hidden=true;miniMap();}else $('pause').hidden=false;return;}if(active){keys.add(e.code);if(e.code==='KeyE')inspect();if(e.code.startsWith('Arrow'))e.preventDefault();}});
 document.addEventListener('keyup',(e)=>keys.delete(e.code)); window.addEventListener('blur',()=>{active=false;document.exitPointerLock();pause();});
 $('inspect-habitat').onclick=inspectHabitat; $('record-science').onclick=recordScience; $('start').onclick=enter; $('resume').onclick=enter; $('finish').onclick=()=>finish(); $('projection').oninput=forecast; $('close-science').onclick=()=>$('science').close(); $('science').addEventListener('close',()=>{if(!ended)$('pause').hidden=false;});
-window.addEventListener('resize',()=>{if(renderer){renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();}});
+window.addEventListener('resize',()=>{if(renderer){applyTier(tier);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();}});
 window.addEventListener('error',()=>{ if(!terrain) $('loading').textContent='The 3D module could not start. Check WebGL support and CDN connectivity, then reload.'; });
 boot().catch((e)=>{$('loading').textContent=`Simulator unavailable: ${e.message}`; $('controls').hidden=true;});
