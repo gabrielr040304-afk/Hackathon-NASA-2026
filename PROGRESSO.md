@@ -52,7 +52,7 @@
 - **Conteúdo (Tarefa 4): pronto.** 5 fotos reais com créditos, textos dos alvos e Arcadia no centro do estudo SWIM com altitudes MOLA.
 
 ## Pendências e avisos
-- Repositório: https://github.com/gabrielr040304-afk/Hackton-NASA-2026 · Site: https://gabrielr040304-afk.github.io/Hackton-NASA-2026/ (GitHub Pages, branch main). Push só com o "ok" do Gabriel.
+- Repositório: https://github.com/gabrielr040304-afk/Hackathon-NASA-2026 · Site: https://gabrielr040304-afk.github.io/Hackathon-NASA-2026/ (GitHub Pages, branch main). Push só com o "ok" do Gabriel.
 - **Entrega:** textos prontos em `docs/ENTREGA_SPACE_APPS.md` (inglês). Prazo: **domingo 15/11, 23:59** no horário do evento local. Falta: gravar o vídeo de até 30 s (ou 7 slides), colar os textos e clicar em Submit for Judging.
 - **Regra do Space Apps:** tudo que os jurados veem precisa estar em inglês. O 3D (colega) também precisa sair em inglês.
 
@@ -98,3 +98,4 @@
 - Simulador: o link (site, rota, sol, hora) passa a valer sobre a preparação antiga guardada no navegador.
 - Novo visual liquid glass (referências: shell de vidro índigo + dashboard fosco): barra lateral com os 8 passos nomeados e clicáveis (vira índice no resultado), painel "Your mission" ao vivo com prévia do veredito e dos bloqueios, fundo com o céu real de Marte (NASA PIA26680). Nenhuma função removida; lógica do planejador intacta.
 - Simulador: controle automático de qualidade (mínimo 30 fps), sombras estáticas calculadas uma vez, modo leve quando não há placa de vídeo; personagem mais rápido (5 m/s a pé, 8 m/s rover, até 20x de tempo) inclusive em subidas. Medição nesta máquina (sem GPU): desenho foi de 27 fps (100%) para 68 fps (75%).
+- Repositório renomeado para Hackathon-NASA-2026 (nome antigo com erro de digitação). Teste novo confirma que a velocidade maior não muda o consumo por metro.

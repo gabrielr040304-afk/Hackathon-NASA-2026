@@ -16,8 +16,8 @@ Mars Survival Guide is a web tool that helps an astronaut plan a Marswalk and th
 [link público do vídeo de até 30 s (YouTube/Drive) OU dos slides (até 7)]
 
 ## Link to Final Project
-https://gabrielr040304-afk.github.io/Hackton-NASA-2026/
-(code: https://github.com/gabrielr040304-afk/Hackton-NASA-2026)
+https://gabrielr040304-afk.github.io/Hackathon-NASA-2026/
+(code: https://github.com/gabrielr040304-afk/Hackathon-NASA-2026)
 
 ## Detailed Project Description
 **What it does.** NASA maps such as Mars Trek are built for regional and global views, but an astronaut on a Marswalk needs a hyper-local plan: where to step, how steep it gets, how long it takes, and whether the suit and the daylight will last. Our tool answers those questions in two steps.
@@ -55,7 +55,7 @@ Yes. We used Claude (Anthropic), a large language model, as a coding assistant t
 - Planetary Science Institute: SWIM pilot study (LPSC 2019, abstract 2069).
 - Tobler, W. (1993), hiking function, used in our walking-speed model.
 - Leaflet (BSD-2-Clause), Three.js (MIT), Google Fonts Archivo and Atkinson Hyperlegible (SIL OFL).
-- Full list with processing details: https://github.com/gabrielr040304-afk/Hackton-NASA-2026/blob/main/SOURCES.md
+- Full list with processing details: https://github.com/gabrielr040304-afk/Hackathon-NASA-2026/blob/main/SOURCES.md
 
 ---
 

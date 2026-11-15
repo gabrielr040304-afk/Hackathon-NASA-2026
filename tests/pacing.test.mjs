@@ -27,3 +27,19 @@ test('uphill walking (~15 degrees, ~0.25 m/s modeled) still reaches the visual w
   assert.ok(C.maxFootVisualMps >= 5);
   assert.ok(Math.abs(modeled * seconds - .1 * C.maxFootVisualMps) < 1e-9, `visual ${modeled * seconds / .1} m/s`);
 });
+
+import { consumption } from '../js/sim/model.js';
+import { walkSpeedKmh, effort } from '../js/calc.js';
+import { SUIT_CAPACITY_H } from '../js/config.js';
+test('faster on-screen walking does not change oxygen used per meter: simulator matches the planner model at any pace', () => {
+  for (const slope of [0, 10, 15]) for (const pace of C.paceMultipliers) {
+    const load = 9, speed = walkSpeedKmh(slope, load, false) / 3.6, usage = { seconds: 0, effortSeconds: 0, distance: 0 };
+    while (usage.distance < 1000) { // same per-frame update as js/sim/main.ts, at 30 fps
+      const s = explorationSeconds(1 / 30, speed, false, pace);
+      usage.distance += speed * s; usage.seconds += s; usage.effortSeconds += s * effort(slope, load);
+    }
+    const expectedO2 = (usage.distance / speed) * effort(slope, load) / (SUIT_CAPACITY_H * 3600) * 100; // planner: hours x effort / capacity
+    assert.ok(Math.abs(consumption(usage).oxygenUsed - expectedO2) < 1e-9, `slope ${slope}, pace ${pace}`);
+    assert.ok(Math.abs(usage.seconds - usage.distance / speed) < 1e-6); // clock advances by modeled walking time, not by screen time
+  }
+});

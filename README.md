@@ -1,8 +1,8 @@
-# Hackton-NASA-2026 — Mars Survival Guide
+# Hackathon-NASA-2026 — Mars Survival Guide
 
 Survival HUD for astronauts on exploratory missions to Mars. Overlays data from NASA missions, such as terrain, weather, radiation and resources, onto the Martian map to plan routes and monitor Marswalks safely. Built for NASA Space Apps Challenge 2026: Interplanetary Survival Guide – Martian Map.
 
-**Live site:** https://gabrielr040304-afk.github.io/Hackton-NASA-2026/
+**Live site:** https://gabrielr040304-afk.github.io/Hackathon-NASA-2026/
 
 ## What it does
 1. **Plan:** an 8-step questionnaire covers essential life-support systems, science goal, site, crew, additional equipment, habitat/shielding concept, recorded weather/departure time and an automatic illustrative cost estimate. The map shows sampled slope cautions, a MODEL GO / NO-GO assessment, resource use and a downloadable survival report. Candidate routes are compared using explicit rules.
